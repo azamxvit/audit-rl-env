@@ -7,7 +7,7 @@ test.describe("AuditDesk end to end", () => {
   test("episode list is accessible and hides the answers", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Выберите эпизод", level: 1 })).toBeVisible();
-    await expect(page.getByRole("article")).toHaveCount(20);
+    await expect(page.getByRole("button", { name: /^Начать эпизод / })).toHaveCount(20);
     await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
     await expect(page.getByRole("main")).not.toContainText("ISS-");
     await expectNoSeriousA11yViolations(page);
@@ -65,7 +65,7 @@ test.describe("AuditDesk end to end", () => {
     await expect(page.getByRole("heading", { name: "Разбор эпизода", level: 1 })).toBeVisible();
     const table = page.getByRole("table", { name: "Ошибки эталона и ваши ответы" });
     await expect(table.getByRole("row")).toHaveCount(issues.length + 1);
-    const matched = table.getByRole("row").filter({ hasText: paymentId });
+    const matched = table.getByRole("row").filter({ hasText: paymentId }).filter({ hasText: invoiceId });
     await expect(matched).toContainText("Найдено");
     await expect(page.getByText("TP 1")).toBeVisible();
     // reward = 2*F1 - 1 - 0.002*3 with one of N issues found

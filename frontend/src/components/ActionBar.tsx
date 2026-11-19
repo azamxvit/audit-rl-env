@@ -1,7 +1,6 @@
 import { ArrowRightToLine, Check, ChevronDown, Download, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/Button";
-import { Dialog } from "../ui/Overlay";
+import { Button, Dialog } from "@/ui";
 
 interface Props {
   count: number;

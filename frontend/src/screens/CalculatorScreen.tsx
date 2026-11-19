@@ -1,9 +1,7 @@
 import { Calculator } from "lucide-react";
 import { useState } from "react";
-import type { EpisodeApi } from "../hooks/useEpisode";
-import { Button, Cost } from "../ui/Button";
-import { TextInput } from "../ui/Form";
-import { Mono, Page } from "../ui/Page";
+import type { EpisodeApi } from "@/hooks";
+import { Button, Cost, TextInput, Mono, Page } from "@/ui";
 
 export function CalculatorScreen({ ep }: { ep: EpisodeApi }) {
   const [expr, setExpr] = useState("");

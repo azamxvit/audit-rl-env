@@ -1,14 +1,8 @@
 import { ArrowLeft, Copy, Landmark, MessageSquareText, Repeat, Scale } from "lucide-react";
-import { FindingForm } from "../components/FindingForm";
-import { FindingList } from "../components/FindingList";
-import type { DraftApi } from "../hooks/useDraft";
-import type { EpisodeApi } from "../hooks/useEpisode";
-import { periodLabel } from "../lib/format";
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
-import { AttributeBar, DescriptionList } from "../ui/DescriptionList";
-import { Page, SectionTitle } from "../ui/Page";
+import { FindingForm, FindingList } from "@/components";
+import type { DraftApi, EpisodeApi } from "@/hooks";
+import { periodLabel } from "@/lib";
+import { Badge, Button, Card, AttributeBar, DescriptionList, Page, SectionTitle } from "@/ui";
 
 export function Overview({
   ep,

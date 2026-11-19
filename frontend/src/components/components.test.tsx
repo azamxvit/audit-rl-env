@@ -1,12 +1,9 @@
 import { render, renderHook, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { useDraft } from "../hooks/useDraft";
-import { DataTable } from "../ui/Table";
-import { ActionBar } from "./ActionBar";
-import { FindingForm } from "./FindingForm";
-import { FindingList } from "./FindingList";
-import { Sidebar } from "./Sidebar";
+import { useDraft } from "@/hooks";
+import { DataTable } from "@/ui";
+import { ActionBar, FindingForm, FindingList, Sidebar } from "@/components";
 
 const exponent = () => 2;
 

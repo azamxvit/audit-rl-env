@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Finding, IssueType } from "../types";
-import { parseMajor } from "../lib/format";
+import type { Finding, IssueType } from "@/types";
+import { parseMajor } from "@/lib";
 
 export interface FormState {
   type: IssueType;

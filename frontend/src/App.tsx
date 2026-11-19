@@ -1,31 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
-import { ActionBar } from "./components/ActionBar";
-import { RecordDrawer } from "./components/RecordDrawer";
-import { Sidebar } from "./components/Sidebar";
-import { Toasts, useToasts } from "./components/Toasts";
-import { TopBar } from "./components/TopBar";
-import { useDraft } from "./hooks/useDraft";
-import { useEpisode, type Opened } from "./hooks/useEpisode";
-import { ID_FIELD } from "./lib/format";
-import { CalculatorScreen } from "./screens/CalculatorScreen";
-import { EpisodePicker } from "./screens/EpisodePicker";
-import { Findings } from "./screens/Findings";
-import { Help } from "./screens/Help";
-import { Overview } from "./screens/Overview";
-import { PolicyScreen } from "./screens/PolicyScreen";
-import { Records } from "./screens/Records";
-import { Review } from "./screens/Review";
-import type { TableName } from "./types";
-
-export type View =
-  | { name: "episodes" }
-  | { name: "overview" }
-  | { name: "records"; table: TableName }
-  | { name: "findings" }
-  | { name: "calculator" }
-  | { name: "policy" }
-  | { name: "help" }
-  | { name: "review" };
+import { ActionBar, RecordDrawer, Sidebar, Toasts, useToasts, TopBar } from "@/components";
+import { useDraft, useEpisode, type Opened } from "@/hooks";
+import { ID_FIELD } from "@/lib";
+import {
+  CalculatorScreen,
+  EpisodePicker,
+  Findings,
+  Help,
+  Overview,
+  PolicyScreen,
+  Records,
+  Review,
+} from "@/screens";
+import type { View } from "@/types";
 
 function downloadJson(filename: string, data: unknown) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));

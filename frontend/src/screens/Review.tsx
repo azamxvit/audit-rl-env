@@ -1,14 +1,19 @@
 import { CircleCheck, CircleX, FolderOpen, RotateCcw, ShieldCheck } from "lucide-react";
-import type { DraftApi } from "../hooks/useDraft";
-import type { EpisodeApi } from "../hooks/useEpisode";
-import { formatMinor, TYPE_LABEL } from "../lib/format";
-import type { ReviewIssue } from "../types";
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
-import { Card, EmptyState } from "../ui/Card";
-import { AttributeBar } from "../ui/DescriptionList";
-import { Mono, Muted, Page, SectionTitle } from "../ui/Page";
-import { DataTable } from "../ui/Table";
+import type { DraftApi, EpisodeApi } from "@/hooks";
+import { formatMinor, TYPE_LABEL } from "@/lib";
+import type { ReviewIssue } from "@/types";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  AttributeBar,
+  Mono,
+  Muted,
+  Page,
+  SectionTitle,
+  DataTable,
+} from "@/ui";
 
 const TERMINATION: Record<string, string> = {
   submit: "отправка выводов",

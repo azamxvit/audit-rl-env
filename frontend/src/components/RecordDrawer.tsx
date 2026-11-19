@@ -1,10 +1,7 @@
 import { FileText, Plus, X } from "lucide-react";
-import type { Opened } from "../hooks/useEpisode";
-import { formatMinor, ID_FIELD, TABLE_LABEL } from "../lib/format";
-import { Button, Cost } from "../ui/Button";
-import { DescriptionList } from "../ui/DescriptionList";
-import { Drawer } from "../ui/Overlay";
-import { Mono, Muted } from "../ui/Page";
+import type { Opened } from "@/hooks";
+import { formatMinor, ID_FIELD, TABLE_LABEL } from "@/lib";
+import { Button, Cost, DescriptionList, Drawer, Mono, Muted } from "@/ui";
 
 const LINK_FIELDS = new Set(["row_id", "invoice_id", "payment_id", "doc_id", "rate_id"]);
 const MONEY_FIELDS = new Set([

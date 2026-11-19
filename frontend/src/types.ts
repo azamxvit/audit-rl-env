@@ -92,3 +92,14 @@ export interface Review {
   issues: ReviewIssue[];
   false_positives: number[];
 }
+
+/** Which screen the app shows. */
+export type View =
+  | { name: "episodes" }
+  | { name: "overview" }
+  | { name: "records"; table: TableName }
+  | { name: "findings" }
+  | { name: "calculator" }
+  | { name: "policy" }
+  | { name: "help" }
+  | { name: "review" };

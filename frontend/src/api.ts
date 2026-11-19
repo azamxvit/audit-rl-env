@@ -1,4 +1,4 @@
-import type { EpisodeInfo, ResetObservation, Review, StepResponse } from "./types";
+import type { EpisodeInfo, ResetObservation, Review, StepResponse } from "@/types";
 
 export class ApiError extends Error {
   constructor(

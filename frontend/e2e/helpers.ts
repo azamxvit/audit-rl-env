@@ -1,9 +1,10 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const EPISODES = join(__dirname, "..", "..", "backend", "episodes");
+const EPISODES = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "backend", "episodes");
 
 export interface TruthIssue {
   type: string;
@@ -47,5 +48,7 @@ export async function openById(page: Page, id: string) {
 export async function expectNoSeriousA11yViolations(page: Page) {
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-  expect(serious.map((v) => `${v.id}: ${v.help} (${v.nodes.length})`)).toEqual([]);
+  expect(
+    serious.flatMap((v) => v.nodes.map((n) => `${v.id}: ${n.target.join(" ")} — ${n.failureSummary ?? ""}`)),
+  ).toEqual([]);
 }

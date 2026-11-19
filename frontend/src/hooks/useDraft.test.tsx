@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { useDraft } from "./useDraft";
+import { useDraft } from "@/hooks";
 
 const exponent = (c: string) => ({ USD: 2, JPY: 0 })[c] ?? 2;
 const setup = (key = "draft:test") => renderHook(() => useDraft(key, "USD", exponent));

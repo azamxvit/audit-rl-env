@@ -1,10 +1,7 @@
 import { ClipboardCheck, Pencil, Trash2 } from "lucide-react";
-import type { DraftApi } from "../hooks/useDraft";
-import { formatMinor, TYPE_LABEL } from "../lib/format";
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
-import { Card, EmptyState } from "../ui/Card";
-import { Mono, Muted } from "../ui/Page";
+import type { DraftApi } from "@/hooks";
+import { formatMinor, TYPE_LABEL } from "@/lib";
+import { Badge, Button, Card, EmptyState, Mono, Muted } from "@/ui";
 
 export function FindingList({
   draft,

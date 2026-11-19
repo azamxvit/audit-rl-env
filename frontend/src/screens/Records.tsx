@@ -1,14 +1,9 @@
 import { Download } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import type { EpisodeApi, Opened } from "../hooks/useEpisode";
-import { formatMinor, formatTimestamp, ID_FIELD, TABLE_LABEL } from "../lib/format";
-import type { Rec, TableName } from "../types";
-import { Badge } from "../ui/Badge";
-import { Button, Cost } from "../ui/Button";
-import { EmptyState } from "../ui/Card";
-import { SearchBox } from "../ui/Form";
-import { Mono, Muted, Page } from "../ui/Page";
-import { DataTable, type Column } from "../ui/Table";
+import type { EpisodeApi, Opened } from "@/hooks";
+import { formatMinor, formatTimestamp, ID_FIELD, TABLE_LABEL } from "@/lib";
+import type { Rec, TableName } from "@/types";
+import { Badge, Button, Cost, EmptyState, SearchBox, Mono, Muted, Page, DataTable, type Column } from "@/ui";
 
 function columns(table: TableName, exps: Record<string, number>, open: (r: Rec) => void): Column<Rec>[] {
   const money = (field: string) => (r: Rec) =>

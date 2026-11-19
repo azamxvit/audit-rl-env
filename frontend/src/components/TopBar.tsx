@@ -1,6 +1,6 @@
 import { Copy } from "lucide-react";
 import { useState } from "react";
-import { SearchBox } from "../ui/Form";
+import { SearchBox } from "@/ui";
 
 interface Props {
   enabled: boolean;

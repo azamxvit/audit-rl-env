@@ -70,6 +70,8 @@ Python-инструменты ставятся из `backend/requirements-dev.tx
 
 Фронт написан на Tailwind CSS 4 без собственных CSS-классов и без `@apply`. Токены цвета, теней и шрифтов заданы в `@theme` в `frontend/src/index.css`, а переиспользуемые стили живут в компонентах `frontend/src/ui/` (`Button`, `Badge`, `Card`, `DataTable`, `Dialog`, `Drawer`, поля формы). Разметка семантическая: `aside`/`nav`/`header`/`main`, `role="search"`, `aria-current`, секции с заголовками, `dl` для пар ключ–значение, таблицы с `caption` и `th scope`, `fieldset`/`legend`, модальный диалог, live-region для уведомлений.
 
+Импорты идут через алиас `@/` и barrel-файлы `index.ts` в каждой папке: `import { Button, Card } from "@/ui"`, а также `@/components`, `@/screens`, `@/hooks`, `@/lib`, `@/types` и `@/api`. Внутри одной папки модули импортируют друг друга по относительному пути, чтобы не было циклов через barrel.
+
 ## Состав репозитория
 
 ```

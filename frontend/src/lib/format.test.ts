@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatMinor, formatTimestamp, lookupTarget, parseMajor, periodLabel } from "./format";
+import { formatDate, formatMinor, formatTimestamp, lookupTarget, parseMajor, periodLabel } from "@/lib";
 
 const EXPS = { USD: 2, JPY: 0, KZT: 2 };
 

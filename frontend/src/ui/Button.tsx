@@ -43,5 +43,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
 /** Small grey "· 1 шаг" price tag next to actions that call the environment. */
 export function Cost({ children = "· 1 шаг" }: { children?: string }) {
-  return <span className="text-[11px] font-medium text-subtle">{children}</span>;
+  return <span className="text-[11px] font-medium text-muted">{children}</span>;
 }

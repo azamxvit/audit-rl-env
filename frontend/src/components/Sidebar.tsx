@@ -9,10 +9,9 @@ import {
   Layers,
 } from "lucide-react";
 import { useId, type ReactNode } from "react";
-import type { View } from "../App";
-import { TABLE_LABEL } from "../lib/format";
-import type { TableName } from "../types";
-import { cx } from "../ui/cx";
+import type { View, TableName } from "@/types";
+import { TABLE_LABEL } from "@/lib";
+import { cx } from "@/ui";
 
 interface Props {
   view: View;

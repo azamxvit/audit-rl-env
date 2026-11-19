@@ -1,4 +1,4 @@
-import type { IssueType, TableName } from "../types";
+import type { IssueType, TableName } from "@/types";
 
 export const ISSUE_TYPES: IssueType[] = [
   "duplicate_invoice",

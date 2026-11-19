@@ -1,12 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { api } from "../api";
-import { periodLabel } from "../lib/format";
-import type { EpisodeInfo } from "../types";
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
-import { EmptyState } from "../ui/Card";
-import { Mono, Page, SectionTitle } from "../ui/Page";
+import { api } from "@/api";
+import { periodLabel } from "@/lib";
+import type { EpisodeInfo } from "@/types";
+import { Badge, Button, EmptyState, Mono, Page, SectionTitle } from "@/ui";
 
 const SPLITS = [
   { split: "train", title: "Обучающие (train)" },

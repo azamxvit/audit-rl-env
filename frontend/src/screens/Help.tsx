@@ -1,5 +1,4 @@
-import { Card } from "../ui/Card";
-import { Mono, Page } from "../ui/Page";
+import { Card, Mono, Page } from "@/ui";
 
 const RULES: [string, string][] = [
   ["Дубль счёта", "оба invoice_id; сумма проводки более позднего."],

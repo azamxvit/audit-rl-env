@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import type { EpisodeInfo, Rec, ResetObservation, Review } from "../types";
+import type { EpisodeInfo, Rec, ResetObservation, Review } from "@/types";
 
 /** Tiny in-memory stand-in for the backend API, enough to drive the UI in jsdom. */
 export const EPISODES: EpisodeInfo[] = [

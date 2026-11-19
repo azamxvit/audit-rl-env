@@ -1,11 +1,9 @@
 import { PenLine, Plus } from "lucide-react";
 import { useId, useState } from "react";
-import type { DraftApi } from "../hooks/useDraft";
-import { ISSUE_TYPES, TYPE_LABEL } from "../lib/format";
-import type { IssueType } from "../types";
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
-import { Field, IdChip, Select, TextArea, TextInput } from "../ui/Form";
+import type { DraftApi } from "@/hooks";
+import { ISSUE_TYPES, TYPE_LABEL } from "@/lib";
+import type { IssueType } from "@/types";
+import { Button, Card, Field, IdChip, Select, TextArea, TextInput } from "@/ui";
 
 type IdKind = "affected" | "evidence";
 

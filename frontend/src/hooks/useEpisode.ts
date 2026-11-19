@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
-import { api, ApiError } from "../api";
-import type { Finding, Rec, ResetObservation, Review, StepResponse, TableName } from "../types";
-import { OWN_KEYS, lookupTarget } from "../lib/format";
+import { api, ApiError } from "@/api";
+import type { Finding, Rec, ResetObservation, Review, StepResponse, TableName } from "@/types";
+import { OWN_KEYS, lookupTarget } from "@/lib";
 
 export interface Opened {
   table: TableName;

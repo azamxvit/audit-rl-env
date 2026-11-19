@@ -1,8 +1,6 @@
-import { FindingForm } from "../components/FindingForm";
-import { FindingList } from "../components/FindingList";
-import type { DraftApi } from "../hooks/useDraft";
-import type { EpisodeApi } from "../hooks/useEpisode";
-import { Page } from "../ui/Page";
+import { FindingForm, FindingList } from "@/components";
+import type { DraftApi, EpisodeApi } from "@/hooks";
+import { Page } from "@/ui";
 
 export function Findings({ ep, draft }: { ep: EpisodeApi; draft: DraftApi }) {
   return (

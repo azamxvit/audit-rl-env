@@ -1,7 +1,5 @@
-import type { EpisodeApi } from "../hooks/useEpisode";
-import { Card } from "../ui/Card";
-import { DescriptionList } from "../ui/DescriptionList";
-import { Page } from "../ui/Page";
+import type { EpisodeApi } from "@/hooks";
+import { Card, DescriptionList, Page } from "@/ui";
 
 function PolicySection({ title, data }: { title: string; data: Record<string, unknown> }) {
   return (

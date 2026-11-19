@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools==75.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audit-rl-env"
+version = "0.1.0"
+description = "Reproducible RL environment for training AI financial auditors (synthetic books with hidden errors)"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = []  # core is stdlib-only
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+extend-exclude = ["episodes", "runs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["audit_env"]
+
+[tool.ruff.format]
+quote-style = "double"

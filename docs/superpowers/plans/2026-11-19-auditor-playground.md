@@ -6,7 +6,7 @@
 
 **Architecture:** Stdlib-сервер `backend/src/audit_env/server.py` — тонкая обёртка над `AuditEnv("train")` (`/api/episodes|reset|step|review`) и хост статики `frontend/dist`. Фронт — SPA без роутера; один хук `useEpisode` владеет сессией, бюджетом шагов и кэшем загруженных записей; черновик выводов — хук `useDraft`. Собранный `dist/` коммитится, поэтому `make play`, `make verify` и Docker не требуют Node и сети.
 
-**Tech Stack:** Python 3.11 stdlib (`http.server`), pytest 8.3.4; React 18.3.1, TypeScript 5.6.3, Vite 5.4.11, @vitejs/plugin-react 4.3.4, lucide-react 0.460.0, @fontsource/inter 5.1.0.
+**Tech Stack:** Python 3.11 stdlib (`http.server`), pytest 8.3.4; React 18.3.1, TypeScript 5.6.3, Vite 6.4.6, @vitejs/plugin-react 4.3.4, lucide-react 0.460.0, @fontsource/inter 5.1.0.
 
 Спецификация: `docs/superpowers/specs/2026-11-19-auditor-playground-design.md`.
 
@@ -14,7 +14,7 @@
 
 - Ядро среды (`audit_env/*` кроме нового `server.py`) не меняется по логике; `make verify` из корня зелёный после каждой задачи.
 - Офлайн: никаких CDN; шрифт и иконки бандлятся; Node не нужен для `make verify`, `make play` и Docker.
-- Версии npm точные (без `^`/`~`): react 18.3.1, react-dom 18.3.1, @types/react 18.3.12, @types/react-dom 18.3.1, vite 5.4.11, @vitejs/plugin-react 4.3.4, typescript 5.6.3, lucide-react 0.460.0, @fontsource/inter 5.1.0. `package-lock.json` коммитится.
+- Версии npm точные (без `^`/`~`): react 18.3.1, react-dom 18.3.1, @types/react 18.3.12, @types/react-dom 18.3.1, vite 6.4.6, @vitejs/plugin-react 4.3.4, typescript 5.6.3, lucide-react 0.460.0, @fontsource/inter 5.1.0. `package-lock.json` коммитится.
 - Сервер слушает `127.0.0.1:8000` по умолчанию; клиент выбирает эпизод только по ключу `"<split>/<NN>"` из индекса.
 - `/api/episodes` не отдаёт число/типы ошибок; `/api/review` → 403 до конца эпизода.
 - Название продукта в UI — «AuditDesk»; бренд/логотип NovaPay не используется. Иконки — Lucide.

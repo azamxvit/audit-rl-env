@@ -53,6 +53,20 @@ export function RecordDrawer({ opened, exps, accounts, readOnly, cached, onOpen,
           {!cached(v) && <Cost />}
         </Button>
       );
+    if (k === "invoice_refs" && Array.isArray(v))
+      return (
+        <ul className="m-0 flex list-none flex-col gap-1 p-0">
+          {v.map((ref: { invoice_id: string; amount_minor: number }) => (
+            <li key={ref.invoice_id} className="flex items-center gap-2">
+              <Button variant="link" onClick={() => onOpen(ref.invoice_id)}>
+                {ref.invoice_id}
+                {!cached(ref.invoice_id) && <Cost />}
+              </Button>
+              <Muted>{formatMinor(ref.amount_minor, ccy, exps)}</Muted>
+            </li>
+          ))}
+        </ul>
+      );
     if (typeof v === "object")
       return (
         <pre className="m-0 rounded-lg border border-line bg-surface-muted p-3 font-mono text-xs break-all whitespace-pre-wrap">

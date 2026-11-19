@@ -21,7 +21,7 @@ export function useToasts(timeoutMs = 4000) {
 /** Live region: screen readers announce new messages politely. */
 export function Toasts({ toasts }: { toasts: Toast[] }) {
   return (
-    <div role="status" aria-live="polite" className="fixed right-6 bottom-6 z-40">
+    <div role="status" aria-live="polite" aria-label="Уведомления" className="fixed right-6 bottom-6 z-40">
       <ul className="m-0 flex list-none flex-col gap-2 p-0">
         {toasts.map((t) => (
           <li

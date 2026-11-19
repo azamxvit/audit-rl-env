@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { ActionBar } from "./components/ActionBar";
+import { RecordDrawer } from "./components/RecordDrawer";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { Toasts, useToasts } from "./components/Toasts";
@@ -9,6 +10,10 @@ import { EpisodePicker } from "./screens/EpisodePicker";
 import { Findings } from "./screens/Findings";
 import { Help } from "./screens/Help";
 import { Overview } from "./screens/Overview";
+import { CalculatorScreen } from "./screens/CalculatorScreen";
+import { PolicyScreen } from "./screens/PolicyScreen";
+import { Records } from "./screens/Records";
+import { ID_FIELD } from "./lib/format";
 import type { TableName } from "./types";
 
 export type View =
@@ -29,7 +34,6 @@ export default function App() {
   }, [ep, notify]);
   const openId = useCallback(async (id: string) => { const o = await ep.open(id); if (o) setOpened(o); }, [ep]);
   const go = useCallback((v: View) => { setOpened(null); setView(v); }, []);
-  void opened; // rendered by RecordDrawer (Task 6)
 
   const exportDraft = useCallback(() => {
     const blob = new Blob([JSON.stringify({ episode_id: ep.obs?.manifest.episode_id, findings: draft.findings }, null, 2)],
@@ -46,6 +50,10 @@ export default function App() {
     case "episodes": screen = <EpisodePicker onStart={start} notify={notify} />; break;
     case "overview": screen = ep.obs ? <Overview ep={ep} draft={draft} notify={notify} onBack={() => go({ name: "episodes" })} /> : null; break;
     case "findings": screen = ep.obs ? <Findings ep={ep} draft={draft} /> : null; break;
+    case "records": screen = ep.obs ? <Records table={view.table} ep={ep} onSelect={setOpened}
+        selected={opened && opened.table === view.table ? String(opened.record[ID_FIELD[view.table]]) : undefined} /> : null; break;
+    case "calculator": screen = ep.obs ? <CalculatorScreen ep={ep} /> : null; break;
+    case "policy": screen = ep.obs ? <PolicyScreen ep={ep} /> : null; break;
     default: screen = <Help />;
   }
 
@@ -62,6 +70,12 @@ export default function App() {
         )}
       </div>
       <Toasts toasts={toasts} />
+      {opened && ep.obs && (
+        <RecordDrawer opened={opened} exps={ep.obs.policy.currency_exponents} accounts={ep.obs.policy.accounts}
+                      readOnly={ep.done} cached={(id) => !!ep.cache[id]} onOpen={openId}
+                      onAdd={(kind, id) => { draft.addTo(kind, id); notify(`${id} → ${kind === "affected" ? "affected" : "доказательства"}`); }}
+                      onClose={() => setOpened(null)} />
+      )}
     </div>
   );
 }

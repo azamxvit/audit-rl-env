@@ -1,11 +1,14 @@
 import { useCallback, useState } from "react";
+import { ActionBar } from "./components/ActionBar";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { Toasts, useToasts } from "./components/Toasts";
 import { useEpisode, type Opened } from "./hooks/useEpisode";
 import { useDraft } from "./hooks/useDraft";
 import { EpisodePicker } from "./screens/EpisodePicker";
+import { Findings } from "./screens/Findings";
 import { Help } from "./screens/Help";
+import { Overview } from "./screens/Overview";
 import type { TableName } from "./types";
 
 export type View =
@@ -28,9 +31,21 @@ export default function App() {
   const go = useCallback((v: View) => { setOpened(null); setView(v); }, []);
   void opened; // rendered by RecordDrawer (Task 6)
 
+  const exportDraft = useCallback(() => {
+    const blob = new Blob([JSON.stringify({ episode_id: ep.obs?.manifest.episode_id, findings: draft.findings }, null, 2)],
+                          { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `findings-${ep.obs?.manifest.episode_id ?? "draft"}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, [ep.obs, draft.findings]);
+
   let screen;
   switch (view.name) {
     case "episodes": screen = <EpisodePicker onStart={start} notify={notify} />; break;
+    case "overview": screen = ep.obs ? <Overview ep={ep} draft={draft} notify={notify} onBack={() => go({ name: "episodes" })} /> : null; break;
+    case "findings": screen = ep.obs ? <Findings ep={ep} draft={draft} /> : null; break;
     default: screen = <Help />;
   }
 
@@ -41,6 +56,10 @@ export default function App() {
         <TopBar enabled={!!ep.obs && !ep.done} stepsRemaining={ep.stepsRemaining} maxSteps={ep.maxSteps}
                 episodeId={ep.obs?.manifest.episode_id} onSearch={openId} notify={notify} />
         <main className="content">{screen}</main>
+        {ep.obs && !ep.done && view.name !== "episodes" && view.name !== "help" && (
+          <ActionBar count={draft.findings.length} disabled={ep.busy} onClear={draft.clear} onExport={exportDraft}
+                     onSubmit={async () => { await ep.submit(draft.findings); setView({ name: "review" }); }} />
+        )}
       </div>
       <Toasts toasts={toasts} />
     </div>

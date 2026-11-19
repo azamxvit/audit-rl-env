@@ -1,0 +1,43 @@
+{
+  "base_currencies": [
+    "EUR",
+    "KZT",
+    "CHF"
+  ],
+  "config_id": "dev-mixed-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        1,
+        2
+      ]
+    },
+    "fx_error": {
+      "count": [
+        0,
+        2
+      ]
+    },
+    "payment_allocation": {
+      "count": [
+        0,
+        2
+      ]
+    },
+    "period_cutoff": {
+      "count": [
+        0,
+        2
+      ]
+    }
+  },
+  "foreign_currencies": [
+    "USD",
+    "EUR",
+    "GBP",
+    "JPY",
+    "KZT",
+    "CHF"
+  ],
+  "schema_version": "1.0"
+}

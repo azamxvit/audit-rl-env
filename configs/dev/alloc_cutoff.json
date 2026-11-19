@@ -1,0 +1,40 @@
+{
+  "config_id": "dev-alloc-cutoff-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": [
+        2,
+        3
+      ],
+      "variants": [
+        "missing",
+        "partial"
+      ]
+    },
+    "period_cutoff": {
+      "count": [
+        2,
+        3
+      ],
+      "variants": [
+        "next_period",
+        "prior_period"
+      ]
+    }
+  },
+  "scenarios": {
+    "cutoff_fx": {
+      "count": 0
+    },
+    "fx_partial_boundary": {
+      "count": 0
+    }
+  },
+  "schema_version": "1.0"
+}

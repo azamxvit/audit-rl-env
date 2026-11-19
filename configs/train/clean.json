@@ -1,0 +1,41 @@
+{
+  "config_id": "train-clean-v1",
+  "distractors": {
+    "boundary_documents": [
+      2,
+      4
+    ],
+    "overpayments": [
+      1,
+      3
+    ],
+    "split_payments": 0.25,
+    "unidentified_receipts": [
+      1,
+      2
+    ]
+  },
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "scenarios": {
+    "cutoff_fx": {
+      "count": 0
+    },
+    "fx_partial_boundary": {
+      "count": 0
+    }
+  },
+  "schema_version": "1.0"
+}

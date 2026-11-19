@@ -1,0 +1,39 @@
+{
+  "config_id": "train-interacting-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "fx_error": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "payment_allocation": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "period_cutoff": {
+      "count": [
+        0,
+        1
+      ]
+    }
+  },
+  "foreign_customer_share": 0.5,
+  "scenarios": {
+    "cutoff_fx": {
+      "count": 1
+    },
+    "fx_partial_boundary": {
+      "count": 1
+    }
+  },
+  "schema_version": "1.0"
+}

@@ -1,0 +1,51 @@
+{
+  "config_id": "train-small-month-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "fx_error": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "payment_allocation": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "period_cutoff": {
+      "count": [
+        1,
+        2
+      ]
+    }
+  },
+  "ledger_rows": [
+    200,
+    300
+  ],
+  "n_customers": [
+    5,
+    8
+  ],
+  "n_invoices": [
+    18,
+    30
+  ],
+  "n_next_period_invoices": [
+    2,
+    3
+  ],
+  "n_prior_period_invoices": [
+    2,
+    4
+  ],
+  "period": "month",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "note": "Open train/dev splits. (config file, seed) pairs; hidden evaluation uses other seeds and parameter combinations.",
+  "train": [
+    {
+      "config": "train/mixed.json",
+      "seed": 1001
+    },
+    {
+      "config": "train/mixed.json",
+      "seed": 1002
+    },
+    {
+      "config": "train/clean.json",
+      "seed": 1003
+    },
+    {
+      "config": "train/clean.json",
+      "seed": 1004
+    },
+    {
+      "config": "train/interacting.json",
+      "seed": 1005
+    },
+    {
+      "config": "train/interacting.json",
+      "seed": 1006
+    },
+    {
+      "config": "train/fx_heavy.json",
+      "seed": 1007
+    },
+    {
+      "config": "train/small_month.json",
+      "seed": 1008
+    },
+    {
+      "config": "train/large.json",
+      "seed": 1009
+    },
+    {
+      "config": "train/mixed.json",
+      "seed": 1010
+    }
+  ],
+  "dev": [
+    {
+      "config": "dev/mixed.json",
+      "seed": 2001
+    },
+    {
+      "config": "dev/mixed.json",
+      "seed": 2002
+    },
+    {
+      "config": "dev/clean.json",
+      "seed": 2003
+    },
+    {
+      "config": "dev/clean.json",
+      "seed": 2004
+    },
+    {
+      "config": "dev/interacting.json",
+      "seed": 2005
+    },
+    {
+      "config": "dev/interacting.json",
+      "seed": 2006
+    },
+    {
+      "config": "dev/alloc_cutoff.json",
+      "seed": 2007
+    },
+    {
+      "config": "dev/alloc_cutoff.json",
+      "seed": 2008
+    },
+    {
+      "config": "dev/mixed.json",
+      "seed": 2009
+    },
+    {
+      "config": "dev/interacting.json",
+      "seed": 2010
+    }
+  ]
+}

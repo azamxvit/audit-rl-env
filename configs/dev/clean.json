@@ -1,0 +1,42 @@
+{
+  "config_id": "dev-clean-v1",
+  "distractors": {
+    "boundary_documents": [
+      2,
+      4
+    ],
+    "overpayments": [
+      2,
+      3
+    ],
+    "subscriptions": 0.5,
+    "unidentified_receipts": [
+      1,
+      3
+    ]
+  },
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "foreign_customer_share": 0.5,
+  "scenarios": {
+    "cutoff_fx": {
+      "count": 0
+    },
+    "fx_partial_boundary": {
+      "count": 0
+    }
+  },
+  "schema_version": "1.0"
+}

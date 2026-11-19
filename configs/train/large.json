@@ -1,0 +1,50 @@
+{
+  "config_id": "train-large-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        1,
+        2
+      ]
+    },
+    "fx_error": {
+      "count": [
+        1,
+        2
+      ]
+    },
+    "payment_allocation": {
+      "count": [
+        1,
+        2
+      ]
+    },
+    "period_cutoff": {
+      "count": [
+        1,
+        2
+      ]
+    }
+  },
+  "ledger_rows": [
+    1500,
+    2000
+  ],
+  "n_customers": [
+    14,
+    20
+  ],
+  "n_invoices": [
+    55,
+    70
+  ],
+  "n_next_period_invoices": [
+    3,
+    6
+  ],
+  "n_prior_period_invoices": [
+    4,
+    8
+  ],
+  "schema_version": "1.0"
+}

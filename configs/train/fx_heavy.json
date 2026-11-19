@@ -1,0 +1,33 @@
+{
+  "config_id": "train-fx-heavy-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": [
+        2,
+        4
+      ],
+      "variants": [
+        "wrong_date",
+        "stale_rate",
+        "inverted"
+      ]
+    },
+    "payment_allocation": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "period_cutoff": {
+      "count": [
+        0,
+        1
+      ]
+    }
+  },
+  "foreign_customer_share": 0.7,
+  "schema_version": "1.0"
+}

@@ -1,0 +1,48 @@
+{
+  "config_id": "dev-interacting-v1",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "fx_error": {
+      "count": [
+        0,
+        1
+      ]
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": [
+        0,
+        1
+      ]
+    }
+  },
+  "foreign_customer_share": 0.6,
+  "ledger_rows": [
+    250,
+    400
+  ],
+  "n_invoices": [
+    25,
+    40
+  ],
+  "period": "month",
+  "scenarios": {
+    "cutoff_fx": {
+      "count": [
+        1,
+        2
+      ]
+    },
+    "fx_partial_boundary": {
+      "count": 1
+    }
+  },
+  "schema_version": "1.0"
+}

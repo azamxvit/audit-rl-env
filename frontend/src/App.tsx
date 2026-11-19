@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActionBar } from "./components/ActionBar";
 import { RecordDrawer } from "./components/RecordDrawer";
 import { Sidebar } from "./components/Sidebar";
@@ -13,6 +13,7 @@ import { Overview } from "./screens/Overview";
 import { CalculatorScreen } from "./screens/CalculatorScreen";
 import { PolicyScreen } from "./screens/PolicyScreen";
 import { Records } from "./screens/Records";
+import { Review } from "./screens/Review";
 import { ID_FIELD } from "./lib/format";
 import type { TableName } from "./types";
 
@@ -25,15 +26,17 @@ export default function App() {
   const ep = useEpisode(notify);
   const [view, setView] = useState<View>({ name: "episodes" });
   const [opened, setOpened] = useState<Opened | null>(null);
+  const [episodeKey, setEpisodeKey] = useState<string | null>(null);
   const exps = ep.obs?.policy.currency_exponents;
   const exponent = useCallback((c: string) => exps?.[c] ?? 2, [exps]);
   const draft = useDraft(`auditdesk:draft:${ep.session ?? "none"}`, ep.obs?.manifest.base_currency ?? "USD", exponent);
 
   const start = useCallback(async (key: string) => {
-    try { await ep.start(key); setOpened(null); setView({ name: "overview" }); } catch { notify("Не удалось начать эпизод"); }
+    try { await ep.start(key); setEpisodeKey(key); setOpened(null); setView({ name: "overview" }); } catch { notify("Не удалось начать эпизод"); }
   }, [ep, notify]);
   const openId = useCallback(async (id: string) => { const o = await ep.open(id); if (o) setOpened(o); }, [ep]);
   const go = useCallback((v: View) => { setOpened(null); setView(v); }, []);
+  useEffect(() => { if (ep.done && ep.review) setView({ name: "review" }); }, [ep.done, ep.review]);
 
   const exportDraft = useCallback(() => {
     const blob = new Blob([JSON.stringify({ episode_id: ep.obs?.manifest.episode_id, findings: draft.findings }, null, 2)],
@@ -54,6 +57,8 @@ export default function App() {
         selected={opened && opened.table === view.table ? String(opened.record[ID_FIELD[view.table]]) : undefined} /> : null; break;
     case "calculator": screen = ep.obs ? <CalculatorScreen ep={ep} /> : null; break;
     case "policy": screen = ep.obs ? <PolicyScreen ep={ep} /> : null; break;
+    case "review": screen = ep.obs ? <Review ep={ep} draft={draft} onAgain={() => { if (episodeKey) start(episodeKey); }}
+        onOther={() => go({ name: "episodes" })} /> : null; break;
     default: screen = <Help />;
   }
 

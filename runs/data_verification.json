@@ -1,0 +1,122 @@
+[
+  {
+    "episode": "train/00_EP-F0E143XX",
+    "issues": 7,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/01_EP-05VW0CH7",
+    "issues": 2,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/02_EP-P4JN00JH",
+    "issues": 0,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/03_EP-JFE4RE43",
+    "issues": 0,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/04_EP-2JFR7MFB",
+    "issues": 7,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/05_EP-EZKBGEH8",
+    "issues": 7,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/06_EP-RFKAYH8C",
+    "issues": 9,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/07_EP-ZKDK8R67",
+    "issues": 7,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/08_EP-RS3HNJZ4",
+    "issues": 6,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "train/09_EP-BJTAJZXP",
+    "issues": 3,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/00_EP-4CWABAG5",
+    "issues": 7,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/01_EP-PVKWMT0K",
+    "issues": 8,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/02_EP-EVG65JGC",
+    "issues": 0,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/03_EP-AFX8Q175",
+    "issues": 0,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/04_EP-AAEZHWVM",
+    "issues": 8,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/05_EP-EEJXVHF2",
+    "issues": 6,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/06_EP-ZP1ZMAPR",
+    "issues": 4,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/07_EP-M3PYMJXP",
+    "issues": 5,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/08_EP-MPPHR75G",
+    "issues": 8,
+    "ok": true,
+    "problems": []
+  },
+  {
+    "episode": "dev/09_EP-FRTRHX7A",
+    "issues": 8,
+    "ok": true,
+    "problems": []
+  }
+]

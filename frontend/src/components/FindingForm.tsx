@@ -1,61 +1,158 @@
-import { PenLine, Plus, X } from "lucide-react";
-import { useState } from "react";
+import { PenLine, Plus } from "lucide-react";
+import { useId, useState } from "react";
 import type { DraftApi } from "../hooks/useDraft";
-import type { IssueType } from "../types";
 import { ISSUE_TYPES, TYPE_LABEL } from "../lib/format";
+import type { IssueType } from "../types";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import { Field, IdChip, Select, TextArea, TextInput } from "../ui/Form";
 
-function IdChips({ ids, onRemove }: { ids: string[]; onRemove: (id: string) => void }) {
-  return (
-    <div className="chips">
-      {ids.map((id) => <span key={id} className="chip">{id}<button onClick={() => onRemove(id)} aria-label="убрать"><X size={12} /></button></span>)}
-      {!ids.length && <span className="muted">пусто — добавляйте из таблиц кнопками «+»</span>}
-    </div>
-  );
-}
+type IdKind = "affected" | "evidence";
 
-function AddId({ onAdd }: { onAdd: (id: string) => void }) {
-  const [v, setV] = useState("");
+function IdListField({
+  legend,
+  ids,
+  onAdd,
+  onRemove,
+}: {
+  legend: string;
+  ids: string[];
+  onAdd: (id: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [value, setValue] = useState("");
+  const inputId = useId();
   return (
-    <form className="row" onSubmit={(e) => { e.preventDefault(); if (v.trim()) { onAdd(v.trim()); setV(""); } }}>
-      <input className="input mono" style={{ flex: 1 }} placeholder="ID вручную" value={v} onChange={(e) => setV(e.target.value)} />
-      <button className="btn small" type="submit"><Plus size={14} /></button>
-    </form>
+    <fieldset className="m-0 mb-3 flex flex-col gap-1.5 border-0 p-0">
+      <legend className="mb-1.5 p-0 text-xs text-muted">{legend}</legend>
+      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+        {ids.map((id) => (
+          <li key={id}>
+            <IdChip id={id} onRemove={() => onRemove(id)} />
+          </li>
+        ))}
+        {!ids.length && <li className="text-muted">пусто — добавляйте из таблиц кнопками «+»</li>}
+      </ul>
+      <div className="flex items-center gap-2">
+        <label htmlFor={inputId} className="sr-only">
+          {`Добавить ID: ${legend}`}
+        </label>
+        <TextInput
+          id={inputId}
+          mono
+          placeholder="ID вручную"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              if (value.trim()) {
+                onAdd(value.trim());
+                setValue("");
+              }
+            }
+          }}
+        />
+        <Button
+          size="sm"
+          aria-label={`Добавить в «${legend}»`}
+          onClick={() => {
+            if (value.trim()) {
+              onAdd(value.trim());
+              setValue("");
+            }
+          }}
+        >
+          <Plus size={14} aria-hidden />
+        </Button>
+      </div>
+    </fieldset>
   );
 }
 
 export function FindingForm({ draft }: { draft: DraftApi }) {
   const { form, setForm, addTo, saveForm } = draft;
   const [error, setError] = useState<string | null>(null);
-  const drop = (kind: "affected" | "evidence") => (id: string) => setForm((f) => ({ ...f, [kind]: f[kind].filter((x) => x !== id) }));
+  const ids = { type: useId(), amount: useId(), currency: useId(), explanation: useId(), error: useId() };
+  const drop = (kind: IdKind) => (id: string) =>
+    setForm((f) => ({ ...f, [kind]: f[kind].filter((x) => x !== id) }));
+  const title = form.editing === null ? "Новый вывод" : `Вывод #${form.editing + 1}`;
   return (
-    <div className="card">
-      <div className="card-title"><PenLine size={18} />{form.editing === null ? "Новый вывод" : `Вывод #${form.editing + 1}`}</div>
-      <div className="field">
-        <label>Тип</label>
-        <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as IssueType }))}>
-          {ISSUE_TYPES.map((t) => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
-        </select>
-      </div>
-      <div className="field"><label>Затронутые ID (affected_ids)</label><IdChips ids={form.affected} onRemove={drop("affected")} /><AddId onAdd={(id) => addTo("affected", id)} /></div>
-      <div className="field"><label>Доказательства (evidence_ids, ≤ 10)</label><IdChips ids={form.evidence} onRemove={drop("evidence")} /><AddId onAdd={(id) => addTo("evidence", id)} /></div>
-      <div className="row">
-        <div className="field" style={{ flex: 2 }}>
-          <label>Сумма искажения (в мажорных единицах)</label>
-          <input className="input" inputMode="decimal" placeholder="1234.56" value={form.amount} onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} />
+    <Card title={title} icon={<PenLine size={18} aria-hidden />}>
+      <form
+        aria-label={title}
+        aria-describedby={error ? ids.error : undefined}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setError(saveForm());
+        }}
+      >
+        <Field label="Тип" htmlFor={ids.type}>
+          <Select
+            id={ids.type}
+            value={form.type}
+            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as IssueType }))}
+          >
+            {ISSUE_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {TYPE_LABEL[t]}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <IdListField
+          legend="Затронутые ID (affected_ids)"
+          ids={form.affected}
+          onAdd={(id) => addTo("affected", id)}
+          onRemove={drop("affected")}
+        />
+        <IdListField
+          legend="Доказательства (evidence_ids, ≤ 10)"
+          ids={form.evidence}
+          onAdd={(id) => addTo("evidence", id)}
+          onRemove={drop("evidence")}
+        />
+        <div className="flex gap-2">
+          <Field label="Сумма искажения (в мажорных единицах)" htmlFor={ids.amount} className="flex-[2]">
+            <TextInput
+              id={ids.amount}
+              inputMode="decimal"
+              placeholder="1234.56"
+              value={form.amount}
+              onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+            />
+          </Field>
+          <Field label="Валюта" htmlFor={ids.currency} className="flex-1">
+            <TextInput
+              id={ids.currency}
+              maxLength={3}
+              value={form.currency}
+              onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))}
+            />
+          </Field>
         </div>
-        <div className="field" style={{ flex: 1 }}>
-          <label>Валюта</label>
-          <input className="input" maxLength={3} value={form.currency} onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} />
+        <Field
+          label={`Пояснение (${form.explanation.length}/1000) — на награду не влияет`}
+          htmlFor={ids.explanation}
+        >
+          <TextArea
+            id={ids.explanation}
+            maxLength={1000}
+            value={form.explanation}
+            onChange={(e) => setForm((f) => ({ ...f, explanation: e.target.value }))}
+          />
+        </Field>
+        {error && (
+          <p id={ids.error} role="alert" className="text-[13px] text-danger">
+            {error}
+          </p>
+        )}
+        <div className="flex justify-end">
+          <Button type="submit" variant="primary">
+            Сохранить
+          </Button>
         </div>
-      </div>
-      <div className="field">
-        <label>Пояснение ({form.explanation.length}/1000) — на награду не влияет</label>
-        <textarea maxLength={1000} value={form.explanation} onChange={(e) => setForm((f) => ({ ...f, explanation: e.target.value }))} />
-      </div>
-      {error && <p className="error-text">{error}</p>}
-      <div className="row" style={{ justifyContent: "flex-end" }}>
-        <button className="btn primary" onClick={() => setError(saveForm())}>Сохранить</button>
-      </div>
-    </div>
+      </form>
+    </Card>
   );
 }

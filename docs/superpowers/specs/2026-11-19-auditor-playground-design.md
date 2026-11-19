@@ -33,10 +33,10 @@ frontend/
 корень: README.md, DESIGN.md, LICENSE, Makefile, Dockerfile, .dockerignore, docs/
 ```
 
-* `Makefile` в корне: все цели выполняются в `backend/` (`cd backend && ...`);
+- `Makefile` в корне: все цели выполняются в `backend/` (`cd backend && ...`);
   новые цели `play` (сервер) и `frontend` (`npm ci && npm run build` в `frontend/`).
-* `Dockerfile`: `WORKDIR /app/backend`, `PYTHONPATH=/app/backend/src`, Node в образ не ставится.
-* Все пути в скриптах, тестах, README, DESIGN и `.gitignore` правятся; критерий —
+- `Dockerfile`: `WORKDIR /app/backend`, `PYTHONPATH=/app/backend/src`, Node в образ не ставится.
+- Все пути в скриптах, тестах, README, DESIGN и `.gitignore` правятся; критерий —
   `make verify` из корня зелёный, `episodes/` перегенерируются байт-в-байт (хеши в
   `index.json` не меняются, т.к. содержимое не зависит от пути).
 
@@ -46,22 +46,22 @@ Stdlib `http.server.ThreadingHTTPServer`, по умолчанию `127.0.0.1:800
 (`python -m audit_env.server --port 8000`). Раздаёт `frontend/dist` (путь
 вычисляется от корня репозитория, переопределяется `--static`) и JSON API.
 
-| метод и путь | вход | выход | примечания |
-|---|---|---|---|
-| `GET /api/episodes` | — | `[{key, split, episode_id, company_name, period_start, period_end, base_currency, counts}]` | из `episodes/index.json` + `manifest.json`; число и типы ошибок НЕ отдаются |
-| `POST /api/reset` | `{episode: key}` | `{session, observation}` | создаёт `AuditEnv("train")` с `{"episode_dir": ...}`; `session` = `secrets.token_hex(16)` |
-| `POST /api/step` | `{session, action}` | `{observation, reward, terminated, truncated, info}` | ровно `env.step(action)`, ничего не добавляет |
-| `GET /api/review?session=` | — | разбор (см. ниже) | 403, пока эпизод не завершён |
+| метод и путь               | вход                | выход                                                                                       | примечания                                                                                |
+| -------------------------- | ------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `GET /api/episodes`        | —                   | `[{key, split, episode_id, company_name, period_start, period_end, base_currency, counts}]` | из `episodes/index.json` + `manifest.json`; число и типы ошибок НЕ отдаются               |
+| `POST /api/reset`          | `{episode: key}`    | `{session, observation}`                                                                    | создаёт `AuditEnv("train")` с `{"episode_dir": ...}`; `session` = `secrets.token_hex(16)` |
+| `POST /api/step`           | `{session, action}` | `{observation, reward, terminated, truncated, info}`                                        | ровно `env.step(action)`, ничего не добавляет                                             |
+| `GET /api/review?session=` | —                   | разбор (см. ниже)                                                                           | 403, пока эпизод не завершён                                                              |
 
-* `key` — `"<split>/<NN>"`; принимаются только ключи из индекса (без путей от клиента).
-* Разбор: `{metrics: {tp, fp, fn, precision, recall, f1, reward, inspection_steps, valid},
-  issues: [{type, affected_ids, expected_amount_minor, currency, evidence_sets, status: found|missed, matched_finding}],
-  false_positives: [индексы выводов]}`. Источник — `Grader.result` и truth из
+- `key` — `"<split>/<NN>"`; принимаются только ключи из индекса (без путей от клиента).
+- Разбор: `{metrics: {tp, fp, fn, precision, recall, f1, reward, inspection_steps, valid},
+issues: [{type, affected_ids, expected_amount_minor, currency, evidence_sets, status: found|missed, matched_finding}],
+false_positives: [индексы выводов]}`. Источник — `Grader.result` и truth из
   `private/` открытого эпизода (эталон train/dev и так публичен).
-* Сессии в памяти, не более 32 (самая старая вытесняется). Неизвестная сессия → 404,
+- Сессии в памяти, не более 32 (самая старая вытесняется). Неизвестная сессия → 404,
   неверный JSON → 400, тело > 1 МБ → 413. Ответы только `application/json`,
   трассировки не отдаются.
-* Статика: только файлы внутри `dist/` (нормализация пути, запрет `..`),
+- Статика: только файлы внутри `dist/` (нормализация пути, запрет `..`),
   неизвестный путь вне `/api` → `index.html`.
 
 ## 3. Frontend: Vite + React 18 + TypeScript
@@ -74,12 +74,12 @@ Stdlib `http.server.ThreadingHTTPServer`, по умолчанию `127.0.0.1:800
 
 ### Каркас (образец — NovaPay «Dispute Details»)
 
-* **Сайдбар** (светло-серый, логотип-марка + «AuditDesk»), секции с иконками Lucide:
+- **Сайдбар** (светло-серый, логотип-марка + «AuditDesk»), секции с иконками Lucide:
   РАССЛЕДОВАНИЕ — Обзор (`House`), Записи (`Layers`, раскрывается: Главная книга,
   Счета, Платежи, Курсы FX), Выводы (`ClipboardCheck`, счётчик);
   ИНСТРУМЕНТЫ — Калькулятор (`Calculator`), Политика (`BookOpen`);
   ЭПИЗОДЫ — Сменить эпизод (`FolderOpen`); СПРАВКА — Как играть (`CircleHelp`).
-* **Верхняя панель**: поле «Найти запись по ID · 1 шаг» (префикс ID → таблица:
+- **Верхняя панель**: поле «Найти запись по ID · 1 шаг» (префикс ID → таблица:
   `LR-`→ledger, `INV-`→invoices, `PAY-`→payments, `FXR-`→fx, `DOC-`→`get_document`);
   справа индикатор бюджета «N/100 шагов» (прогресс-кольцо) и чип ID эпизода.
 
@@ -115,26 +115,26 @@ Stdlib `http.server.ThreadingHTTPServer`, по умолчанию `127.0.0.1:800
 
 ### Поведение
 
-* Каждое действие, вызывающее среду, явно подписано ценой; после ответа
+- Каждое действие, вызывающее среду, явно подписано ценой; после ответа
   бюджет обновляется из `steps_remaining`. Ошибки среды показываются тостом с
   кодом (`unknown_id`, `invalid_cursor` …) и тоже расходуют шаг.
-* Черновик живёт в состоянии React (и в `localStorage` по ключу сессии, в
+- Черновик живёт в состоянии React (и в `localStorage` по ключу сессии, в
   try/catch); отправляется как `{"tool":"submit","args":{"episode_id", "findings"}}`.
-* При `truncated` (лимит шагов/времени) сразу открывается «Разбор».
+- При `truncated` (лимит шагов/времени) сразу открывается «Разбор».
 
 ## 4. Проверка
 
-* `backend/tests/test_server.py`: сервер на свободном порту в потоке; `reset`/`step`
+- `backend/tests/test_server.py`: сервер на свободном порту в потоке; `reset`/`step`
   дают те же наблюдения, что прямой `AuditEnv`; `/api/review` → 403 до конца,
   200 после; ответы API до `submit` не содержат полей эталона; неверный ключ
   эпизода / сессия / JSON → 400/404; статика не выходит за `dist/`.
-* Сборка фронта: `npm ci && npm run build` (включает `tsc --noEmit`) без ошибок.
-* Ручная проверка в браузере: пройти эпизод до разбора.
-* `make verify` из корня зелёный (Node не требуется).
+- Сборка фронта: `npm ci && npm run build` (включает `tsc --noEmit`) без ошибок.
+- Ручная проверка в браузере: пройти эпизод до разбора.
+- `make verify` из корня зелёный (Node не требуется).
 
 ## 5. Риски
 
-* Перенос в `backend/` ломает пути — закрывается полным прогоном `make verify` и
+- Перенос в `backend/` ломает пути — закрывается полным прогоном `make verify` и
   Docker-сборкой (если демон доступен).
-* `dist/` в git может разойтись с исходниками — `make frontend` пересобирает,
+- `dist/` в git может разойтись с исходниками — `make frontend` пересобирает,
   README это описывает.

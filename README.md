@@ -37,13 +37,13 @@ obs, reward, terminated, truncated, info = env.step(
     {"tool": "submit", "args": {"episode_id": episode_id, "findings": [...]}})
 ```
 
-| инструмент | аргументы | что возвращает |
-|---|---|---|
-| `list_records` | `table` (`ledger` \| `invoices` \| `payments` \| `fx`), `cursor` (непрозрачный, стабильный), `limit` ≤ 50 | страница записей и `next_cursor` |
-| `get_record` | `table`, `id` | одна запись |
-| `get_document` | `doc_id` | счёт или платёж |
-| `calculator` | `expression` | арифметика над десятичными числами (AST whitelist, `Decimal`) |
-| `submit` | `episode_id`, `findings[]` | завершает эпизод (`terminated=true`) |
+| инструмент     | аргументы                                                                                                 | что возвращает                                                |
+| -------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `list_records` | `table` (`ledger` \| `invoices` \| `payments` \| `fx`), `cursor` (непрозрачный, стабильный), `limit` ≤ 50 | страница записей и `next_cursor`                              |
+| `get_record`   | `table`, `id`                                                                                             | одна запись                                                   |
+| `get_document` | `doc_id`                                                                                                  | счёт или платёж                                               |
+| `calculator`   | `expression`                                                                                              | арифметика над десятичными числами (AST whitelist, `Decimal`) |
+| `submit`       | `episode_id`, `findings[]`                                                                                | завершает эпизод (`terminated=true`)                          |
 
 Бюджет — 100 шагов, `submit` входит в бюджет. Ошибочное действие тоже расходует шаг. При исчерпании шагов или 60 с эпизод завершается с `truncated=true` и оценивается как пустой ответ. Награда = `clip(2·F1 − 1 − 0.002·inspection_steps, −1, 1)`. В режиме `train` политика получает её после завершения эпизода. В режиме `eval` награда и диагностика остаются в журнале оценщика.
 

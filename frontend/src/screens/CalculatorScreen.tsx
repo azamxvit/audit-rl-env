@@ -1,26 +1,63 @@
 import { Calculator } from "lucide-react";
 import { useState } from "react";
 import type { EpisodeApi } from "../hooks/useEpisode";
+import { Button, Cost } from "../ui/Button";
+import { TextInput } from "../ui/Form";
+import { Mono, Page } from "../ui/Page";
 
 export function CalculatorScreen({ ep }: { ep: EpisodeApi }) {
   const [expr, setExpr] = useState("");
   return (
-    <div className="page" style={{ maxWidth: 760 }}>
-      <h1>Калькулятор</h1>
-      <p className="muted">Только арифметика над десятичными числами (Decimal). Каждое вычисление — 1 шаг.</p>
-      <form className="card row" onSubmit={(e) => { e.preventDefault(); if (expr.trim()) { ep.calculate(expr.trim()); setExpr(""); } }}>
-        <Calculator size={18} />
-        <input className="input mono" style={{ flex: 1 }} placeholder="12500.00 * 1.084512" value={expr} onChange={(e) => setExpr(e.target.value)} disabled={ep.done} />
-        <button className="btn primary" type="submit" disabled={ep.done || ep.busy}>Вычислить <span className="cost" style={{ color: "#cbd5e1" }}>· 1 шаг</span></button>
+    <Page
+      title="Калькулятор"
+      lead="Только арифметика над десятичными числами (Decimal). Каждое вычисление — 1 шаг."
+    >
+      <form
+        aria-label="Калькулятор"
+        className="flex max-w-[760px] items-center gap-2 rounded-[10px] border border-line bg-canvas p-[18px] shadow-card"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (expr.trim()) {
+            ep.calculate(expr.trim());
+            setExpr("");
+          }
+        }}
+      >
+        <Calculator size={18} aria-hidden />
+        <label htmlFor="calc-expression" className="sr-only">
+          Выражение
+        </label>
+        <TextInput
+          id="calc-expression"
+          mono
+          placeholder="12500.00 * 1.084512"
+          value={expr}
+          onChange={(e) => setExpr(e.target.value)}
+          disabled={ep.done}
+        />
+        <Button type="submit" variant="primary" disabled={ep.done || ep.busy}>
+          Вычислить <Cost />
+        </Button>
       </form>
-      <div className="list" style={{ marginTop: 16, maxHeight: "none" }}>
-        {ep.calc.map((c, i) => (
-          <div key={i} className="list-item row">
-            <span className="mono" style={{ flex: 1 }}>{c.expr}</span>
-            {c.error ? <span className="error-text">{c.error}</span> : <span className="mono" style={{ fontWeight: 600 }}>= {c.value}</span>}
-          </div>
-        ))}
-      </div>
-    </div>
+      <section aria-label="История вычислений" className="mt-4 max-w-[760px]">
+        <ol className="m-0 flex list-none flex-col gap-2.5 p-0">
+          {ep.calc.map((c, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-2 rounded-lg border border-line bg-canvas px-3 py-2.5"
+            >
+              <Mono className="flex-1">{c.expr}</Mono>
+              {c.error ? (
+                <span role="alert" className="text-[13px] text-danger">
+                  {c.error}
+                </span>
+              ) : (
+                <output className="font-mono text-[12.5px] font-semibold">= {c.value}</output>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+    </Page>
   );
 }

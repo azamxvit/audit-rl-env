@@ -1,6 +1,11 @@
 import type { IssueType, TableName } from "../types";
 
-export const ISSUE_TYPES: IssueType[] = ["duplicate_invoice", "payment_allocation", "fx_error", "period_cutoff"];
+export const ISSUE_TYPES: IssueType[] = [
+  "duplicate_invoice",
+  "payment_allocation",
+  "fx_error",
+  "period_cutoff",
+];
 export const TYPE_LABEL: Record<IssueType, string> = {
   duplicate_invoice: "Дубль счёта",
   payment_allocation: "Распределение платежа",
@@ -8,13 +13,22 @@ export const TYPE_LABEL: Record<IssueType, string> = {
   period_cutoff: "Отнесение к периоду",
 };
 export const TABLE_LABEL: Record<TableName, string> = {
-  ledger: "Главная книга", invoices: "Счета", payments: "Платежи", fx: "Курсы FX",
+  ledger: "Главная книга",
+  invoices: "Счета",
+  payments: "Платежи",
+  fx: "Курсы FX",
 };
 export const ID_FIELD: Record<TableName, string> = {
-  ledger: "row_id", invoices: "invoice_id", payments: "payment_id", fx: "rate_id",
+  ledger: "row_id",
+  invoices: "invoice_id",
+  payments: "payment_id",
+  fx: "rate_id",
 };
 export const OWN_KEYS: Record<TableName, string[]> = {
-  ledger: ["row_id"], invoices: ["invoice_id", "doc_id"], payments: ["payment_id", "doc_id"], fx: ["rate_id"],
+  ledger: ["row_id"],
+  invoices: ["invoice_id", "doc_id"],
+  payments: ["payment_id", "doc_id"],
+  fx: ["rate_id"],
 };
 const PREFIX: Record<string, TableName> = { LR: "ledger", INV: "invoices", PAY: "payments", FXR: "fx" };
 

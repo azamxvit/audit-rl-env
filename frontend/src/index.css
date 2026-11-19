@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Design tokens (NovaPay-like palette). Only tokens and element defaults live here — no classes. */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --color-canvas: #ffffff;
+  --color-sidebar: #f7f8fa;
+  --color-surface-muted: #fafbfc;
+  --color-line: #e6e8ec;
+  --color-line-strong: #d5d9e0;
+  --color-ink: #111827;
+  --color-ink-soft: #374151;
+  --color-muted: #6b7280;
+  --color-subtle: #9ca3af;
+  --color-accent: #0e9f9a;
+  --color-accent-soft: #e6f6f5;
+  --color-danger: #c0262d;
+  --color-danger-soft: #fdecec;
+  --color-warn: #b45309;
+  --color-warn-soft: #fff4e0;
+  --color-success: #15803d;
+  --color-success-soft: #e7f6ec;
+  --color-info: #1d4ed8;
+  --color-info-soft: #eaf0ff;
+
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-float: 0 12px 32px rgb(16 24 40 / 0.14);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--color-ink);
+    background: var(--color-canvas);
+  }
+  body {
+    margin: 0;
+    min-width: 1280px;
+  }
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}

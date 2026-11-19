@@ -1,7 +1,12 @@
 import type { EpisodeInfo, ResetObservation, Review, StepResponse } from "./types";
 
 export class ApiError extends Error {
-  constructor(public status: number, public code: string) { super(code); }
+  constructor(
+    public status: number,
+    public code: string,
+  ) {
+    super(code);
+  }
 }
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
@@ -15,7 +20,9 @@ export const api = {
   episodes: () => call<EpisodeInfo[]>("/api/episodes"),
   reset: (episode: string) =>
     call<{ session: string; observation: ResetObservation }>("/api/reset", {
-      method: "POST", body: JSON.stringify({ episode }) }),
+      method: "POST",
+      body: JSON.stringify({ episode }),
+    }),
   step: (session: string, action: unknown) =>
     call<StepResponse>("/api/step", { method: "POST", body: JSON.stringify({ session, action }) }),
   review: (session: string) => call<Review>(`/api/review?session=${encodeURIComponent(session)}`),

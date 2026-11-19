@@ -1,5 +1,6 @@
 .git
-runs
+backend/runs
 **/__pycache__
-.pytest_cache
+**/.pytest_cache
 *.egg-info
+frontend/node_modules

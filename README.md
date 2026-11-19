@@ -16,12 +16,12 @@ docker build -t audit-env . && docker run --network none audit-env
 
 Команда делает четыре шага, все офлайн, около 5 секунд на ноутбуке:
 
-1. генерирует 10 train- и 10 dev-эпизодов из версионированных конфигов `configs/` в `episodes/`;
-2. прогоняет тесты (`tests/`): контракт, лимиты, неверный ввод, анти-утечка, matcher и атаки на награду, детерминизм, метаморфные пары;
-3. независимо проверяет данные (`scripts/verify.py`): воспроизводимость байт-в-байт, бухгалтерские равенства до и после инъекции, «полный аудит открытых записей == эталон», достаточность каждого набора доказательств, парная проверка «перестановка + смена ID»;
-4. прогоняет 4 базовые политики. Траектории пишутся в `runs/<split>/<policy>/trajectories.jsonl`, метрики P/R/F1, возврат, шаги и время — в `runs/report.md`.
+1. генерирует 10 train- и 10 dev-эпизодов из версионированных конфигов `backend/configs/` в `backend/episodes/`;
+2. прогоняет тесты (`backend/tests/`): контракт, лимиты, неверный ввод, анти-утечка, matcher и атаки на награду, детерминизм, метаморфные пары;
+3. независимо проверяет данные (`backend/scripts/verify.py`): воспроизводимость байт-в-байт, бухгалтерские равенства до и после инъекции, «полный аудит открытых записей == эталон», достаточность каждого набора доказательств, парная проверка «перестановка + смена ID»;
+4. прогоняет 4 базовые политики. Траектории пишутся в `backend/runs/<split>/<policy>/trajectories.jsonl`, метрики P/R/F1, возврат, шаги и время — в `backend/runs/report.md`.
 
-Без `make`: `PYTHONPATH=src python3 scripts/verify_all.py`. Демо скриптовой политики: `make demo`.
+Без `make`: `cd backend && PYTHONPATH=src python3 scripts/verify_all.py`. Демо скриптовой политики: `make demo`.
 
 ## Использование среды
 
@@ -50,13 +50,15 @@ obs, reward, terminated, truncated, info = env.step(
 ## Состав репозитория
 
 ```
-src/audit_env/      money, calculator, world (скрытая история), generator, errors/ (4 типа + сценарии + отвлекающие),
-                    checker (независимая проверка), store, env, matcher, reward, grader, transform, trajectories, policies/
-configs/            версионированные конфиги генератора (train/, dev/) и splits.json (config, seed)
-episodes/           10 train + 10 dev: <ep>/public/* (агенту), <ep>/private/{truth,provenance}.json (оценщику)
-scripts/            verify_all, generate_episodes, verify, run_baselines, transform_episode, demo
-runs/               траектории, журнал оценщика, report.md/json (результат make verify)
-tests/              ~160 тестов
+backend/            Python: src/audit_env (среда + HTTP-сервер), tests/ (~160 тестов), scripts/, configs/, episodes/, runs/
+  src/audit_env/    money, calculator, world, generator, errors/ (4 типа + сценарии + отвлекающие), checker, store, env,
+                    matcher, reward, grader, transform, trajectories, policies/
+  configs/          версионированные конфиги генератора (train/, dev/) и splits.json (config, seed)
+  episodes/         10 train + 10 dev: <ep>/public/* (агенту), <ep>/private/{truth,provenance}.json (оценщику)
+  scripts/          verify_all, generate_episodes, verify, run_baselines, transform_episode, demo
+  runs/             траектории, журнал оценщика, report.md/json (результат make verify)
+frontend/           React + TS + Vite (Auditor Playground); собранный dist/ в репозитории
+docs/               case.pdf, спецификации и планы
 ```
 
 Все компании, люди, счета и деньги вымышлены.

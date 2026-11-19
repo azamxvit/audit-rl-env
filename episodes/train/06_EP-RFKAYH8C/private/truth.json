@@ -1,0 +1,188 @@
+{
+  "base_currency": "GBP",
+  "episode_id": "EP-RFKAYH8C",
+  "issues": [
+    {
+      "affected_ids": [
+        "INV-9JJQH5V2"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-HNVEVEPD",
+          "FXR-TGH59F9S",
+          "LR-3R4390DY"
+        ],
+        [
+          "DOC-HNVEVEPD",
+          "FXR-TGH59F9S",
+          "LR-Q026Y86R"
+        ]
+      ],
+      "expected_amount_minor": 1727600,
+      "issue_id": "ISS-R00AEVJA",
+      "scenario": null,
+      "type": "fx_error",
+      "variant": "inverted"
+    },
+    {
+      "affected_ids": [
+        "INV-A7C3DJXR"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-NVWF97Q4",
+          "FXR-HY88AFDG",
+          "LR-MJDCAGKN"
+        ],
+        [
+          "DOC-NVWF97Q4",
+          "FXR-HY88AFDG",
+          "LR-ZA6VF87Z"
+        ]
+      ],
+      "expected_amount_minor": 2322,
+      "issue_id": "ISS-CJHAHB68",
+      "scenario": "cutoff_fx",
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "INV-JJGYRZ41"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-TJ95B29W",
+          "FXR-R276JH21",
+          "LR-4M4DMCRF"
+        ],
+        [
+          "DOC-TJ95B29W",
+          "FXR-R276JH21",
+          "LR-VCGR9GSR"
+        ]
+      ],
+      "expected_amount_minor": 465975,
+      "issue_id": "ISS-8QCVJ7E7",
+      "scenario": null,
+      "type": "fx_error",
+      "variant": "inverted"
+    },
+    {
+      "affected_ids": [
+        "PAY-HK0V4384"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-3QN965KS",
+          "FXR-T87EXWSW",
+          "LR-AN123KJ5"
+        ]
+      ],
+      "expected_amount_minor": 7068,
+      "issue_id": "ISS-20JHN5EW",
+      "scenario": null,
+      "type": "fx_error",
+      "variant": "stale_rate"
+    },
+    {
+      "affected_ids": [
+        "PAY-RS06KTTA"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-S7F5PWCY",
+          "FXR-W2S5Y0QA",
+          "LR-GQFKDA0B"
+        ]
+      ],
+      "expected_amount_minor": 36354338511,
+      "issue_id": "ISS-PT43S18Y",
+      "scenario": null,
+      "type": "fx_error",
+      "variant": "inverted"
+    },
+    {
+      "affected_ids": [
+        "PAY-Z6P5NPC1"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-THPXSFTT",
+          "FXR-11QTP2BT",
+          "LR-24HW8MD7"
+        ]
+      ],
+      "expected_amount_minor": 1564,
+      "issue_id": "ISS-9P7Q48CS",
+      "scenario": "fx_partial_boundary",
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "INV-KP7TNGCZ",
+        "PAY-Z6P5NPC1"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-THPXSFTT",
+          "LR-G8NF728B"
+        ]
+      ],
+      "expected_amount_minor": 501383,
+      "issue_id": "ISS-TE9CJ4XS",
+      "scenario": "fx_partial_boundary",
+      "type": "payment_allocation",
+      "variant": "partial"
+    },
+    {
+      "affected_ids": [
+        "INV-QKKA7XX8",
+        "PAY-WXX6PT5F"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-4SV8WSVG",
+          "LR-C9Z1HRJH"
+        ]
+      ],
+      "expected_amount_minor": 2130780,
+      "issue_id": "ISS-2GA46ZZW",
+      "scenario": null,
+      "type": "payment_allocation",
+      "variant": "missing"
+    },
+    {
+      "affected_ids": [
+        "INV-A7C3DJXR"
+      ],
+      "currency": "GBP",
+      "evidence_sets": [
+        [
+          "DOC-NVWF97Q4",
+          "LR-MJDCAGKN"
+        ],
+        [
+          "DOC-NVWF97Q4",
+          "LR-ZA6VF87Z"
+        ]
+      ],
+      "expected_amount_minor": 563830,
+      "issue_id": "ISS-H347MTR0",
+      "scenario": "cutoff_fx",
+      "type": "period_cutoff",
+      "variant": "next_period"
+    }
+  ],
+  "schema_version": "1.0",
+  "tolerance_minor": 1
+}

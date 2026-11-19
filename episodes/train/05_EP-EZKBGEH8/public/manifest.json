@@ -1,0 +1,21 @@
+{
+  "base_currency": "KZT",
+  "company_name": "Fenzen Energy SA",
+  "counts": {
+    "documents": 141,
+    "fx_rates": 345,
+    "invoices": 86,
+    "ledger_rows": 509,
+    "payments": 55
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-EZKBGEH8",
+  "period_end": "2025-03-31",
+  "period_start": "2025-01-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+09:00"
+}

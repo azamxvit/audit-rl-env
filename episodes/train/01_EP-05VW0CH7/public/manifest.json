@@ -1,0 +1,21 @@
+{
+  "base_currency": "EUR",
+  "company_name": "Ionost Studio SA",
+  "counts": {
+    "documents": 113,
+    "fx_rates": 232,
+    "invoices": 71,
+    "ledger_rows": 438,
+    "payments": 42
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-05VW0CH7",
+  "period_end": "2026-09-30",
+  "period_start": "2026-07-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "-05:00"
+}

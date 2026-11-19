@@ -1,0 +1,489 @@
+{
+  "schema_version": "1.0",
+  "env_version": "0.1.0",
+  "episodes": [
+    {
+      "split": "train",
+      "path": "train/00_EP-F0E143XX",
+      "episode_id": "EP-F0E143XX",
+      "config": "train/mixed.json",
+      "config_id": "train-mixed-v1",
+      "seed": 1001,
+      "public_sha256": "bc32b56bce0f13980e0c7b06f9b1f8643111c0b7f11594e33b7058d50dfd12af",
+      "n_issues": 7,
+      "issue_types": {
+        "duplicate_invoice": 2,
+        "fx_error": 3,
+        "payment_allocation": 1,
+        "period_cutoff": 1
+      },
+      "scenarios": [
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 371,
+        "invoices": 82,
+        "payments": 41,
+        "fx_rates": 116,
+        "documents": 123
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/01_EP-05VW0CH7",
+      "episode_id": "EP-05VW0CH7",
+      "config": "train/mixed.json",
+      "config_id": "train-mixed-v1",
+      "seed": 1002,
+      "public_sha256": "168ada27139ce1804b8a7c71be7fda8ba8c9640b32f6b5753c29b135f5d2caea",
+      "n_issues": 2,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "period_cutoff": 1
+      },
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 438,
+        "invoices": 71,
+        "payments": 42,
+        "fx_rates": 232,
+        "documents": 113
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/02_EP-P4JN00JH",
+      "episode_id": "EP-P4JN00JH",
+      "config": "train/clean.json",
+      "config_id": "train-clean-v1",
+      "seed": 1003,
+      "public_sha256": "b14da66c7c984c8fce26f5e444cc3b6a981aa92fd6a3a42530360118cdbd64c6",
+      "n_issues": 0,
+      "issue_types": {},
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 432,
+        "invoices": 57,
+        "payments": 49,
+        "fx_rates": 232,
+        "documents": 106
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/03_EP-JFE4RE43",
+      "episode_id": "EP-JFE4RE43",
+      "config": "train/clean.json",
+      "config_id": "train-clean-v1",
+      "seed": 1004,
+      "public_sha256": "ac1f498dbf93b07d697bf6ae60867114b4cedc7dc3ffb5fa89777fceabae19ee",
+      "n_issues": 0,
+      "issue_types": {},
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 584,
+        "invoices": 65,
+        "payments": 48,
+        "fx_rates": 232,
+        "documents": 113
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/04_EP-2JFR7MFB",
+      "episode_id": "EP-2JFR7MFB",
+      "config": "train/interacting.json",
+      "config_id": "train-interacting-v1",
+      "seed": 1005,
+      "public_sha256": "875d614c35ea6f50c9de05bc666ce0cadfe121ef7a94eef511fd91b019fabe81",
+      "n_issues": 7,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 3,
+        "payment_allocation": 2,
+        "period_cutoff": 1
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 354,
+        "invoices": 84,
+        "payments": 63,
+        "fx_rates": 351,
+        "documents": 147
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/05_EP-EZKBGEH8",
+      "episode_id": "EP-EZKBGEH8",
+      "config": "train/interacting.json",
+      "config_id": "train-interacting-v1",
+      "seed": 1006,
+      "public_sha256": "2261614a8dcfbd49ffe4e3a214f6c634467c6bc5050c90f57192be145d58cebb",
+      "n_issues": 7,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 2,
+        "payment_allocation": 2,
+        "period_cutoff": 2
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 509,
+        "invoices": 86,
+        "payments": 55,
+        "fx_rates": 345,
+        "documents": 141
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/06_EP-RFKAYH8C",
+      "episode_id": "EP-RFKAYH8C",
+      "config": "train/fx_heavy.json",
+      "config_id": "train-fx-heavy-v1",
+      "seed": 1007,
+      "public_sha256": "84fdc7daced17d3ff0343df3cfcdaa34bb23e27d8f6d54a2e94ba1b0b5786d39",
+      "n_issues": 9,
+      "issue_types": {
+        "fx_error": 6,
+        "payment_allocation": 2,
+        "period_cutoff": 1
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 348,
+        "invoices": 41,
+        "payments": 34,
+        "fx_rates": 230,
+        "documents": 75
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/07_EP-ZKDK8R67",
+      "episode_id": "EP-ZKDK8R67",
+      "config": "train/small_month.json",
+      "config_id": "train-small-month-v1",
+      "seed": 1008,
+      "public_sha256": "a2ab27b6c9275ed9caf345135a0837a265a0b01a941d2de4abbbcc8ccba731f3",
+      "n_issues": 7,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 2,
+        "payment_allocation": 1,
+        "period_cutoff": 3
+      },
+      "scenarios": [
+        "cutoff_fx"
+      ],
+      "counts": {
+        "ledger_rows": 289,
+        "invoices": 36,
+        "payments": 16,
+        "fx_rates": 222,
+        "documents": 52
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/08_EP-RS3HNJZ4",
+      "episode_id": "EP-RS3HNJZ4",
+      "config": "train/large.json",
+      "config_id": "train-large-v1",
+      "seed": 1009,
+      "public_sha256": "813c2d18d82308f0e3076d2b1f226d7497129e372e243634cb1decea2b20ca42",
+      "n_issues": 6,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 2,
+        "payment_allocation": 2,
+        "period_cutoff": 1
+      },
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 1680,
+        "invoices": 89,
+        "payments": 68,
+        "fx_rates": 232,
+        "documents": 157
+      }
+    },
+    {
+      "split": "train",
+      "path": "train/09_EP-BJTAJZXP",
+      "episode_id": "EP-BJTAJZXP",
+      "config": "train/mixed.json",
+      "config_id": "train-mixed-v1",
+      "seed": 1010,
+      "public_sha256": "f4be615e99003997617f68d3bf1ae72ac0f2166ca9516c31ce48e400798b03ce",
+      "n_issues": 3,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 1,
+        "period_cutoff": 1
+      },
+      "scenarios": [
+        "cutoff_fx"
+      ],
+      "counts": {
+        "ledger_rows": 452,
+        "invoices": 53,
+        "payments": 40,
+        "fx_rates": 116,
+        "documents": 93
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/00_EP-4CWABAG5",
+      "episode_id": "EP-4CWABAG5",
+      "config": "dev/mixed.json",
+      "config_id": "dev-mixed-v1",
+      "seed": 2001,
+      "public_sha256": "3d62a576da428769e6f2e6884524b0119e51e742a8c1fae0cdd5107b3e0f2eca",
+      "n_issues": 7,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 2,
+        "payment_allocation": 3,
+        "period_cutoff": 1
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 475,
+        "invoices": 61,
+        "payments": 44,
+        "fx_rates": 115,
+        "documents": 105
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/01_EP-PVKWMT0K",
+      "episode_id": "EP-PVKWMT0K",
+      "config": "dev/mixed.json",
+      "config_id": "dev-mixed-v1",
+      "seed": 2002,
+      "public_sha256": "1419183f488105d837797241da71ff09e1d063f4e7a013f6ed50e272ffa03677",
+      "n_issues": 8,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 3,
+        "payment_allocation": 2,
+        "period_cutoff": 2
+      },
+      "scenarios": [
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 453,
+        "invoices": 51,
+        "payments": 30,
+        "fx_rates": 232,
+        "documents": 81
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/02_EP-EVG65JGC",
+      "episode_id": "EP-EVG65JGC",
+      "config": "dev/clean.json",
+      "config_id": "dev-clean-v1",
+      "seed": 2003,
+      "public_sha256": "58acc81b198074fbd5838d111fc02a5b33e4247e27eebeca2c1bc94c7a31743c",
+      "n_issues": 0,
+      "issue_types": {},
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 365,
+        "invoices": 67,
+        "payments": 55,
+        "fx_rates": 115,
+        "documents": 122
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/03_EP-AFX8Q175",
+      "episode_id": "EP-AFX8Q175",
+      "config": "dev/clean.json",
+      "config_id": "dev-clean-v1",
+      "seed": 2004,
+      "public_sha256": "80fc3333426395d8178045874b3238623b07ccb602a26daa86c602018d10edae",
+      "n_issues": 0,
+      "issue_types": {},
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 304,
+        "invoices": 62,
+        "payments": 43,
+        "fx_rates": 115,
+        "documents": 105
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/04_EP-AAEZHWVM",
+      "episode_id": "EP-AAEZHWVM",
+      "config": "dev/interacting.json",
+      "config_id": "dev-interacting-v1",
+      "seed": 2005,
+      "public_sha256": "29a7c386a4e11fd984f970c78011e0be86846f960042e13b0c0d74558e5d2720",
+      "n_issues": 8,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 3,
+        "payment_allocation": 1,
+        "period_cutoff": 3
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 301,
+        "invoices": 57,
+        "payments": 24,
+        "fx_rates": 146,
+        "documents": 81
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/05_EP-EEJXVHF2",
+      "episode_id": "EP-EEJXVHF2",
+      "config": "dev/interacting.json",
+      "config_id": "dev-interacting-v1",
+      "seed": 2006,
+      "public_sha256": "0ca8120f8abc5f24284816d97cd40fb5f55a6ca853bed6a81f695e08db301b13",
+      "n_issues": 6,
+      "issue_types": {
+        "fx_error": 3,
+        "payment_allocation": 1,
+        "period_cutoff": 2
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 346,
+        "invoices": 49,
+        "payments": 20,
+        "fx_rates": 216,
+        "documents": 69
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/06_EP-ZP1ZMAPR",
+      "episode_id": "EP-ZP1ZMAPR",
+      "config": "dev/alloc_cutoff.json",
+      "config_id": "dev-alloc-cutoff-v1",
+      "seed": 2007,
+      "public_sha256": "567fcea291770c8311331ddba252bb4b07d2fb1841972da65a5f0fb14e79d7f3",
+      "n_issues": 4,
+      "issue_types": {
+        "payment_allocation": 2,
+        "period_cutoff": 2
+      },
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 346,
+        "invoices": 79,
+        "payments": 61,
+        "fx_rates": 116,
+        "documents": 140
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/07_EP-M3PYMJXP",
+      "episode_id": "EP-M3PYMJXP",
+      "config": "dev/alloc_cutoff.json",
+      "config_id": "dev-alloc-cutoff-v1",
+      "seed": 2008,
+      "public_sha256": "6f403055fe1fefa6b68167581479e987d11dc89f53c7baa50da75bf336dc0b10",
+      "n_issues": 5,
+      "issue_types": {
+        "payment_allocation": 3,
+        "period_cutoff": 2
+      },
+      "scenarios": [],
+      "counts": {
+        "ledger_rows": 351,
+        "invoices": 44,
+        "payments": 35,
+        "fx_rates": 232,
+        "documents": 79
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/08_EP-MPPHR75G",
+      "episode_id": "EP-MPPHR75G",
+      "config": "dev/mixed.json",
+      "config_id": "dev-mixed-v1",
+      "seed": 2009,
+      "public_sha256": "461d5907961d11232ddd3e09720a388d1e2ee99b0997933a245e18407a4d9f73",
+      "n_issues": 8,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 2,
+        "payment_allocation": 3,
+        "period_cutoff": 2
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 578,
+        "invoices": 61,
+        "payments": 39,
+        "fx_rates": 348,
+        "documents": 100
+      }
+    },
+    {
+      "split": "dev",
+      "path": "dev/09_EP-FRTRHX7A",
+      "episode_id": "EP-FRTRHX7A",
+      "config": "dev/interacting.json",
+      "config_id": "dev-interacting-v1",
+      "seed": 2010,
+      "public_sha256": "83e12df48dfb71f8745647eec3ebbadd08ab532b4504c377a1b8e6ba020d9ac3",
+      "n_issues": 8,
+      "issue_types": {
+        "duplicate_invoice": 1,
+        "fx_error": 3,
+        "payment_allocation": 1,
+        "period_cutoff": 3
+      },
+      "scenarios": [
+        "cutoff_fx",
+        "fx_partial_boundary"
+      ],
+      "counts": {
+        "ledger_rows": 259,
+        "invoices": 47,
+        "payments": 19,
+        "fx_rates": 222,
+        "documents": 66
+      }
+    }
+  ]
+}

@@ -1,0 +1,465 @@
+{
+  "changes": [
+    {
+      "booking_after": {
+        "booking_ts": "2026-03-02T15:15:20+05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": null,
+      "change_id": "CHG-001",
+      "document_added": {
+        "currency": "EUR",
+        "doc_id": "DOC-Y9DKVZVM",
+        "due_at": "2026-04-01T20:15:20+10:00",
+        "entity_id": "CUS-PTD0483K",
+        "invoice_id": "INV-5N04XMFR",
+        "issued_at": "2026-03-02T20:15:20+10:00",
+        "line_items": [
+          {
+            "amount_minor": 91204,
+            "description": "Cloud hosting",
+            "quantity": 1,
+            "service_period_end": "2026-03-31",
+            "service_period_start": "2026-03-01",
+            "unit_price_minor": 91204
+          }
+        ],
+        "total_minor": 91204
+      },
+      "issue_ids": [
+        "ISS-CBV9RD0A"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 91204,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-PTD0483K",
+          "entry_id": "JE-WYR6YCG0",
+          "invoice_id": "INV-5N04XMFR",
+          "payment_id": null,
+          "row_id": "LR-F0KPG6NN",
+          "timestamp": "2026-03-02T15:15:20+05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 91204,
+          "entity_id": "CUS-PTD0483K",
+          "entry_id": "JE-WYR6YCG0",
+          "invoice_id": "INV-5N04XMFR",
+          "payment_id": null,
+          "row_id": "LR-VNE0J1PM",
+          "timestamp": "2026-03-02T15:15:20+05:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "add_document_and_booking",
+      "target": [
+        "invoice",
+        "INV-5N04XMFR"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2026-03-30T14:54:50+05:00",
+        "rate_date_override": null,
+        "rate_override": "0.969462"
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-002",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-C1P6FJ7C",
+        "ISS-Q4SY5RJW"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 257392,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-PDDEDXDQ",
+          "invoice_id": "INV-X2STPXR7",
+          "payment_id": null,
+          "row_id": "LR-B39HTABT",
+          "timestamp": "2026-03-30T14:54:50+05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 257392,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-PDDEDXDQ",
+          "invoice_id": "INV-X2STPXR7",
+          "payment_id": null,
+          "row_id": "LR-J8G1NTJ7",
+          "timestamp": "2026-03-30T14:54:50+05:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-X2STPXR7"
+      ]
+    },
+    {
+      "booking_after": {
+        "applied_override": {
+          "INV-CMAEZWV2": 213065
+        },
+        "booking_ts": "2026-03-26T14:12:08+05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": {
+        "applied_override": null,
+        "booking_ts": "2026-03-26T14:12:08+05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-003",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-PMZJ9HP5"
+      ],
+      "ledger_after": [
+        {
+          "account": "2200",
+          "credit_minor": 674707,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-9B04NTDJ",
+          "entry_id": "JE-BV9F9ZQS",
+          "invoice_id": null,
+          "payment_id": "PAY-C0A7PE9S",
+          "row_id": "LR-7122MGX4",
+          "timestamp": "2026-03-26T14:12:08+05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 213065,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-9B04NTDJ",
+          "entry_id": "JE-BV9F9ZQS",
+          "invoice_id": "INV-CMAEZWV2",
+          "payment_id": "PAY-C0A7PE9S",
+          "row_id": "LR-CX2R39BT",
+          "timestamp": "2026-03-26T14:12:08+05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 887772,
+          "entity_id": "CUS-9B04NTDJ",
+          "entry_id": "JE-BV9F9ZQS",
+          "invoice_id": null,
+          "payment_id": "PAY-C0A7PE9S",
+          "row_id": "LR-GKXSQYY9",
+          "timestamp": "2026-03-26T14:12:08+05:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "1100",
+          "credit_minor": 887772,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-9B04NTDJ",
+          "entry_id": "JE-BV9F9ZQS",
+          "invoice_id": "INV-CMAEZWV2",
+          "payment_id": "PAY-C0A7PE9S",
+          "row_id": "LR-CX2R39BT",
+          "timestamp": "2026-03-26T14:12:08+05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 887772,
+          "entity_id": "CUS-9B04NTDJ",
+          "entry_id": "JE-BV9F9ZQS",
+          "invoice_id": null,
+          "payment_id": "PAY-C0A7PE9S",
+          "row_id": "LR-GKXSQYY9",
+          "timestamp": "2026-03-26T14:12:08+05:00"
+        }
+      ],
+      "op": "change_booking",
+      "target": [
+        "payment",
+        "PAY-C0A7PE9S"
+      ]
+    },
+    {
+      "booking_after": {
+        "applied_override": {
+          "INV-HY5CZN83": 236381
+        },
+        "booking_ts": "2026-03-31T22:53:32+05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": {
+        "applied_override": null,
+        "booking_ts": "2026-03-31T22:53:32+05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-004",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-6660GYZB"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 241548,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": "INV-HY5CZN83",
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-7H1NNFPD",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 3237,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": null,
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-CNK5NE8P",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        },
+        {
+          "account": "2200",
+          "credit_minor": 104908,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": null,
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-P41XC9HE",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 349693,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": null,
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-PC143B32",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "1100",
+          "credit_minor": 345070,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": "INV-HY5CZN83",
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-7H1NNFPD",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 4623,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": null,
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-CNK5NE8P",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 349693,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-ZQ5TNQ4Y",
+          "invoice_id": null,
+          "payment_id": "PAY-D6ANDHJ0",
+          "row_id": "LR-PC143B32",
+          "timestamp": "2026-03-31T22:53:32+05:00"
+        }
+      ],
+      "op": "change_booking",
+      "target": [
+        "payment",
+        "PAY-D6ANDHJ0"
+      ]
+    },
+    {
+      "booking_after": {
+        "applied_override": {
+          "INV-09Z0JD5M": 41268
+        },
+        "booking_ts": "2026-03-31T23:06:32+05:00",
+        "rate_date_override": "2026-03-29",
+        "rate_override": null
+      },
+      "booking_before": {
+        "applied_override": null,
+        "booking_ts": "2026-03-31T23:06:32+05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-005",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-49D6P3B6",
+        "ISS-YCPBY883"
+      ],
+      "ledger_after": [
+        {
+          "account": "2200",
+          "credit_minor": 13348,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": null,
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-3YG871H0",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 41299,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": "INV-09Z0JD5M",
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-6VDQ9Q3Z",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 55617,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": null,
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-B3G5SWW5",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 970,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": null,
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-JBDSN1AC",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "1100",
+          "credit_minor": 54340,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": "INV-09Z0JD5M",
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-6VDQ9Q3Z",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "EUR",
+          "debit_minor": 56230,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": null,
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-B3G5SWW5",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 1890,
+          "currency": "EUR",
+          "debit_minor": 0,
+          "entity_id": "CUS-6BEK0BAJ",
+          "entry_id": "JE-96H24N1B",
+          "invoice_id": null,
+          "payment_id": "PAY-SEAHN2MR",
+          "row_id": "LR-JBDSN1AC",
+          "timestamp": "2026-03-31T23:06:32+05:00"
+        }
+      ],
+      "op": "change_booking",
+      "target": [
+        "payment",
+        "PAY-SEAHN2MR"
+      ]
+    }
+  ],
+  "clean_counts": {
+    "documents": 104,
+    "fx_rates": 115,
+    "invoices": 60,
+    "ledger_rows": 468,
+    "payments": 44
+  },
+  "config_id": "dev-mixed-v1",
+  "config_sha256": "5f2ef6a2e2cb4155ac51fd820370e57bd6ff9adc5b6a6372f547823c26f45826",
+  "distractors": {
+    "multi_invoice_payments": 2,
+    "next_period_documents": 2,
+    "overpayments": 2,
+    "prior_period_documents": 3,
+    "refunds": 2,
+    "split_payment_invoices": 4,
+    "subscription_customers": 3,
+    "unidentified_receipts": 1
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-4CWABAG5",
+  "pipeline": [
+    "world_history",
+    "render_clean",
+    "inject_errors",
+    "rebuild_ledger",
+    "render_public"
+  ],
+  "schema_version": "1.0"
+}

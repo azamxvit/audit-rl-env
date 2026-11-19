@@ -1,0 +1,162 @@
+{
+  "changes": [
+    {
+      "booking_after": {
+        "booking_ts": "2025-10-12T12:14:09+06:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": null,
+      "change_id": "CHG-001",
+      "document_added": {
+        "currency": "EUR",
+        "doc_id": "DOC-H0N8WXPG",
+        "due_at": "2025-11-11T12:14:09+06:00",
+        "entity_id": "CUS-TTT3WFF4",
+        "invoice_id": "INV-NPC43ABA",
+        "issued_at": "2025-10-12T12:14:09+06:00",
+        "line_items": [
+          {
+            "amount_minor": 1338336,
+            "description": "Support plan",
+            "quantity": 6,
+            "service_period_end": "2025-10-31",
+            "service_period_start": "2025-10-01",
+            "unit_price_minor": 223056
+          },
+          {
+            "amount_minor": 2153700,
+            "description": "Software license",
+            "quantity": 10,
+            "service_period_end": "2025-10-31",
+            "service_period_start": "2025-10-01",
+            "unit_price_minor": 215370
+          },
+          {
+            "amount_minor": 331389,
+            "description": "Maintenance visit",
+            "quantity": 3,
+            "service_period_end": "2025-10-31",
+            "service_period_start": "2025-10-01",
+            "unit_price_minor": 110463
+          }
+        ],
+        "total_minor": 3823425
+      },
+      "issue_ids": [
+        "ISS-WJ2WWN90"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 2028984592,
+          "currency": "KZT",
+          "debit_minor": 0,
+          "entity_id": "CUS-TTT3WFF4",
+          "entry_id": "JE-G2BWREEX",
+          "invoice_id": "INV-NPC43ABA",
+          "payment_id": null,
+          "row_id": "LR-DF4RMB2J",
+          "timestamp": "2025-10-12T12:14:09+06:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "KZT",
+          "debit_minor": 2028984592,
+          "entity_id": "CUS-TTT3WFF4",
+          "entry_id": "JE-G2BWREEX",
+          "invoice_id": "INV-NPC43ABA",
+          "payment_id": null,
+          "row_id": "LR-HKSZ5R0Z",
+          "timestamp": "2025-10-12T12:14:09+06:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "add_document_and_booking",
+      "target": [
+        "invoice",
+        "INV-NPC43ABA"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-12-30T11:58:10+06:00",
+        "rate_date_override": "2025-12-31",
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-002",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-1WBF479N",
+        "ISS-N4KS42R6"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 1200786471,
+          "currency": "KZT",
+          "debit_minor": 0,
+          "entity_id": "CUS-7V8Z9GY8",
+          "entry_id": "JE-16K3YDYC",
+          "invoice_id": "INV-SYYY9T7J",
+          "payment_id": null,
+          "row_id": "LR-07KGYE7G",
+          "timestamp": "2025-12-30T11:58:10+06:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "KZT",
+          "debit_minor": 1200786471,
+          "entity_id": "CUS-7V8Z9GY8",
+          "entry_id": "JE-16K3YDYC",
+          "invoice_id": "INV-SYYY9T7J",
+          "payment_id": null,
+          "row_id": "LR-NQ7H57AK",
+          "timestamp": "2025-12-30T11:58:10+06:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-SYYY9T7J"
+      ]
+    }
+  ],
+  "clean_counts": {
+    "documents": 92,
+    "fx_rates": 116,
+    "invoices": 52,
+    "ledger_rows": 448,
+    "payments": 40
+  },
+  "config_id": "train-mixed-v1",
+  "config_sha256": "b9d13c720dfc5dffe6897f23da26941b6d15611e296421f31c9b7800bf8f9a3b",
+  "distractors": {
+    "multi_invoice_payments": 0,
+    "next_period_documents": 2,
+    "overpayments": 1,
+    "prior_period_documents": 3,
+    "refunds": 1,
+    "split_payment_invoices": 3,
+    "subscription_customers": 4,
+    "unidentified_receipts": 2
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-BJTAJZXP",
+  "pipeline": [
+    "world_history",
+    "render_clean",
+    "inject_errors",
+    "rebuild_ledger",
+    "render_public"
+  ],
+  "schema_version": "1.0"
+}

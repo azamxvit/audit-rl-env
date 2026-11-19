@@ -1,0 +1,360 @@
+{
+  "changes": [
+    {
+      "booking_after": {
+        "booking_ts": "2025-11-29T17:53:47+06:00",
+        "rate_date_override": "2025-12-01",
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-001",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-J3RS23EQ",
+        "ISS-N3TAHAGN"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 4969653,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-4DV1KB1Q",
+          "invoice_id": "INV-6DHNGFDK",
+          "payment_id": null,
+          "row_id": "LR-344D6KK0",
+          "timestamp": "2025-11-29T17:53:47+06:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 4969653,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-4DV1KB1Q",
+          "invoice_id": "INV-6DHNGFDK",
+          "payment_id": null,
+          "row_id": "LR-G3DHWGWF",
+          "timestamp": "2025-11-29T17:53:47+06:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-6DHNGFDK"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-11-30T14:57:17+06:00",
+        "rate_date_override": "2025-12-08",
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-002",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-3SE5KD84",
+        "ISS-8RVPBNZY"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 1268998,
+          "entity_id": "CUS-65A21G2P",
+          "entry_id": "JE-8DCHPV19",
+          "invoice_id": "INV-84NC75HH",
+          "payment_id": null,
+          "row_id": "LR-2CX0VC9E",
+          "timestamp": "2025-11-30T14:57:17+06:00"
+        },
+        {
+          "account": "4000",
+          "credit_minor": 1268998,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-65A21G2P",
+          "entry_id": "JE-8DCHPV19",
+          "invoice_id": "INV-84NC75HH",
+          "payment_id": null,
+          "row_id": "LR-6WVG43EM",
+          "timestamp": "2025-11-30T14:57:17+06:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-84NC75HH"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-11-04T16:00:50+06:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": null,
+      "change_id": "CHG-003",
+      "document_added": {
+        "currency": "EUR",
+        "doc_id": "DOC-6RXFRM0N",
+        "due_at": "2025-12-04T18:00:50+08:00",
+        "entity_id": "CUS-65A21G2P",
+        "invoice_id": "INV-BES5X517",
+        "issued_at": "2025-11-04T18:00:50+08:00",
+        "line_items": [
+          {
+            "amount_minor": 18612,
+            "description": "Audit preparation",
+            "quantity": 3,
+            "service_period_end": "2025-11-30",
+            "service_period_start": "2025-11-01",
+            "unit_price_minor": 6204
+          }
+        ],
+        "total_minor": 18612
+      },
+      "issue_ids": [
+        "ISS-4CDMC9B5"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 20509,
+          "entity_id": "CUS-65A21G2P",
+          "entry_id": "JE-2H5WRTGP",
+          "invoice_id": "INV-BES5X517",
+          "payment_id": null,
+          "row_id": "LR-CQPMABF0",
+          "timestamp": "2025-11-04T16:00:50+06:00"
+        },
+        {
+          "account": "4000",
+          "credit_minor": 20509,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-65A21G2P",
+          "entry_id": "JE-2H5WRTGP",
+          "invoice_id": "INV-BES5X517",
+          "payment_id": null,
+          "row_id": "LR-Z6A2YN3D",
+          "timestamp": "2025-11-04T16:00:50+06:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "add_document_and_booking",
+      "target": [
+        "invoice",
+        "INV-BES5X517"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-11-30T12:13:26+06:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-004",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-NFKPC6W2"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 212131,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-244DTT1E",
+          "entry_id": "JE-BQPH37FY",
+          "invoice_id": "INV-NBHEJ4RV",
+          "payment_id": null,
+          "row_id": "LR-FE2X9WYV",
+          "timestamp": "2025-11-30T12:13:26+06:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 212131,
+          "entity_id": "CUS-244DTT1E",
+          "entry_id": "JE-BQPH37FY",
+          "invoice_id": "INV-NBHEJ4RV",
+          "payment_id": null,
+          "row_id": "LR-VAZ5ZHKM",
+          "timestamp": "2025-11-30T12:13:26+06:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-NBHEJ4RV"
+      ]
+    },
+    {
+      "booking_after": {
+        "applied_override": {
+          "INV-5CYMTG5Y": 85899
+        },
+        "booking_ts": "2025-11-30T23:44:49+06:00",
+        "rate_date_override": "2025-12-01",
+        "rate_override": null
+      },
+      "booking_before": {
+        "applied_override": null,
+        "booking_ts": "2025-11-30T23:44:49+06:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-005",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-KPE7FFZG",
+        "ISS-N6ET6J6P"
+      ],
+      "ledger_after": [
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 174020,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": null,
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-5FPW0MAF",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 2097,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": null,
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-F5Y4279T",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 101288,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": "INV-5CYMTG5Y",
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-S7CTR6Y0",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        },
+        {
+          "account": "2200",
+          "credit_minor": 74829,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": null,
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-VHCCC2WW",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 175615,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": null,
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-5FPW0MAF",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 2084,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": null,
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-F5Y4279T",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 177699,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-5A84F7RR",
+          "entry_id": "JE-X6Z8SJVF",
+          "invoice_id": "INV-5CYMTG5Y",
+          "payment_id": "PAY-GJAY06C2",
+          "row_id": "LR-S7CTR6Y0",
+          "timestamp": "2025-11-30T23:44:49+06:00"
+        }
+      ],
+      "op": "change_booking",
+      "target": [
+        "payment",
+        "PAY-GJAY06C2"
+      ]
+    }
+  ],
+  "clean_counts": {
+    "documents": 65,
+    "fx_rates": 222,
+    "invoices": 46,
+    "ledger_rows": 250,
+    "payments": 19
+  },
+  "config_id": "dev-interacting-v1",
+  "config_sha256": "b475a6dfeb52bfd59c9db014f7bfc2684e184bb1082d8b95b14f35c7c37c260d",
+  "distractors": {
+    "multi_invoice_payments": 0,
+    "next_period_documents": 5,
+    "overpayments": 0,
+    "prior_period_documents": 5,
+    "refunds": 0,
+    "split_payment_invoices": 0,
+    "subscription_customers": 4,
+    "unidentified_receipts": 1
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-FRTRHX7A",
+  "pipeline": [
+    "world_history",
+    "render_clean",
+    "inject_errors",
+    "rebuild_ledger",
+    "render_public"
+  ],
+  "schema_version": "1.0"
+}

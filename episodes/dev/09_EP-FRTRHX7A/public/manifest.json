@@ -1,0 +1,21 @@
+{
+  "base_currency": "USD",
+  "company_name": "Quibri Partners JSC",
+  "counts": {
+    "documents": 66,
+    "fx_rates": 222,
+    "invoices": 47,
+    "ledger_rows": 259,
+    "payments": 19
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-FRTRHX7A",
+  "period_end": "2025-11-30",
+  "period_start": "2025-11-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+06:00"
+}

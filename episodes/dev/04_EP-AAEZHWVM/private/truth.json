@@ -1,0 +1,191 @@
+{
+  "base_currency": "USD",
+  "episode_id": "EP-AAEZHWVM",
+  "issues": [
+    {
+      "affected_ids": [
+        "INV-61YQ4Q15",
+        "INV-QTK66DFX"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-S6QA5MDH",
+          "DOC-VE50FP55",
+          "LR-0R16B45V",
+          "LR-3QD97ER1"
+        ],
+        [
+          "DOC-S6QA5MDH",
+          "DOC-VE50FP55",
+          "LR-0R16B45V",
+          "LR-P9S941F1"
+        ],
+        [
+          "DOC-S6QA5MDH",
+          "DOC-VE50FP55",
+          "LR-3F1JSDHA",
+          "LR-3QD97ER1"
+        ],
+        [
+          "DOC-S6QA5MDH",
+          "DOC-VE50FP55",
+          "LR-3F1JSDHA",
+          "LR-P9S941F1"
+        ]
+      ],
+      "expected_amount_minor": 2226800,
+      "issue_id": "ISS-4PB2R5CJ",
+      "scenario": null,
+      "type": "duplicate_invoice",
+      "variant": "re_entered"
+    },
+    {
+      "affected_ids": [
+        "INV-60YGHKD9"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-JD6VREGR",
+          "FXR-SKXBB12E",
+          "LR-ADR5KX0Y"
+        ],
+        [
+          "DOC-JD6VREGR",
+          "FXR-SKXBB12E",
+          "LR-BVJ93Y2E"
+        ]
+      ],
+      "expected_amount_minor": 4349,
+      "issue_id": "ISS-HBF3XG2Y",
+      "scenario": "cutoff_fx",
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "INV-F6E11131"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-X2SGP912",
+          "FXR-N67NRHXC",
+          "LR-495BCPK4"
+        ],
+        [
+          "DOC-X2SGP912",
+          "FXR-N67NRHXC",
+          "LR-AKCNYEP2"
+        ]
+      ],
+      "expected_amount_minor": 108216,
+      "issue_id": "ISS-X8A6SCK1",
+      "scenario": "cutoff_fx",
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "PAY-FAY60QXQ"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-CXP7YK61",
+          "FXR-6AGZQ4JJ",
+          "LR-460C0W1W"
+        ]
+      ],
+      "expected_amount_minor": 3116,
+      "issue_id": "ISS-91Z8YBEV",
+      "scenario": "fx_partial_boundary",
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "INV-QSBY8D6Q",
+        "PAY-FAY60QXQ"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-CXP7YK61",
+          "LR-FW3AR68V"
+        ]
+      ],
+      "expected_amount_minor": 320654,
+      "issue_id": "ISS-M3N63PXT",
+      "scenario": "fx_partial_boundary",
+      "type": "payment_allocation",
+      "variant": "partial"
+    },
+    {
+      "affected_ids": [
+        "INV-41BKAZ80"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-WRERG3YY",
+          "LR-MZRJSKKD"
+        ],
+        [
+          "DOC-WRERG3YY",
+          "LR-ZG70SYKN"
+        ]
+      ],
+      "expected_amount_minor": 914500,
+      "issue_id": "ISS-ENCYW668",
+      "scenario": null,
+      "type": "period_cutoff",
+      "variant": "next_period"
+    },
+    {
+      "affected_ids": [
+        "INV-60YGHKD9"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-JD6VREGR",
+          "LR-ADR5KX0Y"
+        ],
+        [
+          "DOC-JD6VREGR",
+          "LR-BVJ93Y2E"
+        ]
+      ],
+      "expected_amount_minor": 1438037,
+      "issue_id": "ISS-G66H32WD",
+      "scenario": "cutoff_fx",
+      "type": "period_cutoff",
+      "variant": "next_period"
+    },
+    {
+      "affected_ids": [
+        "INV-F6E11131"
+      ],
+      "currency": "USD",
+      "evidence_sets": [
+        [
+          "DOC-X2SGP912",
+          "LR-495BCPK4"
+        ],
+        [
+          "DOC-X2SGP912",
+          "LR-AKCNYEP2"
+        ]
+      ],
+      "expected_amount_minor": 7322580,
+      "issue_id": "ISS-39VNVEC7",
+      "scenario": "cutoff_fx",
+      "type": "period_cutoff",
+      "variant": "next_period"
+    }
+  ],
+  "schema_version": "1.0",
+  "tolerance_minor": 1
+}

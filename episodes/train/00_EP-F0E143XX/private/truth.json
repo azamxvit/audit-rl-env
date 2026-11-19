@@ -1,0 +1,187 @@
+{
+  "base_currency": "KZT",
+  "episode_id": "EP-F0E143XX",
+  "issues": [
+    {
+      "affected_ids": [
+        "INV-BFYHPRF2",
+        "INV-V1D5S56X"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-7XMK0ERH",
+          "DOC-KN5TQQN0",
+          "LR-5QSF6C5P",
+          "LR-6NQP4DFH"
+        ],
+        [
+          "DOC-7XMK0ERH",
+          "DOC-KN5TQQN0",
+          "LR-5QSF6C5P",
+          "LR-P1SPHDPM"
+        ],
+        [
+          "DOC-7XMK0ERH",
+          "DOC-KN5TQQN0",
+          "LR-6NQP4DFH",
+          "LR-X4BV2Y05"
+        ],
+        [
+          "DOC-7XMK0ERH",
+          "DOC-KN5TQQN0",
+          "LR-P1SPHDPM",
+          "LR-X4BV2Y05"
+        ]
+      ],
+      "expected_amount_minor": 725855000,
+      "issue_id": "ISS-A3WK5SS1",
+      "scenario": null,
+      "type": "duplicate_invoice",
+      "variant": "re_entered"
+    },
+    {
+      "affected_ids": [
+        "INV-FH065RBN",
+        "INV-G3X83A7B"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-NGC6HHP8",
+          "DOC-P6AWMQ3M",
+          "LR-6VFEGRZ2",
+          "LR-BZ0CNM2F"
+        ],
+        [
+          "DOC-NGC6HHP8",
+          "DOC-P6AWMQ3M",
+          "LR-6VFEGRZ2",
+          "LR-HV5523F0"
+        ],
+        [
+          "DOC-NGC6HHP8",
+          "DOC-P6AWMQ3M",
+          "LR-BZ0CNM2F",
+          "LR-GXSSW8YM"
+        ],
+        [
+          "DOC-NGC6HHP8",
+          "DOC-P6AWMQ3M",
+          "LR-GXSSW8YM",
+          "LR-HV5523F0"
+        ]
+      ],
+      "expected_amount_minor": 1863099421,
+      "issue_id": "ISS-250BWMS1",
+      "scenario": null,
+      "type": "duplicate_invoice",
+      "variant": "re_entered_later"
+    },
+    {
+      "affected_ids": [
+        "INV-2T4TZ3N3"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-YW0RFHN8",
+          "FXR-3W88SZW7",
+          "LR-86A8MKAS"
+        ],
+        [
+          "DOC-YW0RFHN8",
+          "FXR-3W88SZW7",
+          "LR-C7W6WMA6"
+        ]
+      ],
+      "expected_amount_minor": 14437916,
+      "issue_id": "ISS-2JMDT3T7",
+      "scenario": null,
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "INV-950Y4W8C"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-DHVW6QTT",
+          "FXR-C2VGB28F",
+          "LR-0WRQ22Y7"
+        ],
+        [
+          "DOC-DHVW6QTT",
+          "FXR-C2VGB28F",
+          "LR-Q1G1J4DP"
+        ]
+      ],
+      "expected_amount_minor": 5406944,
+      "issue_id": "ISS-3245X764",
+      "scenario": null,
+      "type": "fx_error",
+      "variant": "stale_rate"
+    },
+    {
+      "affected_ids": [
+        "PAY-JQGNW0N4"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-JG6PXCZ9",
+          "FXR-VBT6V3G2",
+          "LR-JF955C5A"
+        ]
+      ],
+      "expected_amount_minor": 1882071,
+      "issue_id": "ISS-0F8XJQN4",
+      "scenario": "fx_partial_boundary",
+      "type": "fx_error",
+      "variant": "wrong_date"
+    },
+    {
+      "affected_ids": [
+        "INV-QFR4MV30",
+        "PAY-JQGNW0N4"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-JG6PXCZ9",
+          "LR-RG7WCXJW"
+        ]
+      ],
+      "expected_amount_minor": 228018050,
+      "issue_id": "ISS-QR59CWD7",
+      "scenario": "fx_partial_boundary",
+      "type": "payment_allocation",
+      "variant": "partial"
+    },
+    {
+      "affected_ids": [
+        "INV-9M73MB99"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-QZZYGGJA",
+          "LR-50390HAD"
+        ],
+        [
+          "DOC-QZZYGGJA",
+          "LR-XVM5VK6D"
+        ]
+      ],
+      "expected_amount_minor": 473618317,
+      "issue_id": "ISS-SAQMSMAM",
+      "scenario": null,
+      "type": "period_cutoff",
+      "variant": "next_period"
+    }
+  ],
+  "schema_version": "1.0",
+  "tolerance_minor": 1
+}

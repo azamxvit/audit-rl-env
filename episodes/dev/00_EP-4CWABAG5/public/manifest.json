@@ -1,0 +1,21 @@
+{
+  "base_currency": "EUR",
+  "company_name": "Varzen Works JSC",
+  "counts": {
+    "documents": 105,
+    "fx_rates": 115,
+    "invoices": 61,
+    "ledger_rows": 475,
+    "payments": 44
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-4CWABAG5",
+  "period_end": "2026-03-31",
+  "period_start": "2026-01-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+05:00"
+}

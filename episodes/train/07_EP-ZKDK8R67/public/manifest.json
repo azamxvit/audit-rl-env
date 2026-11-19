@@ -1,0 +1,21 @@
+{
+  "base_currency": "USD",
+  "company_name": "Poldax Foods Ltd",
+  "counts": {
+    "documents": 52,
+    "fx_rates": 222,
+    "invoices": 36,
+    "ledger_rows": 289,
+    "payments": 16
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-ZKDK8R67",
+  "period_end": "2026-10-31",
+  "period_start": "2026-10-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+00:00"
+}

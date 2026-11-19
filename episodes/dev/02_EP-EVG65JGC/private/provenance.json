@@ -1,0 +1,32 @@
+{
+  "changes": [],
+  "clean_counts": {
+    "documents": 122,
+    "fx_rates": 115,
+    "invoices": 67,
+    "ledger_rows": 365,
+    "payments": 55
+  },
+  "config_id": "dev-clean-v1",
+  "config_sha256": "897ab3151795af29b13ee3afe72c4b98e0a4a597c2110dc33cf73e7a914cc35b",
+  "distractors": {
+    "multi_invoice_payments": 5,
+    "next_period_documents": 3,
+    "overpayments": 3,
+    "prior_period_documents": 4,
+    "refunds": 3,
+    "split_payment_invoices": 3,
+    "subscription_customers": 4,
+    "unidentified_receipts": 3
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-EVG65JGC",
+  "pipeline": [
+    "world_history",
+    "render_clean",
+    "inject_errors",
+    "rebuild_ledger",
+    "render_public"
+  ],
+  "schema_version": "1.0"
+}

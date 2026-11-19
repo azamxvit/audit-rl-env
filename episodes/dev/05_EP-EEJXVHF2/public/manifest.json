@@ -1,0 +1,21 @@
+{
+  "base_currency": "USD",
+  "company_name": "Senneo Works JSC",
+  "counts": {
+    "documents": 69,
+    "fx_rates": 216,
+    "invoices": 49,
+    "ledger_rows": 346,
+    "payments": 20
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-EEJXVHF2",
+  "period_end": "2025-09-30",
+  "period_start": "2025-09-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+05:00"
+}

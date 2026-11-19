@@ -1,0 +1,21 @@
+{
+  "base_currency": "KZT",
+  "company_name": "Polnor Analytics LLP",
+  "counts": {
+    "documents": 123,
+    "fx_rates": 116,
+    "invoices": 82,
+    "ledger_rows": 371,
+    "payments": 41
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-F0E143XX",
+  "period_end": "2025-06-30",
+  "period_start": "2025-04-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+09:00"
+}

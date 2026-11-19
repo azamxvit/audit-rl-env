@@ -1,0 +1,21 @@
+{
+  "base_currency": "CHF",
+  "company_name": "Norlum Supply Ltd",
+  "counts": {
+    "documents": 100,
+    "fx_rates": 348,
+    "invoices": 61,
+    "ledger_rows": 578,
+    "payments": 39
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-MPPHR75G",
+  "period_end": "2025-09-30",
+  "period_start": "2025-07-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+06:00"
+}

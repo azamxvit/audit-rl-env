@@ -1,0 +1,21 @@
+{
+  "base_currency": "USD",
+  "company_name": "Daxlum Retail SA",
+  "counts": {
+    "documents": 147,
+    "fx_rates": 351,
+    "invoices": 84,
+    "ledger_rows": 354,
+    "payments": 63
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-2JFR7MFB",
+  "period_end": "2026-12-31",
+  "period_start": "2026-10-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+00:00"
+}

@@ -1,0 +1,32 @@
+{
+  "changes": [],
+  "clean_counts": {
+    "documents": 113,
+    "fx_rates": 232,
+    "invoices": 65,
+    "ledger_rows": 584,
+    "payments": 48
+  },
+  "config_id": "train-clean-v1",
+  "config_sha256": "1bb3885aa286c0876dce362ead328c63fd6e66a67905706757e71e47beefff17",
+  "distractors": {
+    "multi_invoice_payments": 2,
+    "next_period_documents": 3,
+    "overpayments": 2,
+    "prior_period_documents": 6,
+    "refunds": 2,
+    "split_payment_invoices": 5,
+    "subscription_customers": 2,
+    "unidentified_receipts": 1
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-JFE4RE43",
+  "pipeline": [
+    "world_history",
+    "render_clean",
+    "inject_errors",
+    "rebuild_ledger",
+    "render_public"
+  ],
+  "schema_version": "1.0"
+}

@@ -1,0 +1,21 @@
+{
+  "base_currency": "EUR",
+  "company_name": "Mirost Media LLC",
+  "counts": {
+    "documents": 81,
+    "fx_rates": 232,
+    "invoices": 51,
+    "ledger_rows": 453,
+    "payments": 30
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-PVKWMT0K",
+  "period_end": "2025-06-30",
+  "period_start": "2025-04-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+01:00"
+}

@@ -1,0 +1,104 @@
+{
+  "base_currency": "KZT",
+  "episode_id": "EP-M3PYMJXP",
+  "issues": [
+    {
+      "affected_ids": [
+        "INV-6KR19WN6",
+        "PAY-7MCQFT6Y"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-GSE7N3GP",
+          "LR-82XTY918"
+        ]
+      ],
+      "expected_amount_minor": 259017330,
+      "issue_id": "ISS-PYYCTK5N",
+      "scenario": null,
+      "type": "payment_allocation",
+      "variant": "partial"
+    },
+    {
+      "affected_ids": [
+        "INV-6MNF71TJ",
+        "PAY-PBKFC0AE"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-CRKC91Z6",
+          "LR-9X8H4EMP"
+        ]
+      ],
+      "expected_amount_minor": 20248680,
+      "issue_id": "ISS-AMJJTW0G",
+      "scenario": null,
+      "type": "payment_allocation",
+      "variant": "missing"
+    },
+    {
+      "affected_ids": [
+        "INV-FFMXSPDJ",
+        "PAY-A02JXBA6"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-CRMEFK07",
+          "LR-817YVMRB"
+        ]
+      ],
+      "expected_amount_minor": 317904000,
+      "issue_id": "ISS-2NAHHZFS",
+      "scenario": null,
+      "type": "payment_allocation",
+      "variant": "missing"
+    },
+    {
+      "affected_ids": [
+        "INV-CTG4TK9H"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-ZRFRQWW3",
+          "LR-2GX56T7R"
+        ],
+        [
+          "DOC-ZRFRQWW3",
+          "LR-D29K7TWV"
+        ]
+      ],
+      "expected_amount_minor": 504458930,
+      "issue_id": "ISS-C2GPBEQ7",
+      "scenario": null,
+      "type": "period_cutoff",
+      "variant": "next_period"
+    },
+    {
+      "affected_ids": [
+        "INV-Z74WA46Z"
+      ],
+      "currency": "KZT",
+      "evidence_sets": [
+        [
+          "DOC-MV2FKJ6M",
+          "LR-FZGQ77JS"
+        ],
+        [
+          "DOC-MV2FKJ6M",
+          "LR-TKYVR3FE"
+        ]
+      ],
+      "expected_amount_minor": 93857000,
+      "issue_id": "ISS-EWBS9867",
+      "scenario": null,
+      "type": "period_cutoff",
+      "variant": "prior_period"
+    }
+  ],
+  "schema_version": "1.0",
+  "tolerance_minor": 1
+}

@@ -1,0 +1,21 @@
+{
+  "base_currency": "GBP",
+  "company_name": "Raxion Holdings SA",
+  "counts": {
+    "documents": 157,
+    "fx_rates": 232,
+    "invoices": 89,
+    "ledger_rows": 1680,
+    "payments": 68
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-RS3HNJZ4",
+  "period_end": "2025-06-30",
+  "period_start": "2025-04-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+05:00"
+}

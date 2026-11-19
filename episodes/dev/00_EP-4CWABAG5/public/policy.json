@@ -1,0 +1,48 @@
+{
+  "accounts": {
+    "1000": "Bank (functional currency)",
+    "1100": "Accounts receivable",
+    "2200": "Unapplied customer cash",
+    "4000": "Revenue",
+    "6100": "Rent expense",
+    "6200": "Payroll expense",
+    "6300": "Utilities expense",
+    "6400": "Software subscriptions",
+    "6500": "Bank fees",
+    "6600": "Office supplies",
+    "7900": "FX gain/loss"
+  },
+  "currency_exponents": {
+    "CHF": 2,
+    "EUR": 2,
+    "GBP": 2,
+    "JPY": 0,
+    "KZT": 2,
+    "USD": 2
+  },
+  "functional_currency": "EUR",
+  "fx": {
+    "conversion": "base_minor = round(amount_minor * rate * 10^(exp_base - exp_source))",
+    "direction": "1 unit of source_currency = rate units of target_currency",
+    "fallback": "Rates are published Monday-Friday only; use the latest published date on or before the rate date.",
+    "rate_date": "Invoice bookings use the rate for the local date of issued_at; payment bookings use the rate for the local date of the payment timestamp (company timezone)."
+  },
+  "ledger_currency": "All ledger rows are in the functional currency (minor units).",
+  "payments": {
+    "application": "A receipt is applied (Cr 1100 with invoice_id and payment_id) to every invoice listed in invoice_refs for the referenced amount. Only the part of a receipt not covered by invoice_refs (or the whole receipt when invoice_refs is null) goes to 2200.",
+    "carrying_amount": "AR relieved = referenced amount converted at the invoice's booking rate; a reference that settles the invoice in full relieves its booked AR amount.",
+    "fx_difference": "Bank debit minus credits is posted to 7900.",
+    "refunds": "kind=refund returns previously unapplied cash: Dr 2200 / Cr 1000."
+  },
+  "period": {
+    "end": "2026-03-31",
+    "membership": "A timestamp belongs to the period if its local calendar date in the company timezone is within [start, end] inclusive. Printed offsets on documents vary.",
+    "start": "2026-01-01",
+    "timezone": "+05:00"
+  },
+  "revenue_recognition": "An invoice is recognised (Dr 1100 / Cr 4000, payment_id null) in the period that contains its issued_at; booking may lag issuance but never crosses a period.",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  }
+}

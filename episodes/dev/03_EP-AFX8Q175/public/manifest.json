@@ -1,0 +1,21 @@
+{
+  "base_currency": "KZT",
+  "company_name": "Neovel Trading SA",
+  "counts": {
+    "documents": 105,
+    "fx_rates": 115,
+    "invoices": 62,
+    "ledger_rows": 304,
+    "payments": 43
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-AFX8Q175",
+  "period_end": "2026-06-30",
+  "period_start": "2026-04-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+01:00"
+}

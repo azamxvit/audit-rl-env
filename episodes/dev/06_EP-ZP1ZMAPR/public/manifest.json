@@ -1,0 +1,21 @@
+{
+  "base_currency": "EUR",
+  "company_name": "Ionter Retail LLC",
+  "counts": {
+    "documents": 140,
+    "fx_rates": 116,
+    "invoices": 79,
+    "ledger_rows": 346,
+    "payments": 61
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-ZP1ZMAPR",
+  "period_end": "2025-09-30",
+  "period_start": "2025-07-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "-05:00"
+}

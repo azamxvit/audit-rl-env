@@ -1,0 +1,376 @@
+{
+  "changes": [
+    {
+      "booking_after": {
+        "booking_ts": "2025-10-30T17:41:57-05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-001",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-ENCYW668"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 914500,
+          "entity_id": "CUS-F35W1602",
+          "entry_id": "JE-2NJ62EZQ",
+          "invoice_id": "INV-41BKAZ80",
+          "payment_id": null,
+          "row_id": "LR-MZRJSKKD",
+          "timestamp": "2025-10-30T17:41:57-05:00"
+        },
+        {
+          "account": "4000",
+          "credit_minor": 914500,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-F35W1602",
+          "entry_id": "JE-2NJ62EZQ",
+          "invoice_id": "INV-41BKAZ80",
+          "payment_id": null,
+          "row_id": "LR-ZG70SYKN",
+          "timestamp": "2025-10-30T17:41:57-05:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-41BKAZ80"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-10-29T14:02:09-05:00",
+        "rate_date_override": "2025-11-04",
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-002",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-G66H32WD",
+        "ISS-HBF3XG2Y"
+      ],
+      "ledger_after": [
+        {
+          "account": "4000",
+          "credit_minor": 1438037,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-52608QQN",
+          "entry_id": "JE-W4MQXCRD",
+          "invoice_id": "INV-60YGHKD9",
+          "payment_id": null,
+          "row_id": "LR-ADR5KX0Y",
+          "timestamp": "2025-10-29T14:02:09-05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 1438037,
+          "entity_id": "CUS-52608QQN",
+          "entry_id": "JE-W4MQXCRD",
+          "invoice_id": "INV-60YGHKD9",
+          "payment_id": null,
+          "row_id": "LR-BVJ93Y2E",
+          "timestamp": "2025-10-29T14:02:09-05:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-60YGHKD9"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-10-22T22:28:04-05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "booking_before": null,
+      "change_id": "CHG-003",
+      "document_added": {
+        "currency": "USD",
+        "doc_id": "DOC-S6QA5MDH",
+        "due_at": "2025-11-06T12:28:04+09:00",
+        "entity_id": "CUS-7B9ZM8VK",
+        "invoice_id": "INV-61YQ4Q15",
+        "issued_at": "2025-10-23T12:28:04+09:00",
+        "line_items": [
+          {
+            "amount_minor": 355500,
+            "description": "Data migration",
+            "quantity": 3,
+            "service_period_end": "2025-10-31",
+            "service_period_start": "2025-10-01",
+            "unit_price_minor": 118500
+          },
+          {
+            "amount_minor": 228900,
+            "description": "Audit preparation",
+            "quantity": 7,
+            "service_period_end": "2025-10-31",
+            "service_period_start": "2025-10-01",
+            "unit_price_minor": 32700
+          },
+          {
+            "amount_minor": 1642400,
+            "description": "Logistics handling",
+            "quantity": 8,
+            "service_period_end": "2025-10-31",
+            "service_period_start": "2025-10-01",
+            "unit_price_minor": 205300
+          }
+        ],
+        "total_minor": 2226800
+      },
+      "issue_ids": [
+        "ISS-4PB2R5CJ"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 2226800,
+          "entity_id": "CUS-7B9ZM8VK",
+          "entry_id": "JE-JAP3SRWW",
+          "invoice_id": "INV-61YQ4Q15",
+          "payment_id": null,
+          "row_id": "LR-0R16B45V",
+          "timestamp": "2025-10-22T22:28:04-05:00"
+        },
+        {
+          "account": "4000",
+          "credit_minor": 2226800,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-7B9ZM8VK",
+          "entry_id": "JE-JAP3SRWW",
+          "invoice_id": "INV-61YQ4Q15",
+          "payment_id": null,
+          "row_id": "LR-3F1JSDHA",
+          "timestamp": "2025-10-22T22:28:04-05:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "add_document_and_booking",
+      "target": [
+        "invoice",
+        "INV-61YQ4Q15"
+      ]
+    },
+    {
+      "booking_after": {
+        "booking_ts": "2025-10-29T09:32:11-05:00",
+        "rate_date_override": "2025-12-05",
+        "rate_override": null
+      },
+      "booking_before": {
+        "booking_ts": null,
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-004",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-39VNVEC7",
+        "ISS-X8A6SCK1"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 7322580,
+          "entity_id": "CUS-52608QQN",
+          "entry_id": "JE-GMVFDZ6K",
+          "invoice_id": "INV-F6E11131",
+          "payment_id": null,
+          "row_id": "LR-495BCPK4",
+          "timestamp": "2025-10-29T09:32:11-05:00"
+        },
+        {
+          "account": "4000",
+          "credit_minor": 7322580,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-52608QQN",
+          "entry_id": "JE-GMVFDZ6K",
+          "invoice_id": "INV-F6E11131",
+          "payment_id": null,
+          "row_id": "LR-AKCNYEP2",
+          "timestamp": "2025-10-29T09:32:11-05:00"
+        }
+      ],
+      "ledger_before": null,
+      "op": "change_booking",
+      "target": [
+        "invoice",
+        "INV-F6E11131"
+      ]
+    },
+    {
+      "booking_after": {
+        "applied_override": {
+          "INV-QSBY8D6Q": 495099
+        },
+        "booking_ts": "2025-10-31T23:27:15-05:00",
+        "rate_date_override": "2025-10-30",
+        "rate_override": null
+      },
+      "booking_before": {
+        "applied_override": null,
+        "booking_ts": "2025-10-31T23:27:15-05:00",
+        "rate_date_override": null,
+        "rate_override": null
+      },
+      "change_id": "CHG-005",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-91Z8YBEV",
+        "ISS-M3N63PXT"
+      ],
+      "ledger_after": [
+        {
+          "account": "7900",
+          "credit_minor": 564,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": null,
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-0J28WFS1",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 916154,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": null,
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-460C0W1W",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 594936,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": "INV-QSBY8D6Q",
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-9B9EPZXJ",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        },
+        {
+          "account": "2200",
+          "credit_minor": 320654,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": null,
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-FW3AR68V",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "7900",
+          "credit_minor": 3984,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": null,
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-0J28WFS1",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        },
+        {
+          "account": "1000",
+          "credit_minor": 0,
+          "currency": "USD",
+          "debit_minor": 919270,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": null,
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-460C0W1W",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 915286,
+          "currency": "USD",
+          "debit_minor": 0,
+          "entity_id": "CUS-1Y54MWNF",
+          "entry_id": "JE-SZD6CQ5H",
+          "invoice_id": "INV-QSBY8D6Q",
+          "payment_id": "PAY-FAY60QXQ",
+          "row_id": "LR-9B9EPZXJ",
+          "timestamp": "2025-10-31T23:27:15-05:00"
+        }
+      ],
+      "op": "change_booking",
+      "target": [
+        "payment",
+        "PAY-FAY60QXQ"
+      ]
+    }
+  ],
+  "clean_counts": {
+    "documents": 80,
+    "fx_rates": 146,
+    "invoices": 56,
+    "ledger_rows": 292,
+    "payments": 24
+  },
+  "config_id": "dev-interacting-v1",
+  "config_sha256": "b475a6dfeb52bfd59c9db014f7bfc2684e184bb1082d8b95b14f35c7c37c260d",
+  "distractors": {
+    "multi_invoice_payments": 1,
+    "next_period_documents": 4,
+    "overpayments": 2,
+    "prior_period_documents": 3,
+    "refunds": 2,
+    "split_payment_invoices": 1,
+    "subscription_customers": 8,
+    "unidentified_receipts": 2
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-AAEZHWVM",
+  "pipeline": [
+    "world_history",
+    "render_clean",
+    "inject_errors",
+    "rebuild_ledger",
+    "render_public"
+  ],
+  "schema_version": "1.0"
+}

@@ -1,0 +1,21 @@
+{
+  "base_currency": "KZT",
+  "company_name": "Pollum Foods GmbH",
+  "counts": {
+    "documents": 93,
+    "fx_rates": 116,
+    "invoices": 53,
+    "ledger_rows": 452,
+    "payments": 40
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-BJTAJZXP",
+  "period_end": "2025-12-31",
+  "period_start": "2025-10-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+06:00"
+}

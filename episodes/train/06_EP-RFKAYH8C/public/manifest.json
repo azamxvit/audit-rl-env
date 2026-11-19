@@ -1,0 +1,21 @@
+{
+  "base_currency": "GBP",
+  "company_name": "Polter Energy GmbH",
+  "counts": {
+    "documents": 75,
+    "fx_rates": 230,
+    "invoices": 41,
+    "ledger_rows": 348,
+    "payments": 34
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-RFKAYH8C",
+  "period_end": "2025-03-31",
+  "period_start": "2025-01-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+03:00"
+}

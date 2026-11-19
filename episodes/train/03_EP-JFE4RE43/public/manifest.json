@@ -1,0 +1,21 @@
+{
+  "base_currency": "EUR",
+  "company_name": "Fentek Studio JSC",
+  "counts": {
+    "documents": 113,
+    "fx_rates": 232,
+    "invoices": 65,
+    "ledger_rows": 584,
+    "payments": 48
+  },
+  "env_version": "0.1.0",
+  "episode_id": "EP-JFE4RE43",
+  "period_end": "2026-09-30",
+  "period_start": "2026-07-01",
+  "rounding": {
+    "mode": "half_even",
+    "scope": "once per converted amount"
+  },
+  "schema_version": "1.0",
+  "timezone": "+00:00"
+}

@@ -8,6 +8,7 @@
 Tools: list_records(table, cursor=None, limit=50), get_record(table, id),
 get_document(doc_id), calculator(expression), submit(episode_id, findings).
 """
+
 from __future__ import annotations
 
 import copy
@@ -40,13 +41,21 @@ TASK_TEXT = (
 )
 
 TOOLS = [
-    {"name": "list_records", "args": {"table": "ledger|invoices|payments|fx", "cursor": "str|null",
-                                      "limit": "int 1..50 (default 50)"}},
+    {
+        "name": "list_records",
+        "args": {"table": "ledger|invoices|payments|fx", "cursor": "str|null", "limit": "int 1..50 (default 50)"},
+    },
     {"name": "get_record", "args": {"table": "ledger|invoices|payments|fx", "id": "str"}},
     {"name": "get_document", "args": {"doc_id": "str"}},
     {"name": "calculator", "args": {"expression": "arithmetic on decimal numbers"}},
-    {"name": "submit", "args": {"episode_id": "str", "findings": "list (<=30) of {type, affected_ids, "
-                                "claimed_amount_minor, currency, evidence_ids (<=10), explanation (<=1000 chars)}"}},
+    {
+        "name": "submit",
+        "args": {
+            "episode_id": "str",
+            "findings": "list (<=30) of {type, affected_ids, "
+            "claimed_amount_minor, currency, evidence_ids (<=10), explanation (<=1000 chars)}",
+        },
+    },
 ]
 
 
@@ -54,9 +63,15 @@ class AuditEnv:
     """Train mode: in-process grader, terminal reward returned. Eval mode: grader in a separate process,
     policy receives reward 0 and empty info; results only in the grader log."""
 
-    def __init__(self, mode: str = "train", max_steps: int = MAX_STEPS, time_limit_s: float = TIME_LIMIT_S,
-                 clock: Optional[Callable[[], float]] = None, grader_log: Optional[Path] = None,
-                 eval_plan: Optional[Path] = None):
+    def __init__(
+        self,
+        mode: str = "train",
+        max_steps: int = MAX_STEPS,
+        time_limit_s: float = TIME_LIMIT_S,
+        clock: Optional[Callable[[], float]] = None,
+        grader_log: Optional[Path] = None,
+        eval_plan: Optional[Path] = None,
+    ):
         if mode not in ("train", "eval"):
             raise ValueError("mode must be 'train' or 'eval'")
         self.mode = mode
@@ -112,8 +127,9 @@ class AuditEnv:
             obs = self._obs(self._tool_name(action), error=ToolError("episode_finished"))
             return obs, 0.0, self._terminated, self._truncated, {}
         if self._clock() - self._t0 > self.time_limit_s:
-            return self._finish_truncated(self._obs(self._tool_name(action), error=ToolError("time_limit")),
-                                          "time_limit")
+            return self._finish_truncated(
+                self._obs(self._tool_name(action), error=ToolError("time_limit")), "time_limit"
+            )
         self._steps += 1
         tool = self._tool_name(action)
         if tool == "submit":
@@ -187,8 +203,12 @@ class AuditEnv:
     def _grade(self, submission, inspection_steps: int, termination: str) -> tuple:
         if self.mode == "train":
             res = self._grader.grade(submission, inspection_steps, termination)
-            info = {"termination": termination, "valid": res["valid"], "inspection_steps": inspection_steps,
-                    "metrics": {k: res[k] for k in ("tp", "fp", "fn", "precision", "recall", "f1")}}
+            info = {
+                "termination": termination,
+                "valid": res["valid"],
+                "inspection_steps": inspection_steps,
+                "metrics": {k: res[k] for k in ("tp", "fp", "fn", "precision", "recall", "f1")},
+            }
             return float(res["reward"]), info
         self._remote.submit(submission, inspection_steps, termination)
         return 0.0, {}

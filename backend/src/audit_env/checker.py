@@ -12,6 +12,7 @@ is used to verify, for every episode:
 3. that every admissible evidence set, on its own, is sufficient to re-derive the
    issue's type, affected IDs and amount ("independent sufficiency").
 """
+
 from __future__ import annotations
 
 import json
@@ -58,8 +59,14 @@ class Books:
     @classmethod
     def from_public(cls, public: dict) -> "Books":
         m = public["manifest"]
-        b = cls(public, m["base_currency"], _tz(m["timezone"]), date.fromisoformat(m["period_start"]),
-                date.fromisoformat(m["period_end"]), public["policy"]["rounding"]["mode"])
+        b = cls(
+            public,
+            m["base_currency"],
+            _tz(m["timezone"]),
+            date.fromisoformat(m["period_start"]),
+            date.fromisoformat(m["period_end"]),
+            public["policy"]["rounding"]["mode"],
+        )
         for inv in public["invoices"]:
             b.invoices[inv["invoice_id"]] = inv
             b.inv_by_doc[inv["doc_id"]] = inv
@@ -97,12 +104,16 @@ class Books:
 
 # --------------------------------------------------------------------------- invariants
 
+
 def check_invariants(public: dict) -> list:
     """Return a list of human-readable violations (empty = OK)."""
     b = Books.from_public(public)
     problems = []
-    ids = [r["row_id"] for r in public["ledger"]] + [i["doc_id"] for i in public["invoices"]] + \
-          [p["doc_id"] for p in public["payments"]]
+    ids = (
+        [r["row_id"] for r in public["ledger"]]
+        + [i["doc_id"] for i in public["invoices"]]
+        + [p["doc_id"] for p in public["payments"]]
+    )
     if len(ids) != len(set(ids)):
         problems.append("duplicate record ids")
     if len(b.invoices) != len(public["invoices"]) or len(b.payments) != len(public["payments"]):
@@ -163,6 +174,7 @@ def check_invariants(public: dict) -> list:
 
 # --------------------------------------------------------------------------- full audit
 
+
 def _invoice_bookings(b: Books) -> dict:
     out: dict = {}
     for rows in b.entries.values():
@@ -173,8 +185,14 @@ def _invoice_bookings(b: Books) -> dict:
 
 
 def _content_key(inv: dict) -> str:
-    return json.dumps([inv["entity_id"], inv["currency"], inv["total_minor"],
-                       sorted(json.dumps(li, sort_keys=True) for li in inv["line_items"])])
+    return json.dumps(
+        [
+            inv["entity_id"],
+            inv["currency"],
+            inv["total_minor"],
+            sorted(json.dumps(li, sort_keys=True) for li in inv["line_items"]),
+        ]
+    )
 
 
 def audit(public: dict, tolerance: int = 1) -> list:
@@ -204,8 +222,11 @@ def audit(public: dict, tolerance: int = 1) -> list:
         invs.sort(key=lambda i: (_dt(i["issued_at"]), i["invoice_id"]))
         first = invs[0]
         for later in invs[1:]:
-            add("duplicate_invoice", [first["invoice_id"], later["invoice_id"]],
-                sum(r["debit_minor"] for r in bookings[later["invoice_id"]]))
+            add(
+                "duplicate_invoice",
+                [first["invoice_id"], later["invoice_id"]],
+                sum(r["debit_minor"] for r in bookings[later["invoice_id"]]),
+            )
 
     pay_rows: dict = {}
     for r in b.rows.values():
@@ -238,6 +259,7 @@ def audit(public: dict, tolerance: int = 1) -> list:
 
 
 # --------------------------------------------------------------------------- evidence sufficiency
+
 
 def derive_from_evidence(issue_type: str, evidence_ids: list, public: dict) -> dict:
     """Re-derive {type, affected_ids, amount_minor} using ONLY the evidence records (+ policy/manifest)."""
@@ -282,8 +304,11 @@ def derive_from_evidence(issue_type: str, evidence_ids: list, public: dict) -> d
             raise CheckError("payment is not fully referenced to one invoice")
         if row["account"] != "2200" or row["credit_minor"] <= 0 or row["payment_id"] != pay["payment_id"]:
             raise CheckError("row is not unapplied cash of this payment")
-        return {"type": issue_type, "affected_ids": sorted([pay["payment_id"], refs[0]["invoice_id"]]),
-                "amount_minor": row["credit_minor"]}
+        return {
+            "type": issue_type,
+            "affected_ids": sorted([pay["payment_id"], refs[0]["invoice_id"]]),
+            "amount_minor": row["credit_minor"],
+        }
 
     if issue_type == "fx_error":
         if len(docs_inv) + len(docs_pay) != 1 or len(rows) != 1 or len(fxs) != 1:
@@ -317,8 +342,11 @@ def derive_from_evidence(issue_type: str, evidence_ids: list, public: dict) -> d
         doc, row = docs_inv[0], rows[0]
         if b.in_period(doc["issued_at"]) or not b.in_period(row["timestamp"]):
             raise CheckError("no cut-off violation visible")
-        return {"type": issue_type, "affected_ids": [doc["invoice_id"]],
-                "amount_minor": booking_amount(row, doc["invoice_id"])}
+        return {
+            "type": issue_type,
+            "affected_ids": [doc["invoice_id"]],
+            "amount_minor": booking_amount(row, doc["invoice_id"]),
+        }
 
     raise CheckError("unknown issue type")
 
@@ -332,12 +360,22 @@ def verify_episode(public: dict, truth: dict, clean_public: dict | None = None) 
         problems += [f"clean books not clean: {f}" for f in audit(clean_public, tol)]
     problems += [f"injected: {p}" for p in check_invariants(public)]
     found = audit(public, tol)
-    expected = sorted(({"type": i["type"], "affected_ids": i["affected_ids"], "amount_minor": i["expected_amount_minor"],
-                        "currency": i["currency"]} for i in truth["issues"]), key=lambda f: (f["type"], f["affected_ids"]))
+    expected = sorted(
+        (
+            {
+                "type": i["type"],
+                "affected_ids": i["affected_ids"],
+                "amount_minor": i["expected_amount_minor"],
+                "currency": i["currency"],
+            }
+            for i in truth["issues"]
+        ),
+        key=lambda f: (f["type"], f["affected_ids"]),
+    )
     if [(f["type"], f["affected_ids"]) for f in found] != [(f["type"], f["affected_ids"]) for f in expected]:
         problems.append(f"audit/truth mismatch: found={found} expected={expected}")
     else:
-        for f, e in zip(found, expected):
+        for f, e in zip(found, expected, strict=False):
             if abs(f["amount_minor"] - e["amount_minor"]) > tol or f["currency"] != e["currency"]:
                 problems.append(f"amount mismatch {f} vs {e}")
     for issue in truth["issues"]:

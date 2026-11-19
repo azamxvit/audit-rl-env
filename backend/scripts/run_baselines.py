@@ -7,17 +7,17 @@ The oracle reads truth from private files: it is grader-side by construction.
 
 Outputs: runs/<split>/<policy>/trajectories.jsonl, runs/<split>/grader_log.jsonl, runs/report.json, runs/report.md
 """
+
 import json
 import shutil
 import statistics
 from collections import Counter
 
 from _common import RUNS, episode_dirs
-
 from audit_env.env import AuditEnv
 from audit_env.generator import load_private
-from audit_env.reward import prf
 from audit_env.policies import FlagAllPolicy, OraclePolicy, RandomExplorerPolicy, SimpleReconcilerPolicy
+from audit_env.reward import prf
 from audit_env.trajectories import TrajectoryWriter, run_episode
 
 POLICIES = ["random_explorer", "simple_reconciler", "flag_all", "oracle"]
@@ -25,8 +25,12 @@ TYPES = ["duplicate_invoice", "payment_allocation", "fx_error", "period_cutoff"]
 
 
 def make_policy(name, truth):
-    return {"random_explorer": lambda: RandomExplorerPolicy(seed=0), "simple_reconciler": SimpleReconcilerPolicy,
-            "flag_all": FlagAllPolicy, "oracle": lambda: OraclePolicy(truth)}[name]()
+    return {
+        "random_explorer": lambda: RandomExplorerPolicy(seed=0),
+        "simple_reconciler": SimpleReconcilerPolicy,
+        "flag_all": FlagAllPolicy,
+        "oracle": lambda: OraclePolicy(truth),
+    }[name]()
 
 
 def run_split(split: str, mode: str) -> list:
@@ -37,7 +41,7 @@ def run_split(split: str, mode: str) -> list:
         env = AuditEnv(mode, grader_log=log) if mode == "eval" else AuditEnv("train")
         try:
             with TrajectoryWriter(out_dir / pname / "trajectories.jsonl") as w:
-                for path, meta in episode_dirs(split):
+                for path, _meta in episode_dirs(split):
                     truth, _ = load_private(path)
                     pol = make_policy(pname, truth)
                     res = run_episode(env, pol, config={"episode_dir": str(path)}, writer=w)
@@ -50,7 +54,7 @@ def run_split(split: str, mode: str) -> list:
             env.close()
     if mode == "eval":  # only now, after the run, read the grader's private log
         graded = [json.loads(x) for x in log.read_text().splitlines()]
-        for res, g in zip(results, graded):
+        for res, g in zip(results, graded, strict=False):
             assert res["episode_id"] == g["episode_id"]
             res["grade"] = g
     return results
@@ -72,14 +76,21 @@ def summarize(results: list) -> dict:
             "recall": statistics.mean(x["recall"] for x in g),
             "f1": statistics.mean(x["f1"] for x in g),
             "return": statistics.mean(x["reward"] for x in g),
-            "return_clean": statistics.mean([x["reward"] for x, r in zip(g, rs) if r["clean"]] or [0.0]),
+            "return_clean": statistics.mean([x["reward"] for x, r in zip(g, rs, strict=False) if r["clean"]] or [0.0]),
             "steps": statistics.mean(r["steps"] for r in rs),
             "seconds": statistics.mean(r["seconds"] for r in rs),
             "invalid": sum(1 for x in g if not x["valid"]),
             "truncated": sum(1 for r in rs if r["truncated"]),
-            "tp": sum(x["tp"] for x in g), "fp": sum(x["fp"] for x in g), "fn": sum(x["fn"] for x in g),
-            "micro": prf(sum(x["tp"] for x in g), sum(x["fp"] for x in g), sum(x["fn"] for x in g),
-                         sum(x["n_truth"] for x in g), sum(x["n_findings"] for x in g)),
+            "tp": sum(x["tp"] for x in g),
+            "fp": sum(x["fp"] for x in g),
+            "fn": sum(x["fn"] for x in g),
+            "micro": prf(
+                sum(x["tp"] for x in g),
+                sum(x["fp"] for x in g),
+                sum(x["fn"] for x in g),
+                sum(x["n_truth"] for x in g),
+                sum(x["n_findings"] for x in g),
+            ),
             "recall_by_type": {t: (1 - missed[t] / total[t]) if total[t] else None for t in TYPES},
             "fp_by_type": {t: fps[t] for t in TYPES},
         }
@@ -99,26 +110,44 @@ def main() -> None:
     for split, mode in (("train", "train"), ("dev", "eval")):
         report[split] = {"mode": mode, "policies": summarize(run_split(split, mode))}
     (RUNS / "report.json").write_text(json.dumps(report, indent=2) + "\n")
-    lines = ["# Baseline report", "",
-             "Diagnostics only. P, R, F1, return: means over episodes (per the case, P = R = 0 when the denominator is 0,",
-             "so clean episodes pull the mean P/R down even for a perfect answer); micro P/R/F1 pool TP/FP/FN over",
-             "episodes. Time is wall-clock seconds per episode (not part of any deterministic artefact).", ""]
+    lines = [
+        "# Baseline report",
+        "",
+        "Diagnostics only. P, R, F1, return: means over episodes (per the case, P = R = 0 when the denominator is 0,",
+        "so clean episodes pull the mean P/R down even for a perfect answer); micro P/R/F1 pool TP/FP/FN over",
+        "episodes. Time is wall-clock seconds per episode (not part of any deterministic artefact).",
+        "",
+    ]
     for split, rep in report.items():
-        lines += [f"## {split} ({rep['mode']} mode, {next(iter(rep['policies'].values()))['episodes']} episodes)", "",
-                  "| policy | P | R | F1 | micro P/R/F1 | return | return (clean) | steps | time, s | TP/FP/FN | invalid |",
-                  "|---|---|---|---|---|---|---|---|---|---|---|"]
+        lines += [
+            f"## {split} ({rep['mode']} mode, {next(iter(rep['policies'].values()))['episodes']} episodes)",
+            "",
+            "| policy | P | R | F1 | micro P/R/F1 | return | return (clean) | steps | time, s | TP/FP/FN | invalid |",
+            "|---|---|---|---|---|---|---|---|---|---|---|",
+        ]
         for p, s in rep["policies"].items():
-            lines.append(f"| {p} | {s['precision']:.3f} | {s['recall']:.3f} | {s['f1']:.3f} | "
-                         f"{s['micro']['precision']:.2f}/{s['micro']['recall']:.2f}/{s['micro']['f1']:.2f} | "
-                         f"{s['return']:.3f} | "
-                         f"{s['return_clean']:.3f} | {s['steps']:.1f} | {s['seconds']:.3f} | "
-                         f"{s['tp']}/{s['fp']}/{s['fn']} | {s['invalid']} |")
-        lines += ["", "Recall by issue type / false positives by claimed type:", "",
-                  "| policy | " + " | ".join(TYPES) + " | FP " + " / ".join(t.split('_')[0] for t in TYPES) + " |",
-                  "|---|" + "---|" * (len(TYPES) + 1)]
+            lines.append(
+                f"| {p} | {s['precision']:.3f} | {s['recall']:.3f} | {s['f1']:.3f} | "
+                f"{s['micro']['precision']:.2f}/{s['micro']['recall']:.2f}/{s['micro']['f1']:.2f} | "
+                f"{s['return']:.3f} | "
+                f"{s['return_clean']:.3f} | {s['steps']:.1f} | {s['seconds']:.3f} | "
+                f"{s['tp']}/{s['fp']}/{s['fn']} | {s['invalid']} |"
+            )
+        lines += [
+            "",
+            "Recall by issue type / false positives by claimed type:",
+            "",
+            "| policy | " + " | ".join(TYPES) + " | FP " + " / ".join(t.split("_")[0] for t in TYPES) + " |",
+            "|---|" + "---|" * (len(TYPES) + 1),
+        ]
         for p, s in rep["policies"].items():
-            lines.append(f"| {p} | " + " | ".join(fmt(s["recall_by_type"][t]) for t in TYPES) + " | " +
-                         " / ".join(str(s["fp_by_type"][t]) for t in TYPES) + " |")
+            lines.append(
+                f"| {p} | "
+                + " | ".join(fmt(s["recall_by_type"][t]) for t in TYPES)
+                + " | "
+                + " / ".join(str(s["fp_by_type"][t]) for t in TYPES)
+                + " |"
+            )
         lines.append("")
     (RUNS / "report.md").write_text("\n".join(lines))
     print("\n".join(lines))

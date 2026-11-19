@@ -24,6 +24,7 @@ Matching
   labelled TP in diagnostics. Unmatched findings are FP (this includes repeats),
   unmatched issues are FN.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -107,16 +108,19 @@ class Aliases:
 def normalize(f: dict, aliases: Aliases) -> NormFinding:
     affected = frozenset(aliases.doc_to_business.get(x, x) for x in (i.strip() for i in f["affected_ids"]))
     evidence = frozenset(aliases.business_to_doc.get(x, x) for x in (i.strip() for i in f["evidence_ids"]))
-    return NormFinding(f["type"].strip().lower(), affected, f["claimed_amount_minor"], f["currency"].strip().upper(),
-                       evidence)
+    return NormFinding(
+        f["type"].strip().lower(), affected, f["claimed_amount_minor"], f["currency"].strip().upper(), evidence
+    )
 
 
 def is_candidate(f: NormFinding, issue: dict, tolerance: int) -> bool:
-    return (f.type == issue["type"]
-            and f.affected == frozenset(issue["affected_ids"])
-            and f.currency == issue["currency"]
-            and abs(f.amount - issue["expected_amount_minor"]) <= tolerance
-            and any(set(es) <= f.evidence for es in issue["evidence_sets"]))
+    return (
+        f.type == issue["type"]
+        and f.affected == frozenset(issue["affected_ids"])
+        and f.currency == issue["currency"]
+        and abs(f.amount - issue["expected_amount_minor"]) <= tolerance
+        and any(set(es) <= f.evidence for es in issue["evidence_sets"])
+    )
 
 
 def match(findings: list, issues: list, tolerance: int) -> list:

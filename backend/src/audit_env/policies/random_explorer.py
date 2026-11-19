@@ -1,4 +1,5 @@
 """Random explorer with a fixed seed: random tool calls, then a few random guesses built from what it saw."""
+
 from __future__ import annotations
 
 import random
@@ -28,7 +29,9 @@ class RandomExplorerPolicy(Policy):
         res = observation.get("result")
         if not observation.get("ok") or not isinstance(res, dict):
             return
-        recs = res.get("records") or ([res["document"]] if "document" in res else [res] if "row_id" in res or "doc_id" in res else [])
+        recs = res.get("records") or (
+            [res["document"]] if "document" in res else [res] if "row_id" in res or "doc_id" in res else []
+        )
         for r in recs:
             if isinstance(r, dict):
                 self.seen.append(r)
@@ -53,7 +56,12 @@ class RandomExplorerPolicy(Policy):
         if choice < 0.7 and "doc_id" in rec:
             return {"tool": "get_document", "args": {"doc_id": rec["doc_id"]}}
         if choice < 0.85:
-            for table, key in (("ledger", "row_id"), ("invoices", "invoice_id"), ("payments", "payment_id"), ("fx", "rate_id")):
+            for table, key in (
+                ("ledger", "row_id"),
+                ("invoices", "invoice_id"),
+                ("payments", "payment_id"),
+                ("fx", "rate_id"),
+            ):
                 if key in rec:
                     return {"tool": "get_record", "args": {"table": table, "id": rec[key]}}
         a, b = rng.randint(0, 10**6), rng.randint(1, 10**4)
@@ -66,11 +74,20 @@ class RandomExplorerPolicy(Policy):
             for key in ("invoice_id", "payment_id", "row_id", "doc_id", "rate_id"):
                 if r.get(key):
                     ids.append(r[key])
-        amounts = [r.get("total_minor") or r.get("amount_minor") or r.get("debit_minor") or r.get("credit_minor") or 0
-                   for r in self.seen] or [0]
+        amounts = [
+            r.get("total_minor") or r.get("amount_minor") or r.get("debit_minor") or r.get("credit_minor") or 0
+            for r in self.seen
+        ] or [0]
         findings = []
         for _ in range(rng.randint(0, 3) if ids else 0):
-            findings.append(finding(rng.choice(TYPES), rng.sample(ids, min(len(ids), rng.randint(1, 2))),
-                                    abs(int(rng.choice(amounts))), self.base,
-                                    rng.sample(ids, min(len(ids), rng.randint(1, 10))), "random guess"))
+            findings.append(
+                finding(
+                    rng.choice(TYPES),
+                    rng.sample(ids, min(len(ids), rng.randint(1, 2))),
+                    abs(int(rng.choice(amounts))),
+                    self.base,
+                    rng.sample(ids, min(len(ids), rng.randint(1, 10))),
+                    "random guess",
+                )
+            )
         return submit_action(self.episode_id, findings)

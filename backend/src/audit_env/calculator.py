@@ -5,6 +5,7 @@ evaluated (numbers, + - * / // % **, unary +/-, parentheses). Every literal is
 re-read from its source text as a ``Decimal`` so ``0.1 + 0.2 == 0.3``.
 No names, calls, attributes, subscripts, strings, comprehensions or ``eval``.
 """
+
 from __future__ import annotations
 
 import ast

@@ -10,6 +10,7 @@ Two deployments with the same scoring code:
   diagnostics and rewards stay in the grader process and its log file until the
   run is over. Protocol: one JSON object per line on stdin/stdout.
 """
+
 from __future__ import annotations
 
 import json
@@ -48,27 +49,45 @@ class Grader:
             return self.result
         issues = self.truth["issues"]
         tol = self.truth.get("tolerance_minor", 1)
-        result = {"episode_id": self.episode_id, "termination": termination, "inspection_steps": inspection_steps,
-                  "n_truth": len(issues)}
+        result = {
+            "episode_id": self.episode_id,
+            "termination": termination,
+            "inspection_steps": inspection_steps,
+            "n_truth": len(issues),
+        }
         try:
             raw = validate_submission(submission, self.episode_id)
         except SubmissionError as exc:
-            result.update({"valid": False, "error": str(exc), "n_findings": 0,
-                           **prf(0, 0, len(issues), len(issues), 0), "reward": INVALID_SUBMISSION_REWARD,
-                           "matches": []})
+            result.update(
+                {
+                    "valid": False,
+                    "error": str(exc),
+                    "n_findings": 0,
+                    **prf(0, 0, len(issues), len(issues), 0),
+                    "reward": INVALID_SUBMISSION_REWARD,
+                    "matches": [],
+                }
+            )
             self._finish(result)
             return result
         findings = [normalize(f, self.aliases) for f in raw]
         pairs = match(findings, issues, tol)
         tp = len(pairs)
         metrics = prf(tp, len(findings) - tp, len(issues) - tp, len(issues), len(findings))
-        result.update({"valid": True, "error": None, "n_findings": len(findings), **metrics,
-                       "reward": terminal_reward(metrics["f1"], inspection_steps),
-                       "matches": [[i, issues[j]["issue_id"]] for i, j in pairs],
-                       "missed_types": sorted(issues[j]["type"] for j in range(len(issues))
-                                              if j not in {jj for _, jj in pairs}),
-                       "fp_types": sorted(findings[i].type for i in range(len(findings))
-                                          if i not in {ii for ii, _ in pairs})})
+        result.update(
+            {
+                "valid": True,
+                "error": None,
+                "n_findings": len(findings),
+                **metrics,
+                "reward": terminal_reward(metrics["f1"], inspection_steps),
+                "matches": [[i, issues[j]["issue_id"]] for i, j in pairs],
+                "missed_types": sorted(
+                    issues[j]["type"] for j in range(len(issues)) if j not in {jj for _, jj in pairs}
+                ),
+                "fp_types": sorted(findings[i].type for i in range(len(findings)) if i not in {ii for ii, _ in pairs}),
+            }
+        )
         self._finish(result)
         return result
 
@@ -81,6 +100,7 @@ class Grader:
 
 
 # --------------------------------------------------------------------------- eval: separate process
+
 
 class GraderServer:
     """Runs inside the grader process. Never sends truth back."""
@@ -148,8 +168,14 @@ class SubprocessGrader:
         return reply["public"]
 
     def submit(self, submission, inspection_steps: int, termination: str) -> None:
-        self._call({"cmd": "submit", "submission": submission, "inspection_steps": inspection_steps,
-                    "termination": termination})
+        self._call(
+            {
+                "cmd": "submit",
+                "submission": submission,
+                "inspection_steps": inspection_steps,
+                "termination": termination,
+            }
+        )
 
     def close(self) -> None:
         if self._proc.poll() is None:

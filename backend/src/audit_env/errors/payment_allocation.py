@@ -8,6 +8,7 @@ Canonical form: affected_ids = [payment_id, invoice_id]; amount = the 2200
 credit booked by that receipt (functional currency). Evidence: the payment
 document (shows the reference) and the 2200 row of that receipt.
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -18,9 +19,14 @@ from .base import InjectionContext, IssueSpec, evidence_product
 
 def eligible(ctx: InjectionContext, p: Payment) -> bool:
     refs = p.invoice_refs or []
-    return (p.kind == "receipt" and p.booking_ts is not None and len(refs) == 1
-            and refs[0]["amount_minor"] == p.amount_minor and p.applied_override is None
-            and ctx.is_free(p.payment_id, refs[0]["invoice_id"]))
+    return (
+        p.kind == "receipt"
+        and p.booking_ts is not None
+        and len(refs) == 1
+        and refs[0]["amount_minor"] == p.amount_minor
+        and p.applied_override is None
+        and ctx.is_free(p.payment_id, refs[0]["invoice_id"])
+    )
 
 
 def apply(ctx: InjectionContext, pay: Payment, variant: str, scenario: Optional[str] = None) -> IssueSpec:
@@ -39,8 +45,14 @@ def apply(ctx: InjectionContext, pay: Payment, variant: str, scenario: Optional[
         row = ledger.row(src, "unapplied")
         return row.credit_minor, evidence_product([[pay.doc_id], [row.row_id]])
 
-    return IssueSpec("payment_allocation", sorted([pay.payment_id, inv_id]), resolve,
-                     [("payment", pay.payment_id)], variant, scenario)
+    return IssueSpec(
+        "payment_allocation",
+        sorted([pay.payment_id, inv_id]),
+        resolve,
+        [("payment", pay.payment_id)],
+        variant,
+        scenario,
+    )
 
 
 def inject(ctx: InjectionContext, variant: Optional[str] = None) -> list:

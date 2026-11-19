@@ -10,13 +10,14 @@ Canonical form: affected_ids = [invoice_id] or [payment_id]; amount =
 the booking row (AR/revenue for invoices, bank for payments) and the fx row the
 policy prescribes.
 """
+
 from __future__ import annotations
 
 from datetime import date, timedelta
 from decimal import Decimal
 from typing import Optional
 
-from ..world import Invoice, Payment, _fmt_rate
+from ..world import Invoice, _fmt_rate
 from .base import InjectionContext, IssueSpec, evidence_product, min_material_diff, printed_date
 
 
@@ -70,8 +71,9 @@ def _try_override(ctx: InjectionContext, obj, variant: str, prefer: Optional[dat
     return variant
 
 
-def apply(ctx: InjectionContext, obj, variant: str, scenario: Optional[str] = None,
-          prefer: Optional[date] = None) -> Optional[IssueSpec]:
+def apply(
+    ctx: InjectionContext, obj, variant: str, scenario: Optional[str] = None, prefer: Optional[date] = None
+) -> Optional[IssueSpec]:
     kind = "invoice" if isinstance(obj, Invoice) else "payment"
     ctx.touch(kind, obj)
     applied = _try_override(ctx, obj, variant, prefer)
@@ -102,15 +104,27 @@ def apply(ctx: InjectionContext, obj, variant: str, scenario: Optional[str] = No
 
 def eligible_invoice(ctx, i) -> bool:
     w = ctx.world
-    return (i.period_class == "current" and i.booking_ts is not None and i.currency != w.base
-            and ctx.is_free(i.invoice_id) and i.rate_override is None and i.rate_date_override is None)
+    return (
+        i.period_class == "current"
+        and i.booking_ts is not None
+        and i.currency != w.base
+        and ctx.is_free(i.invoice_id)
+        and i.rate_override is None
+        and i.rate_date_override is None
+    )
 
 
 def eligible_payment(ctx, p) -> bool:
     w = ctx.world
-    return (p.kind == "receipt" and p.booking_ts is not None and p.currency != w.base
-            and p.applied_override is None and ctx.is_free(p.payment_id) and p.rate_override is None
-            and p.rate_date_override is None)
+    return (
+        p.kind == "receipt"
+        and p.booking_ts is not None
+        and p.currency != w.base
+        and p.applied_override is None
+        and ctx.is_free(p.payment_id)
+        and p.rate_override is None
+        and p.rate_date_override is None
+    )
 
 
 def inject(ctx: InjectionContext, variant: Optional[str] = None) -> list:

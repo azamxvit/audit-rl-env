@@ -1,4 +1,5 @@
 """Deterministic helpers: derived RNG streams, opaque IDs, time handling, JSON."""
+
 from __future__ import annotations
 
 import hashlib

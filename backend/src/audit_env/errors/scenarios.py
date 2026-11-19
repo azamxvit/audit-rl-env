@@ -14,6 +14,7 @@
     rate. -> one ``period_cutoff`` (amount = what was booked) + one
     ``fx_error`` (difference to the policy rate for its own issue date).
 """
+
 from __future__ import annotations
 
 from ..world import Payment
@@ -28,8 +29,12 @@ def _boundary_partial_hosts(ctx: InjectionContext) -> list:
         if not payment_allocation.eligible(ctx, p) or p.currency == w.base:
             continue
         inv = w.invoices[p.invoice_refs[0]["invoice_id"]]
-        if (p.amount_minor < inv.total_minor and w.local(p.timestamp) == w.period_end
-                and printed_date(p) != w.period_end and fx_error.eligible_payment(ctx, p)):
+        if (
+            p.amount_minor < inv.total_minor
+            and w.local(p.timestamp) == w.period_end
+            and printed_date(p) != w.period_end
+            and fx_error.eligible_payment(ctx, p)
+        ):
             out.append(p)
     return sorted(out, key=lambda p: p.payment_id)
 
@@ -50,8 +55,7 @@ def fx_partial_boundary(ctx: InjectionContext) -> list:
 
 def cutoff_fx(ctx: InjectionContext) -> list:
     w = ctx.world
-    cands = [i for i in w.invoices.values()
-             if period_cutoff.eligible(ctx, i, "next") and i.currency != w.base]
+    cands = [i for i in w.invoices.values() if period_cutoff.eligible(ctx, i, "next") and i.currency != w.base]
     inv = ctx.pick(cands, key=lambda i: i.invoice_id)
     if inv is None:
         return []

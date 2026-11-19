@@ -1,16 +1,24 @@
 """Generator: determinism, accounting invariants, truth == independent audit, evidence sufficiency."""
+
 import collections
 
 import pytest
 
 from audit_env.checker import audit, check_invariants, verify_episode
-from audit_env.generator import public_files, write_episode, load_public, load_private
+from audit_env.generator import load_private, load_public, public_files, write_episode
 from audit_env.util import sha256_text
-
 from conftest import cfg, episode
 
-CONFIG_NAMES = [None, "train/clean.json", "train/interacting.json", "train/fx_heavy.json", "train/small_month.json",
-                "dev/mixed.json", "dev/interacting.json", "dev/alloc_cutoff.json"]
+CONFIG_NAMES = [
+    None,
+    "train/clean.json",
+    "train/interacting.json",
+    "train/fx_heavy.json",
+    "train/small_month.json",
+    "dev/mixed.json",
+    "dev/interacting.json",
+    "dev/alloc_cutoff.json",
+]
 
 
 def _hashes(ep):
@@ -20,6 +28,7 @@ def _hashes(ep):
 
 def test_same_seed_same_bytes():
     from audit_env.generator import generate_episode
+
     a = generate_episode(42, cfg("train/interacting.json"))
     b = generate_episode(42, cfg("train/interacting.json"))
     assert _hashes(a) == _hashes(b)
@@ -75,9 +84,12 @@ def test_all_types_and_scenarios_occur():
 def test_error_types_independently_configurable():
     zero = {t: {"count": 0} for t in ["duplicate_invoice", "payment_allocation", "fx_error", "period_cutoff"]}
     for t in zero:
-        conf = {"errors": {**zero, t: {"count": 2}},
-                "scenarios": {"fx_partial_boundary": {"count": 0}, "cutoff_fx": {"count": 0}}}
+        conf = {
+            "errors": {**zero, t: {"count": 2}},
+            "scenarios": {"fx_partial_boundary": {"count": 0}, "cutoff_fx": {"count": 0}},
+        }
         from audit_env.generator import generate_episode
+
         ep = generate_episode(3, conf)
         assert {i["type"] for i in ep.truth["issues"]} == {t}
 
@@ -100,6 +112,7 @@ def test_interacting_scenarios_share_documents():
 
 def test_size_ranges(splits):
     from audit_env.generator import generate_episode
+
     for split in ("train", "dev"):
         for e in splits[split]:
             ep = generate_episode(e["seed"], cfg(e["config"]))

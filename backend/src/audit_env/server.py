@@ -4,6 +4,7 @@ Stdlib only. Run: ``PYTHONPATH=src python -m audit_env.server`` (from backend/) 
 The API is a thin wrapper: /api/step returns exactly what AuditEnv.step returns. Truth is only read
 by /api/review, and only after the episode has ended; it is used for open train/dev episodes only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -63,10 +64,19 @@ class PlaygroundApp:
         out = []
         for key, path in self.catalog.items():
             m = json.loads((path / "public" / "manifest.json").read_text(encoding="utf-8"))
-            out.append({"key": key, "split": key.split("/")[0], "episode_id": m["episode_id"],
-                        "company_name": m["company_name"], "period_start": m["period_start"],
-                        "period_end": m["period_end"], "base_currency": m["base_currency"],
-                        "timezone": m["timezone"], "counts": m["counts"]})
+            out.append(
+                {
+                    "key": key,
+                    "split": key.split("/")[0],
+                    "episode_id": m["episode_id"],
+                    "company_name": m["company_name"],
+                    "period_start": m["period_start"],
+                    "period_end": m["period_end"],
+                    "base_currency": m["base_currency"],
+                    "timezone": m["timezone"],
+                    "counts": m["counts"],
+                }
+            )
         return out
 
     def reset(self, body) -> dict:
@@ -106,14 +116,24 @@ class PlaygroundApp:
         truth, _ = load_private(s.path)
         g = s.env._grader.result
         matched = {issue_id: idx for idx, issue_id in g["matches"]}
-        issues = [{"type": i["type"], "affected_ids": i["affected_ids"],
-                   "expected_amount_minor": i["expected_amount_minor"], "currency": i["currency"],
-                   "evidence_sets": i["evidence_sets"],
-                   "status": "found" if i["issue_id"] in matched else "missed",
-                   "matched_finding": matched.get(i["issue_id"])} for i in truth["issues"]]
+        issues = [
+            {
+                "type": i["type"],
+                "affected_ids": i["affected_ids"],
+                "expected_amount_minor": i["expected_amount_minor"],
+                "currency": i["currency"],
+                "evidence_sets": i["evidence_sets"],
+                "status": "found" if i["issue_id"] in matched else "missed",
+                "matched_finding": matched.get(i["issue_id"]),
+            }
+            for i in truth["issues"]
+        ]
         used = set(matched.values())
-        return {"metrics": {k: g[k] for k in METRIC_KEYS}, "issues": issues,
-                "false_positives": [i for i in range(g["n_findings"]) if i not in used]}
+        return {
+            "metrics": {k: g[k] for k in METRIC_KEYS},
+            "issues": issues,
+            "false_positives": [i for i in range(g["n_findings"]) if i not in used],
+        }
 
 
 def make_handler(app: PlaygroundApp):

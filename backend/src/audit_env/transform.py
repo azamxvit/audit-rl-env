@@ -5,6 +5,7 @@ so formats stay valid. Truth is rewritten with the same mapping. A correct
 environment must give the oracle (and any order/ID-agnostic policy) the same
 reward on the original and on the transformed episode.
 """
+
 from __future__ import annotations
 
 import copy

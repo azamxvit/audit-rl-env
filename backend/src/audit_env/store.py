@@ -5,6 +5,7 @@
   same token within an episode) and are validated server-side.
 - Every returned record is a fresh copy; the agent cannot mutate the store.
 """
+
 from __future__ import annotations
 
 import copy
@@ -24,7 +25,7 @@ class ToolError(Exception):
 
     MESSAGES = {
         "unknown_tool": "Unknown tool.",
-        "invalid_action": "Action must be an object {\"tool\": str, \"args\": object}.",
+        "invalid_action": 'Action must be an object {"tool": str, "args": object}.',
         "invalid_args": "Invalid or missing arguments for this tool.",
         "unknown_table": "Unknown table.",
         "unknown_id": "No record with this id.",
@@ -83,7 +84,7 @@ class RecordStore:
             if t != table:
                 raise ToolError("invalid_cursor")
         rows = self._tables[table]
-        page = [copy.deepcopy(r) for r in rows[offset:offset + limit]]
+        page = [copy.deepcopy(r) for r in rows[offset : offset + limit]]
         nxt = offset + len(page)
         return {
             "table": table,

@@ -23,6 +23,7 @@ boundary_partial_payments   foreign partial receipt late on the last day, printe
                             paid in the period without a booking in this ledger
 =========================== ===============================================================
 """
+
 from __future__ import annotations
 
 from ..world import World
@@ -38,8 +39,13 @@ def summarize(world: World) -> dict:
     return {
         "split_payment_invoices": sum(1 for v in refs_count.values() if v > 1),
         "multi_invoice_payments": sum(1 for p in pays if p.invoice_refs and len(p.invoice_refs) > 1),
-        "overpayments": sum(1 for p in pays if p.invoice_refs and p.kind == "receipt"
-                            and p.amount_minor > sum(r["amount_minor"] for r in p.invoice_refs)),
+        "overpayments": sum(
+            1
+            for p in pays
+            if p.invoice_refs
+            and p.kind == "receipt"
+            and p.amount_minor > sum(r["amount_minor"] for r in p.invoice_refs)
+        ),
         "refunds": sum(1 for p in pays if p.kind == "refund"),
         "unidentified_receipts": sum(1 for p in pays if p.kind == "receipt" and p.invoice_refs is None),
         "subscription_customers": sum(1 for c in world.customers if c.plan),

@@ -2,6 +2,7 @@
 
 ``generate_episode(seed, config)`` is a pure function of (seed, config, ENV_VERSION).
 """
+
 from __future__ import annotations
 
 import copy
@@ -17,8 +18,16 @@ from .errors import InjectionContext, plan_and_inject
 from .errors.base import booking_params
 from .errors.distractors import summarize
 from .util import IdFactory, derive_rng, dumps, sha256_text, tz_label
-from .world import (WorldBuilder, World, build_ledger, render_fx, render_invoice, render_payment,
-                    render_policy, render_row)
+from .world import (
+    World,
+    WorldBuilder,
+    build_ledger,
+    render_fx,
+    render_invoice,
+    render_payment,
+    render_policy,
+    render_row,
+)
 
 TOLERANCE_MINOR = 1
 
@@ -57,8 +66,18 @@ DEFAULT_CONFIG: dict = {
 }
 
 PUBLIC_TABLES = ("ledger", "invoices", "payments", "fx")
-LEDGER_COLUMNS = ["row_id", "timestamp", "account", "debit_minor", "credit_minor", "currency",
-                  "entity_id", "invoice_id", "payment_id", "entry_id"]
+LEDGER_COLUMNS = [
+    "row_id",
+    "timestamp",
+    "account",
+    "debit_minor",
+    "credit_minor",
+    "currency",
+    "entity_id",
+    "invoice_id",
+    "payment_id",
+    "entry_id",
+]
 FX_COLUMNS = ["date", "source_currency", "target_currency", "rate", "rate_id"]
 LEDGER_INT = {"debit_minor", "credit_minor"}
 
@@ -141,17 +160,19 @@ def generate_episode(seed: object, config: Optional[dict] = None) -> Episode:
     issues = []
     for spec in specs:
         amount, evidence = spec.resolve(world, ledger)
-        issues.append({
-            "issue_id": issue_ids.new("ISS"),
-            "type": spec.type,
-            "affected_ids": sorted(spec.affected_ids),
-            "expected_amount_minor": amount,
-            "currency": world.base,
-            "evidence_sets": evidence,
-            "variant": spec.variant,
-            "scenario": spec.scenario,
-            "_targets": spec.targets,
-        })
+        issues.append(
+            {
+                "issue_id": issue_ids.new("ISS"),
+                "type": spec.type,
+                "affected_ids": sorted(spec.affected_ids),
+                "expected_amount_minor": amount,
+                "currency": world.base,
+                "evidence_sets": evidence,
+                "variant": spec.variant,
+                "scenario": spec.scenario,
+                "_targets": spec.targets,
+            }
+        )
     issues.sort(key=lambda i: (i["type"], i["affected_ids"], i["issue_id"]))
 
     changes = []
@@ -164,17 +185,19 @@ def generate_episode(seed: object, config: Optional[dict] = None) -> Episode:
         obj = world.invoices[bid] if kind == "invoice" else world.payments[bid]
         added = target in ctx.added
         doc = render_invoice(world, obj) if kind == "invoice" else render_payment(world, obj)
-        changes.append({
-            "change_id": f"CHG-{n + 1:03d}",
-            "issue_ids": sorted(ids),
-            "target": [kind, bid],
-            "op": "add_document_and_booking" if added else "change_booking",
-            "document_added": doc if added else None,
-            "booking_before": None if added else ctx.snapshots.get(target),
-            "booking_after": booking_params(obj),
-            "ledger_before": None if added else _entry_dump(world, clean_ledger, target),
-            "ledger_after": _entry_dump(world, ledger, target),
-        })
+        changes.append(
+            {
+                "change_id": f"CHG-{n + 1:03d}",
+                "issue_ids": sorted(ids),
+                "target": [kind, bid],
+                "op": "add_document_and_booking" if added else "change_booking",
+                "document_added": doc if added else None,
+                "booking_before": None if added else ctx.snapshots.get(target),
+                "booking_after": booking_params(obj),
+                "ledger_before": None if added else _entry_dump(world, clean_ledger, target),
+                "ledger_after": _entry_dump(world, ledger, target),
+            }
+        )
     for iss in issues:
         del iss["_targets"]
 
@@ -200,6 +223,7 @@ def generate_episode(seed: object, config: Optional[dict] = None) -> Episode:
 
 
 # --------------------------------------------------------------------------- files
+
 
 def _csv_text(rows: list, columns: list) -> str:
     buf = io.StringIO()
@@ -270,8 +294,10 @@ def load_public(directory: Path) -> dict:
 
 def load_private(directory: Path) -> tuple:
     d = Path(directory) / "private"
-    return (json.loads((d / "truth.json").read_text(encoding="utf-8")),
-            json.loads((d / "provenance.json").read_text(encoding="utf-8")))
+    return (
+        json.loads((d / "truth.json").read_text(encoding="utf-8")),
+        json.loads((d / "provenance.json").read_text(encoding="utf-8")),
+    )
 
 
 def load_config(path: Path) -> dict:

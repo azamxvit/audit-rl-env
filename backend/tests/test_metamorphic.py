@@ -1,4 +1,5 @@
 """Paired checks: permuting order and renaming IDs preserves oracle answer, audit result and rewards."""
+
 import pytest
 
 from audit_env.checker import audit, verify_episode
@@ -6,20 +7,33 @@ from audit_env.env import AuditEnv
 from audit_env.generator import Episode, write_episode
 from audit_env.grader import Grader
 from audit_env.policies import OraclePolicy, SimpleReconcilerPolicy
-from audit_env.transform import map_findings, transform_episode
 from audit_env.trajectories import run_episode
+from audit_env.transform import map_findings, transform_episode
+from conftest import episode
 
-from conftest import cfg, episode
-
-PAIRS = [(s, None) for s in range(6)] + [(1005, "train/interacting.json"), (1003, "train/clean.json"),
-                                          (2007, "dev/alloc_cutoff.json"), (2005, "dev/interacting.json")]
+PAIRS = [(s, None) for s in range(6)] + [
+    (1005, "train/interacting.json"),
+    (1003, "train/clean.json"),
+    (2007, "dev/alloc_cutoff.json"),
+    (2005, "dev/interacting.json"),
+]
 
 
 def _submission(truth):
-    return {"episode_id": truth["episode_id"], "findings": [
-        {"type": i["type"], "affected_ids": i["affected_ids"], "claimed_amount_minor": i["expected_amount_minor"],
-         "currency": i["currency"], "evidence_ids": i["evidence_sets"][0], "explanation": ""}
-        for i in truth["issues"]]}
+    return {
+        "episode_id": truth["episode_id"],
+        "findings": [
+            {
+                "type": i["type"],
+                "affected_ids": i["affected_ids"],
+                "claimed_amount_minor": i["expected_amount_minor"],
+                "currency": i["currency"],
+                "evidence_ids": i["evidence_sets"][0],
+                "explanation": "",
+            }
+            for i in truth["issues"]
+        ],
+    }
 
 
 @pytest.mark.parametrize("seed,name", PAIRS)
@@ -39,8 +53,10 @@ def test_transformed_episode_is_valid_and_equivalent(seed, name):
     assert r1["reward"] == r2["reward"] == 1.0
     # a partial answer too (rewards are a function of the answer up to renaming)
     half = {"episode_id": sub["episode_id"], "findings": sub["findings"][: len(sub["findings"]) // 2]}
-    assert Grader(ep.public, ep.truth).grade(half, 7, "submit")["reward"] == \
-        Grader(pub2, tr2).grade(map_findings(half, mapping), 7, "submit")["reward"]
+    assert (
+        Grader(ep.public, ep.truth).grade(half, 7, "submit")["reward"]
+        == Grader(pub2, tr2).grade(map_findings(half, mapping), 7, "submit")["reward"]
+    )
 
 
 @pytest.mark.parametrize("seed,name", PAIRS[:4])

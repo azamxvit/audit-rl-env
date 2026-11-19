@@ -5,6 +5,7 @@
 3. independent data verification + paired checks         (scripts/verify.py)
 4. run the 4 baseline policies, write trajectories+report (scripts/run_baselines.py)
 """
+
 import subprocess
 import sys
 import time

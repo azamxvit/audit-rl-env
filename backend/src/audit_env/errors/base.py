@@ -6,6 +6,7 @@ a document that the bookkeeper booked, then the ledger is rebuilt. Each injector
 returns ``IssueSpec`` objects whose ``resolve`` computes the ground-truth amount
 and the admissible evidence sets from the rebuilt ledger.
 """
+
 from __future__ import annotations
 
 import copy

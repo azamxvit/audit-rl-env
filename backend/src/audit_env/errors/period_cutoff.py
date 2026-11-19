@@ -9,6 +9,7 @@ Variants:
 Canonical form: affected_ids = [invoice_id]; amount = functional amount booked.
 Evidence: the invoice document and its booking row (AR or revenue).
 """
+
 from __future__ import annotations
 
 from datetime import timedelta

@@ -3,12 +3,12 @@
 usage: python scripts/transform_episode.py episodes/dev/00_EP-XXXX /tmp/out [--seed S] [--no-permute] [--no-rename]
 Writes <out>/public, <out>/private/truth.json (renamed) and <out>/private/id_mapping.json.
 """
+
 import argparse
 import json
 from pathlib import Path
 
 import _common  # noqa: F401  (sys.path)
-
 from audit_env.generator import Episode, load_private, load_public, write_episode
 from audit_env.transform import transform_episode
 
@@ -24,8 +24,9 @@ def main() -> None:
     public = load_public(Path(a.src))
     truth, prov = load_private(Path(a.src))
     pub2, tr2, mapping = transform_episode(public, truth, a.seed, not a.no_permute, not a.no_rename)
-    write_episode(Episode(pub2, tr2, {"note": "transformed copy", "source_episode": truth["episode_id"]}, {}),
-                  Path(a.dst))
+    write_episode(
+        Episode(pub2, tr2, {"note": "transformed copy", "source_episode": truth["episode_id"]}, {}), Path(a.dst)
+    )
     (Path(a.dst) / "private" / "id_mapping.json").write_text(json.dumps(mapping, indent=2, sort_keys=True))
     print(f"wrote {a.dst} ({len(mapping)} ids remapped)")
 

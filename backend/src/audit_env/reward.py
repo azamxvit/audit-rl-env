@@ -1,4 +1,5 @@
 """Metrics and terminal reward (case section 05)."""
+
 from __future__ import annotations
 
 STEP_COST = 0.002

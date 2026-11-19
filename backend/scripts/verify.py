@@ -7,11 +7,11 @@ For every episode in episodes/index.json:
   4. paired check: permute + rename IDs -> episode still valid, oracle answer (renamed) gets the same reward.
 Exit code 1 on any problem.
 """
+
 import json
 import sys
 
-from _common import CONFIGS, EPISODES, RUNS, episode_dirs
-
+from _common import CONFIGS, RUNS, episode_dirs
 from audit_env.checker import verify_episode
 from audit_env.generator import generate_episode, load_config, load_private, load_public, public_files
 from audit_env.grader import Grader
@@ -20,9 +20,20 @@ from audit_env.util import dumps, sha256_text
 
 
 def oracle_submission(truth):
-    return {"episode_id": truth["episode_id"], "findings": [
-        {"type": i["type"], "affected_ids": i["affected_ids"], "claimed_amount_minor": i["expected_amount_minor"],
-         "currency": i["currency"], "evidence_ids": i["evidence_sets"][0], "explanation": ""} for i in truth["issues"]]}
+    return {
+        "episode_id": truth["episode_id"],
+        "findings": [
+            {
+                "type": i["type"],
+                "affected_ids": i["affected_ids"],
+                "claimed_amount_minor": i["expected_amount_minor"],
+                "currency": i["currency"],
+                "evidence_ids": i["evidence_sets"][0],
+                "explanation": "",
+            }
+            for i in truth["issues"]
+        ],
+    }
 
 
 def main() -> int:

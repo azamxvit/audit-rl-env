@@ -9,6 +9,7 @@ the budget gets tight), then applies two textbook checks:
 It deliberately does NOT re-convert FX or test period cut-off, so its recall is
 bounded; that gap is what the environment is meant to train.
 """
+
 from __future__ import annotations
 
 import json
@@ -57,15 +58,28 @@ class SimpleReconcilerPolicy(Policy):
                 continue
             for r in by_pay.get(p["payment_id"], []):
                 if r["account"] == "2200" and r["credit_minor"] > 0:
-                    out.append(finding("payment_allocation", [p["payment_id"], refs[0]["invoice_id"]],
-                                       r["credit_minor"], self.base, [p["doc_id"], r["row_id"]],
-                                       "fully referenced receipt left in unapplied cash"))
+                    out.append(
+                        finding(
+                            "payment_allocation",
+                            [p["payment_id"], refs[0]["invoice_id"]],
+                            r["credit_minor"],
+                            self.base,
+                            [p["doc_id"], r["row_id"]],
+                            "fully referenced receipt left in unapplied cash",
+                        )
+                    )
         groups: dict = {}
         for inv in invoices:
             if inv["invoice_id"] not in booking:
                 continue
-            key = json.dumps([inv["entity_id"], inv["currency"], inv["total_minor"],
-                              sorted(json.dumps(li, sort_keys=True) for li in inv["line_items"])])
+            key = json.dumps(
+                [
+                    inv["entity_id"],
+                    inv["currency"],
+                    inv["total_minor"],
+                    sorted(json.dumps(li, sort_keys=True) for li in inv["line_items"]),
+                ]
+            )
             groups.setdefault(key, []).append(inv)
         for invs in groups.values():
             if len(invs) < 2:
@@ -73,6 +87,14 @@ class SimpleReconcilerPolicy(Policy):
             invs.sort(key=lambda i: datetime.fromisoformat(i["issued_at"]))
             a, b = invs[0], invs[1]
             ra, rb = booking[a["invoice_id"]], booking[b["invoice_id"]]
-            out.append(finding("duplicate_invoice", [a["invoice_id"], b["invoice_id"]], rb["debit_minor"], self.base,
-                               [a["doc_id"], b["doc_id"], ra["row_id"], rb["row_id"]], "identical invoice booked twice"))
+            out.append(
+                finding(
+                    "duplicate_invoice",
+                    [a["invoice_id"], b["invoice_id"]],
+                    rb["debit_minor"],
+                    self.base,
+                    [a["doc_id"], b["doc_id"], ra["row_id"], rb["row_id"]],
+                    "identical invoice booked twice",
+                )
+            )
         return out[:30]

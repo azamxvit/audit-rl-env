@@ -1,4 +1,5 @@
 """Anti-leak: truth/provenance never reach observations, errors, info, IDs, order or record schemas."""
+
 import json
 import re
 import statistics
@@ -7,12 +8,24 @@ from audit_env.env import AuditEnv
 from audit_env.grader import load_episode
 from audit_env.policies import FlagAllPolicy, RandomExplorerPolicy, SimpleReconcilerPolicy
 from audit_env.trajectories import run_episode
-
 from conftest import episode
 
-PRIVATE_KEYS = ["expected_amount_minor", "evidence_sets", "issue_id", "variant",
-                "scenario", "provenance", "truth", "booking_before", "rate_override", "applied_override",
-                "period_class", "CHG-", "ISS-", "inject"]
+PRIVATE_KEYS = [
+    "expected_amount_minor",
+    "evidence_sets",
+    "issue_id",
+    "variant",
+    "scenario",
+    "provenance",
+    "truth",
+    "booking_before",
+    "rate_override",
+    "applied_override",
+    "period_class",
+    "CHG-",
+    "ISS-",
+    "inject",
+]
 
 
 class Spy:
@@ -54,10 +67,13 @@ def test_errors_do_not_echo_inputs_or_paths():
     env = AuditEnv("train")
     env.reset(seed=1)
     marker = "ZZ_MARKER_/private/truth.json"
-    for action in [{"tool": marker}, {"tool": "get_record", "args": {"table": "ledger", "id": marker}},
-                   {"tool": "get_document", "args": {"doc_id": marker}},
-                   {"tool": "calculator", "args": {"expression": marker}},
-                   {"tool": "list_records", "args": {"table": marker}}]:
+    for action in [
+        {"tool": marker},
+        {"tool": "get_record", "args": {"table": "ledger", "id": marker}},
+        {"tool": "get_document", "args": {"doc_id": marker}},
+        {"tool": "calculator", "args": {"expression": marker}},
+        {"tool": "list_records", "args": {"table": marker}},
+    ]:
         o = env.step(action)[0]
         assert marker not in json.dumps(o) and "Traceback" not in json.dumps(o)
         assert "/" not in o["error"]["message"]
@@ -93,14 +109,15 @@ def test_id_formats_do_not_reveal_errors():
 
 def test_eval_trajectory_rewards_hidden(tmp_path):
     from audit_env.trajectories import TrajectoryWriter
+
     env = AuditEnv("eval", grader_log=tmp_path / "g.jsonl")
     try:
         with TrajectoryWriter(tmp_path / "t.jsonl") as w:
             run_episode(env, SimpleReconcilerPolicy(), seed=4, writer=w)
         lines = [json.loads(x) for x in (tmp_path / "t.jsonl").read_text().splitlines()]
-        assert all(l["reward"] == 0.0 for l in lines)
+        assert all(line["reward"] == 0.0 for line in lines)
         assert set(lines[1]) == {"episode_id", "step", "action", "observation", "reward", "terminated", "truncated"}
-        blob = json.dumps([l["observation"] for l in lines])  # actions are the agent's own words
+        blob = json.dumps([line["observation"] for line in lines])  # actions are the agent's own words
         leaked = [k for k in PRIVATE_KEYS if k in blob]
         assert leaked == []
     finally:

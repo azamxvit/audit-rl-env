@@ -1,21 +1,23 @@
 """Matcher + reward robustness (case section 05): attacks, duplicates, evidence, currency, tolerance, cost."""
+
 import copy
 
 import pytest
 
 from audit_env.env import AuditEnv
-from audit_env.grader import Grader, load_episode
+from audit_env.grader import Grader
 from audit_env.matcher import NormFinding, match
 from audit_env.policies import FlagAllPolicy, finding
 from audit_env.reward import prf, terminal_reward
 from audit_env.trajectories import run_episode
-
 from conftest import cfg, episode, first_episode
 
 
 def oracle_findings(truth):
-    return [finding(i["type"], i["affected_ids"], i["expected_amount_minor"], i["currency"], i["evidence_sets"][0],
-                    "ok") for i in truth["issues"]]
+    return [
+        finding(i["type"], i["affected_ids"], i["expected_amount_minor"], i["currency"], i["evidence_sets"][0], "ok")
+        for i in truth["issues"]
+    ]
 
 
 def grade(ep, findings, steps=0):
@@ -46,8 +48,16 @@ def test_silence_beats_false_accusations_on_clean_books():
         ep = episode(s, CLEAN)
         inv = ep.public["invoices"][0]
         rows = [r["row_id"] for r in ep.public["ledger"] if r["invoice_id"] == inv["invoice_id"]]
-        fake = [finding("duplicate_invoice", [inv["invoice_id"]], inv["total_minor"], ep.truth["base_currency"],
-                        [inv["doc_id"]] + rows, "suspicious")]
+        fake = [
+            finding(
+                "duplicate_invoice",
+                [inv["invoice_id"]],
+                inv["total_minor"],
+                ep.truth["base_currency"],
+                [inv["doc_id"]] + rows,
+                "suspicious",
+            )
+        ]
         silent = grade(ep, [], steps=10)["reward"]
         accuse = grade(ep, fake, steps=10)["reward"]
         assert silent > accuse
@@ -83,8 +93,11 @@ def test_flag_all_types_for_true_targets_is_still_bad():
         spray = []
         for i in ep.truth["issues"]:
             for t in ("duplicate_invoice", "payment_allocation", "fx_error", "period_cutoff"):
-                spray.append(finding(t, i["affected_ids"], i["expected_amount_minor"] + 50, i["currency"],
-                                     i["evidence_sets"][0], ""))
+                spray.append(
+                    finding(
+                        t, i["affected_ids"], i["expected_amount_minor"] + 50, i["currency"], i["evidence_sets"][0], ""
+                    )
+                )
         r = grade(ep, spray[:30])
         assert r["reward"] == -1.0
 
@@ -127,7 +140,10 @@ def test_wrong_currency_and_amount_tolerance():
     ep = episode(4)
     i = ep.truth["issues"][0]
     other_ccy = "JPY" if i["currency"] != "JPY" else "USD"
-    mk = lambda amt, ccy: finding(i["type"], i["affected_ids"], amt, ccy, i["evidence_sets"][0], "")
+
+    def mk(amt, ccy):
+        return finding(i["type"], i["affected_ids"], amt, ccy, i["evidence_sets"][0], "")
+
     assert grade(ep, [mk(i["expected_amount_minor"], other_ccy)])["tp"] == 0
     assert grade(ep, [mk(i["expected_amount_minor"] + 1, i["currency"])])["tp"] == 1
     assert grade(ep, [mk(i["expected_amount_minor"] - 1, i["currency"])])["tp"] == 1
@@ -156,26 +172,29 @@ def test_id_aliases_are_normalised():
     assert grade(ep, [f])["tp"] == 1
 
 
-@pytest.mark.parametrize("mutate", [
-    lambda s: None,
-    lambda s: [],
-    lambda s: {"findings": []},
-    lambda s: {**s, "extra": 1},
-    lambda s: {**s, "episode_id": "EP-WRONG000"},
-    lambda s: {**s, "findings": "all"},
-    lambda s: {**s, "findings": [{"type": "fx_error"}]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], type="fraud")]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=12.5)]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=True)]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=-5)]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], currency="EURO")]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], affected_ids=[])]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], affected_ids="INV-1")]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], evidence_ids=["X"] * 11)]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], explanation="x" * 1001)]},
-    lambda s: {**s, "findings": [dict(s["findings"][0], hint=1)]},
-    lambda s: {**s, "findings": s["findings"][:1] * 31},
-])
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda s: None,
+        lambda s: [],
+        lambda s: {"findings": []},
+        lambda s: {**s, "extra": 1},
+        lambda s: {**s, "episode_id": "EP-WRONG000"},
+        lambda s: {**s, "findings": "all"},
+        lambda s: {**s, "findings": [{"type": "fx_error"}]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], type="fraud")]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=12.5)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=True)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=-5)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], currency="EURO")]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], affected_ids=[])]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], affected_ids="INV-1")]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], evidence_ids=["X"] * 11)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], explanation="x" * 1001)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], hint=1)]},
+        lambda s: {**s, "findings": s["findings"][:1] * 31},
+    ],
+)
 def test_invalid_structure_ends_with_minus_one(mutate):
     ep = episode(6)
     good = {"episode_id": ep.episode_id, "findings": oracle_findings(ep.truth)}
@@ -204,12 +223,27 @@ def test_metric_edge_cases():
 
 def test_matching_is_maximum_not_greedy():
     issues = [
-        {"type": "fx_error", "affected_ids": ["INV-A"], "currency": "USD", "expected_amount_minor": 100,
-         "evidence_sets": [["DOC-A"]], "issue_id": "I1"},
-        {"type": "fx_error", "affected_ids": ["INV-A"], "currency": "USD", "expected_amount_minor": 101,
-         "evidence_sets": [["DOC-A"]], "issue_id": "I2"},
+        {
+            "type": "fx_error",
+            "affected_ids": ["INV-A"],
+            "currency": "USD",
+            "expected_amount_minor": 100,
+            "evidence_sets": [["DOC-A"]],
+            "issue_id": "I1",
+        },
+        {
+            "type": "fx_error",
+            "affected_ids": ["INV-A"],
+            "currency": "USD",
+            "expected_amount_minor": 101,
+            "evidence_sets": [["DOC-A"]],
+            "issue_id": "I2",
+        },
     ]
-    nf = lambda amt: NormFinding("fx_error", frozenset({"INV-A"}), amt, "USD", frozenset({"DOC-A"}))
+
+    def nf(amt):
+        return NormFinding("fx_error", frozenset({"INV-A"}), amt, "USD", frozenset({"DOC-A"}))
+
     pairs = match([nf(100), nf(99)], issues, 1)  # f0 fits both, f1 fits only I1
     assert len(pairs) == 2 and (1, 0) in pairs and (0, 1) in pairs
     assert match([nf(100), nf(99)], issues, 1) == pairs  # deterministic

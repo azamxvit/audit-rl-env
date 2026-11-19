@@ -6,6 +6,7 @@ period). Errors are injected later (see ``errors/``) by changing *booking
 parameters* of specific documents; the ledger is then rebuilt from those
 parameters, so every injected error is a causal change with a before/after.
 """
+
 from __future__ import annotations
 
 import bisect
@@ -45,18 +46,68 @@ USD_VALUE = {
 COMPANY_TZ_CHOICES = [-300, -180, 0, 60, 180, 300, 360, 540]
 CUSTOMER_TZ_CHOICES = [-480, -300, -180, 0, 60, 120, 180, 300, 330, 360, 480, 540, 600]
 
-SYLLABLES = ["vel", "tra", "nor", "qui", "lum", "dax", "ori", "sen", "kal", "mir", "zen", "pol",
-             "tek", "var", "ost", "bri", "neo", "cor", "fen", "ula", "rax", "ion", "ter", "sol"]
-SUFFIXES = ["Systems", "Trading", "Logistics", "Analytics", "Foods", "Labs", "Works", "Partners",
-            "Retail", "Energy", "Media", "Holdings", "Studio", "Supply"]
+SYLLABLES = [
+    "vel",
+    "tra",
+    "nor",
+    "qui",
+    "lum",
+    "dax",
+    "ori",
+    "sen",
+    "kal",
+    "mir",
+    "zen",
+    "pol",
+    "tek",
+    "var",
+    "ost",
+    "bri",
+    "neo",
+    "cor",
+    "fen",
+    "ula",
+    "rax",
+    "ion",
+    "ter",
+    "sol",
+]
+SUFFIXES = [
+    "Systems",
+    "Trading",
+    "Logistics",
+    "Analytics",
+    "Foods",
+    "Labs",
+    "Works",
+    "Partners",
+    "Retail",
+    "Energy",
+    "Media",
+    "Holdings",
+    "Studio",
+    "Supply",
+]
 LEGAL = ["LLP", "LLC", "Ltd", "GmbH", "SA", "JSC"]
 
-CATALOG = ["Consulting services", "Software license", "Support plan", "Implementation work",
-           "Training session", "Equipment rental", "Data migration", "Maintenance visit",
-           "Cloud hosting", "Audit preparation", "Design services", "Logistics handling"]
+CATALOG = [
+    "Consulting services",
+    "Software license",
+    "Support plan",
+    "Implementation work",
+    "Training session",
+    "Equipment rental",
+    "Data migration",
+    "Maintenance visit",
+    "Cloud hosting",
+    "Audit preparation",
+    "Design services",
+    "Logistics handling",
+]
 
 
 # --------------------------------------------------------------------------- entities
+
 
 @dataclass
 class Customer:
@@ -238,6 +289,7 @@ class World:
 
 # --------------------------------------------------------------------------- ledger build
 
+
 def _row_id(world: World, kind: str, key: str, slot: str) -> str:
     return "LR-" + hashed_token(world.id_salt, "row", kind, key, slot)
 
@@ -252,8 +304,21 @@ def build_ledger(world: World) -> Ledger:
         entry_id = "JE-" + hashed_token(world.id_salt, "entry", kind, key)
         rows = []
         for slot, account, debit, credit, entity, inv_id, pay_id in specs:
-            rows.append(Row(_row_id(world, kind, key, slot), entry_id, ts, account, debit, credit,
-                            base, entity, inv_id, pay_id, slot))
+            rows.append(
+                Row(
+                    _row_id(world, kind, key, slot),
+                    entry_id,
+                    ts,
+                    account,
+                    debit,
+                    credit,
+                    base,
+                    entity,
+                    inv_id,
+                    pay_id,
+                    slot,
+                )
+            )
         e = Entry(entry_id, (kind, key), ts, rows)
         entries.append(e)
         return e
@@ -263,10 +328,15 @@ def build_ledger(world: World) -> Ledger:
             continue
         amount = world.to_base(inv.total_minor, inv.currency, world.invoice_rate(inv))
         booked_ar[inv.invoice_id] = amount
-        make_entry("invoice", inv.invoice_id, inv.booking_ts, [
-            ("ar", "1100", amount, 0, inv.entity_id, inv.invoice_id, None),
-            ("rev", "4000", 0, amount, inv.entity_id, inv.invoice_id, None),
-        ])
+        make_entry(
+            "invoice",
+            inv.invoice_id,
+            inv.booking_ts,
+            [
+                ("ar", "1100", amount, 0, inv.entity_id, inv.invoice_id, None),
+                ("rev", "4000", 0, amount, inv.entity_id, inv.invoice_id, None),
+            ],
+        )
 
     for pay in sorted(world.payments.values(), key=lambda p: (p.timestamp, p.payment_id)):
         if pay.booking_ts is None:
@@ -274,10 +344,15 @@ def build_ledger(world: World) -> Ledger:
         rate = world.payment_rate(pay)
         bank = world.to_base(pay.amount_minor, pay.currency, rate)
         if pay.kind == "refund":
-            make_entry("payment", pay.payment_id, pay.booking_ts, [
-                ("unapplied", "2200", bank, 0, pay.entity_id, None, pay.payment_id),
-                ("bank", "1000", 0, bank, pay.entity_id, None, pay.payment_id),
-            ])
+            make_entry(
+                "payment",
+                pay.payment_id,
+                pay.booking_ts,
+                [
+                    ("unapplied", "2200", bank, 0, pay.entity_id, None, pay.payment_id),
+                    ("bank", "1000", 0, bank, pay.entity_id, None, pay.payment_id),
+                ],
+            )
             continue
         specs = [("bank", "1000", bank, 0, pay.entity_id, None, pay.payment_id)]
         if pay.applied_override is not None:
@@ -310,10 +385,15 @@ def build_ledger(world: World) -> Ledger:
         make_entry("payment", pay.payment_id, pay.booking_ts, specs)
 
     for exp in world.expenses:
-        make_entry("expense", exp.key, exp.ts, [
-            ("exp", exp.account, exp.amount_minor, 0, exp.entity_id, None, None),
-            ("bank", "1000", 0, exp.amount_minor, exp.entity_id, None, None),
-        ])
+        make_entry(
+            "expense",
+            exp.key,
+            exp.ts,
+            [
+                ("exp", exp.account, exp.amount_minor, 0, exp.entity_id, None, None),
+                ("bank", "1000", 0, exp.amount_minor, exp.entity_id, None, None),
+            ],
+        )
 
     seen: set = set()
     for e in entries:
@@ -326,6 +406,7 @@ def build_ledger(world: World) -> Ledger:
 
 
 # --------------------------------------------------------------------------- generation
+
 
 def _name(rng, words: int = 2) -> str:
     stem = "".join(rng.choice(SYLLABLES) for _ in range(words)).capitalize()
@@ -389,25 +470,34 @@ class WorldBuilder:
         for desc in rng.sample(CATALOG, rng.randint(1, 4)):
             qty = rng.randint(1, 12)
             unit = _price_minor(rng, currency, 40, 2500)
-            items.append({
-                "description": desc,
-                "quantity": qty,
-                "unit_price_minor": unit,
-                "amount_minor": qty * unit,
-                "service_period_start": svc_start.isoformat(),
-                "service_period_end": svc_end.isoformat(),
-            })
+            items.append(
+                {
+                    "description": desc,
+                    "quantity": qty,
+                    "unit_price_minor": unit,
+                    "amount_minor": qty * unit,
+                    "service_period_start": svc_start.isoformat(),
+                    "service_period_end": svc_end.isoformat(),
+                }
+            )
         return items
 
-    def _new_invoice(self, cust: Customer, issued: datetime, items: list, period_class: str,
-                     render_tz: Optional[int] = None) -> Invoice:
+    def _new_invoice(
+        self, cust: Customer, issued: datetime, items: list, period_class: str, render_tz: Optional[int] = None
+    ) -> Invoice:
         w = self.w
         due = issued + timedelta(days=self.rng.choice([14, 30, 30, 45]))
         inv = Invoice(
-            doc_id=self.ids.new("DOC"), invoice_id=self.ids.new("INV"), entity_id=cust.entity_id,
-            currency=cust.currency, issued_at=issued, due_at=due,
+            doc_id=self.ids.new("DOC"),
+            invoice_id=self.ids.new("INV"),
+            entity_id=cust.entity_id,
+            currency=cust.currency,
+            issued_at=issued,
+            due_at=due,
             render_tz=cust.tz_minutes if render_tz is None else render_tz,
-            line_items=items, total_minor=sum(i["amount_minor"] for i in items), period_class=period_class,
+            line_items=items,
+            total_minor=sum(i["amount_minor"] for i in items),
+            period_class=period_class,
         )
         if period_class == "current":
             inv.booking_ts = issued
@@ -418,14 +508,21 @@ class WorldBuilder:
         w.invoices[inv.invoice_id] = inv
         return inv
 
-    def _new_payment(self, entity_id, ts: datetime, currency: str, amount: int, refs, kind="receipt",
-                     render_tz: Optional[int] = None) -> Payment:
+    def _new_payment(
+        self, entity_id, ts: datetime, currency: str, amount: int, refs, kind="receipt", render_tz: Optional[int] = None
+    ) -> Payment:
         w = self.w
         cust_tz = next((c.tz_minutes for c in w.customers if c.entity_id == entity_id), w.tz_minutes)
         pay = Payment(
-            doc_id=self.ids.new("DOC"), payment_id=self.ids.new("PAY"), entity_id=entity_id, kind=kind,
-            timestamp=ts, render_tz=cust_tz if render_tz is None else render_tz, currency=currency,
-            amount_minor=amount, invoice_refs=refs,
+            doc_id=self.ids.new("DOC"),
+            payment_id=self.ids.new("PAY"),
+            entity_id=entity_id,
+            kind=kind,
+            timestamp=ts,
+            render_tz=cust_tz if render_tz is None else render_tz,
+            currency=currency,
+            amount_minor=amount,
+            invoice_refs=refs,
         )
         pay.booking_ts = ts
         if self.rng.random() < self.cfg["distractors"].get("booking_delay", 0.0):
@@ -483,8 +580,11 @@ class WorldBuilder:
             ccy = rng.choice(foreign) if (rng.random() < share or i == 0) else w.base
             cust = Customer(self.ids.new("CUS"), _name(rng, 2), ccy, rng.choice(CUSTOMER_TZ_CHOICES))
             if rng.random() < cfg["distractors"].get("subscriptions", 0.0):
-                cust.plan = {"description": f"Subscription plan {rng.choice(['Basic', 'Team', 'Pro', 'Scale'])}",
-                             "quantity": 1, "unit_price_minor": _price_minor(rng, ccy, 100, 1500)}
+                cust.plan = {
+                    "description": f"Subscription plan {rng.choice(['Basic', 'Team', 'Pro', 'Scale'])}",
+                    "quantity": 1,
+                    "unit_price_minor": _price_minor(rng, ccy, 100, 1500),
+                }
             w.customers.append(cust)
 
     def _invoices(self) -> None:
@@ -550,8 +650,13 @@ class WorldBuilder:
             cust = next(c for c in w.customers if c.entity_id == inv.entity_id)
             if inv.period_class == "prior":
                 day = self._day_in(start, start + timedelta(days=25))
-                self._new_payment(cust.entity_id, self._business_dt(day), inv.currency, inv.total_minor,
-                                  [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor}])
+                self._new_payment(
+                    cust.entity_id,
+                    self._business_dt(day),
+                    inv.currency,
+                    inv.total_minor,
+                    [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor}],
+                )
                 continue
             r = rng.random()
             pay_day = w.local(inv.issued_at) + timedelta(days=rng.randint(3, 45))
@@ -559,12 +664,22 @@ class WorldBuilder:
                 continue
             if inv.currency != w.base:
                 if r < 0.65:
-                    self._new_payment(cust.entity_id, self._business_dt(pay_day), inv.currency, inv.total_minor,
-                                      [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor}])
+                    self._new_payment(
+                        cust.entity_id,
+                        self._business_dt(pay_day),
+                        inv.currency,
+                        inv.total_minor,
+                        [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor}],
+                    )
                 elif r < 0.8:
                     part = inv.total_minor * rng.randint(30, 70) // 100
-                    self._new_payment(cust.entity_id, self._business_dt(pay_day), inv.currency, part,
-                                      [{"invoice_id": inv.invoice_id, "amount_minor": part}])
+                    self._new_payment(
+                        cust.entity_id,
+                        self._business_dt(pay_day),
+                        inv.currency,
+                        part,
+                        [{"invoice_id": inv.invoice_id, "amount_minor": part}],
+                    )
                 continue
             if r < d.get("split_payments", 0.0):
                 n_tr = rng.randint(2, 3)
@@ -574,8 +689,13 @@ class WorldBuilder:
                     amt = remaining if t == n_tr - 1 else remaining * rng.randint(25, 60) // 100
                     if day > end or amt <= 0:
                         break
-                    self._new_payment(cust.entity_id, self._business_dt(day), inv.currency, amt,
-                                      [{"invoice_id": inv.invoice_id, "amount_minor": amt}])
+                    self._new_payment(
+                        cust.entity_id,
+                        self._business_dt(day),
+                        inv.currency,
+                        amt,
+                        [{"invoice_id": inv.invoice_id, "amount_minor": amt}],
+                    )
                     remaining -= amt
                     day = day + timedelta(days=rng.randint(2, 15))
             elif r < 0.8:
@@ -588,19 +708,39 @@ class WorldBuilder:
                 day, inv = items[i]
                 if i + 1 < len(items) and rng.random() < d.get("multi_invoice_payments", 0.0):
                     day2, inv2 = items[i + 1]
-                    refs = [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor},
-                            {"invoice_id": inv2.invoice_id, "amount_minor": inv2.total_minor}]
-                    self._new_payment(entity_id, self._business_dt(max(day, day2)), inv.currency,
-                                      inv.total_minor + inv2.total_minor, refs)
+                    refs = [
+                        {"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor},
+                        {"invoice_id": inv2.invoice_id, "amount_minor": inv2.total_minor},
+                    ]
+                    self._new_payment(
+                        entity_id,
+                        self._business_dt(max(day, day2)),
+                        inv.currency,
+                        inv.total_minor + inv2.total_minor,
+                        refs,
+                    )
                     i += 2
                     continue
-                self._new_payment(entity_id, self._business_dt(day), inv.currency, inv.total_minor,
-                                  [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor}])
+                self._new_payment(
+                    entity_id,
+                    self._business_dt(day),
+                    inv.currency,
+                    inv.total_minor,
+                    [{"invoice_id": inv.invoice_id, "amount_minor": inv.total_minor}],
+                )
                 i += 1
         # overpayments (excess held as unapplied cash) and their refunds
-        singles = sorted((p for p in w.payments.values() if p.currency == w.base and p.invoice_refs
-                          and len(p.invoice_refs) == 1 and p.amount_minor == p.invoice_refs[0]["amount_minor"]),
-                         key=lambda p: p.payment_id)
+        singles = sorted(
+            (
+                p
+                for p in w.payments.values()
+                if p.currency == w.base
+                and p.invoice_refs
+                and len(p.invoice_refs) == 1
+                and p.amount_minor == p.invoice_refs[0]["amount_minor"]
+            ),
+            key=lambda p: p.payment_id,
+        )
         for pay in rng.sample(singles, min(len(singles), _rand_range(rng, d.get("overpayments", [0, 0])))):
             extra = max(100, pay.amount_minor * rng.randint(2, 12) // 100)
             pay.amount_minor += extra
@@ -611,8 +751,13 @@ class WorldBuilder:
         base_custs = [c for c in w.customers if c.currency == w.base] or w.customers[:1]
         for _ in range(_rand_range(rng, d.get("unidentified_receipts", [0, 0]))):
             cust = rng.choice(base_custs)
-            self._new_payment(cust.entity_id, self._business_dt(self._day_in(start, end)), cust.currency,
-                              _price_minor(rng, cust.currency, 100, 3000), None)
+            self._new_payment(
+                cust.entity_id,
+                self._business_dt(self._day_in(start, end)),
+                cust.currency,
+                _price_minor(rng, cust.currency, 100, 3000),
+                None,
+            )
         # foreign partial payments received late on the last day of the period, remitted from a
         # timezone where the printed date is already the next day (legit; host for interacting errors)
         for _ in range(_rand_range(rng, d.get("boundary_partial_payments", [0, 0]))):
@@ -621,17 +766,31 @@ class WorldBuilder:
     def _boundary_partial_payment(self) -> Optional[Payment]:
         rng, w = self.rng, self.w
         paid = {r["invoice_id"] for p in w.payments.values() for r in (p.invoice_refs or [])}
-        cands = sorted((i for i in w.invoices.values() if i.period_class == "current" and i.currency != w.base
-                        and i.invoice_id not in paid and w.local(i.issued_at) < w.period_end - timedelta(days=3)),
-                       key=lambda i: i.invoice_id)
+        cands = sorted(
+            (
+                i
+                for i in w.invoices.values()
+                if i.period_class == "current"
+                and i.currency != w.base
+                and i.invoice_id not in paid
+                and w.local(i.issued_at) < w.period_end - timedelta(days=3)
+            ),
+            key=lambda i: i.invoice_id,
+        )
         if not cands:
             return None
         inv = rng.choice(cands)
         ts = self._local_dt(w.period_end, rng.randint(22 * 3600 + 600, 23 * 3600 + 3000))
         render = min(840, w.tz_minutes + rng.randint(3, 5) * 60)
         part = inv.total_minor * rng.randint(30, 70) // 100
-        pay = self._new_payment(inv.entity_id, ts, inv.currency, part,
-                                [{"invoice_id": inv.invoice_id, "amount_minor": part}], render_tz=render)
+        pay = self._new_payment(
+            inv.entity_id,
+            ts,
+            inv.currency,
+            part,
+            [{"invoice_id": inv.invoice_id, "amount_minor": part}],
+            render_tz=render,
+        )
         pay.booking_ts = ts
         return pay
 
@@ -647,18 +806,24 @@ class WorldBuilder:
             self._expense("software", self._local_dt(m.replace(day=3), 9 * 3600), "6400", software)
             self._expense("payroll", self._local_dt(m.replace(day=15), 12 * 3600), "6200", payroll)
             self._expense("payroll", self._local_dt(_month_end(m), 12 * 3600), "6200", payroll)
-            self._expense("utilities", self._business_dt(self._day_in(m, _month_end(m))), "6300",
-                          _price_minor(rng, w.base, 150, 900))
+            self._expense(
+                "utilities",
+                self._business_dt(self._day_in(m, _month_end(m))),
+                "6300",
+                _price_minor(rng, w.base, 150, 900),
+            )
             m = _add_months(m, 1)
         target = _rand_range(rng, cfg["ledger_rows"])
         current = len(build_ledger(w).rows())
         while current < target:
             if rng.random() < 0.3:
-                self._expense("bank", self._business_dt(self._day_in(start, end)), "6500",
-                              _price_minor(rng, w.base, 2, 40))
+                self._expense(
+                    "bank", self._business_dt(self._day_in(start, end)), "6500", _price_minor(rng, w.base, 2, 40)
+                )
             else:
-                self._expense("supplies", self._business_dt(self._day_in(start, end)), "6600",
-                              _price_minor(rng, w.base, 10, 600))
+                self._expense(
+                    "supplies", self._business_dt(self._day_in(start, end)), "6600", _price_minor(rng, w.base, 10, 600)
+                )
             current += 2
 
     def _expense(self, vendor: str, ts: datetime, account: str, amount: int) -> None:
@@ -671,6 +836,7 @@ def generate_world(seed: object, cfg: dict) -> World:
 
 
 # --------------------------------------------------------------------------- rendering
+
 
 def render_invoice(w: World, inv: Invoice) -> dict:
     tz = tz_from_minutes(inv.render_tz)
@@ -716,8 +882,13 @@ def render_row(w: World, r: Row) -> dict:
 
 
 def render_fx(r: FxRate) -> dict:
-    return {"date": r.day.isoformat(), "source_currency": r.source, "target_currency": r.target,
-            "rate": r.rate, "rate_id": r.rate_id}
+    return {
+        "date": r.day.isoformat(),
+        "source_currency": r.source,
+        "target_currency": r.target,
+        "rate": r.rate,
+        "rate_id": r.rate_id,
+    }
 
 
 def render_policy(w: World) -> dict:
@@ -729,25 +900,25 @@ def render_policy(w: World) -> dict:
             "end": w.period_end.isoformat(),
             "timezone": tz_label(w.tz_minutes),
             "membership": "A timestamp belongs to the period if its local calendar date in the company "
-                          "timezone is within [start, end] inclusive. Printed offsets on documents vary.",
+            "timezone is within [start, end] inclusive. Printed offsets on documents vary.",
         },
         "revenue_recognition": "An invoice is recognised (Dr 1100 / Cr 4000, payment_id null) in the period "
-                               "that contains its issued_at; booking may lag issuance but never crosses a period.",
+        "that contains its issued_at; booking may lag issuance but never crosses a period.",
         "fx": {
             "direction": "1 unit of source_currency = rate units of target_currency",
             "rate_date": "Invoice bookings use the rate for the local date of issued_at; payment bookings use "
-                         "the rate for the local date of the payment timestamp (company timezone).",
+            "the rate for the local date of the payment timestamp (company timezone).",
             "fallback": "Rates are published Monday-Friday only; use the latest published date on or before the "
-                        "rate date.",
+            "rate date.",
             "conversion": "base_minor = round(amount_minor * rate * 10^(exp_base - exp_source))",
         },
         "rounding": {"mode": w.rounding, "scope": "once per converted amount"},
         "payments": {
             "application": "A receipt is applied (Cr 1100 with invoice_id and payment_id) to every invoice listed "
-                           "in invoice_refs for the referenced amount. Only the part of a receipt not covered by "
-                           "invoice_refs (or the whole receipt when invoice_refs is null) goes to 2200.",
+            "in invoice_refs for the referenced amount. Only the part of a receipt not covered by "
+            "invoice_refs (or the whole receipt when invoice_refs is null) goes to 2200.",
             "carrying_amount": "AR relieved = referenced amount converted at the invoice's booking rate; a "
-                               "reference that settles the invoice in full relieves its booked AR amount.",
+            "reference that settles the invoice in full relieves its booked AR amount.",
             "fx_difference": "Bank debit minus credits is posted to 7900.",
             "refunds": "kind=refund returns previously unapplied cash: Dr 2200 / Cr 1000.",
         },

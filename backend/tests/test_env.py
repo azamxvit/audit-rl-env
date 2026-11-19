@@ -1,9 +1,10 @@
 """Contract: reset/step, schemas, limits, termination, invalid input, eval isolation."""
+
 import json
 
 import pytest
 
-from audit_env.env import AuditEnv, MAX_STEPS
+from audit_env.env import MAX_STEPS, AuditEnv
 from audit_env.grader import load_episode
 from audit_env.policies import OraclePolicy
 from audit_env.trajectories import run_episode
@@ -22,8 +23,16 @@ def test_reset_observation_contents():
     assert set(obs) == {"task", "manifest", "policy", "tables", "tools", "max_steps", "steps_remaining"}
     assert obs["steps_remaining"] == MAX_STEPS == 100
     m = obs["manifest"]
-    for k in ("schema_version", "episode_id", "base_currency", "period_start", "period_end", "timezone", "counts",
-              "rounding"):
+    for k in (
+        "schema_version",
+        "episode_id",
+        "base_currency",
+        "period_start",
+        "period_end",
+        "timezone",
+        "counts",
+        "rounding",
+    ):
         assert k in m
     assert "seed" not in json.dumps(obs).lower()
     json.dumps(obs)  # JSON-compatible
@@ -64,21 +73,24 @@ def test_pagination_limit_and_stable_opaque_cursors():
     assert o["result"]["records"][0]["row_id"] == seen[50]
 
 
-@pytest.mark.parametrize("action,code", [
-    ({"tool": "rm -rf"}, "unknown_tool"),
-    ({"tool": "shell", "args": {"cmd": "ls"}}, "unknown_tool"),
-    ("not a dict", "invalid_action"),
-    ({"tool": "list_records", "args": "x"}, "invalid_action"),
-    ({"tool": "list_records", "args": {"table": "truth"}}, "unknown_table"),
-    ({"tool": "list_records", "args": {"table": "ledger", "limit": 51}}, "invalid_limit"),
-    ({"tool": "list_records", "args": {"table": "ledger", "limit": 0}}, "invalid_limit"),
-    ({"tool": "list_records", "args": {"table": "ledger", "cursor": "c_forged"}}, "invalid_cursor"),
-    ({"tool": "list_records", "args": {"table": "ledger", "extra": 1}}, "invalid_args"),
-    ({"tool": "get_record", "args": {"table": "ledger", "id": "LR-NOPE0000"}}, "unknown_id"),
-    ({"tool": "get_record", "args": {"table": "ledger"}}, "invalid_args"),
-    ({"tool": "get_document", "args": {"doc_id": "../private/truth.json"}}, "unknown_id"),
-    ({"tool": "calculator", "args": {"expression": "__import__('os')"}}, "calculator_error"),
-])
+@pytest.mark.parametrize(
+    "action,code",
+    [
+        ({"tool": "rm -rf"}, "unknown_tool"),
+        ({"tool": "shell", "args": {"cmd": "ls"}}, "unknown_tool"),
+        ("not a dict", "invalid_action"),
+        ({"tool": "list_records", "args": "x"}, "invalid_action"),
+        ({"tool": "list_records", "args": {"table": "truth"}}, "unknown_table"),
+        ({"tool": "list_records", "args": {"table": "ledger", "limit": 51}}, "invalid_limit"),
+        ({"tool": "list_records", "args": {"table": "ledger", "limit": 0}}, "invalid_limit"),
+        ({"tool": "list_records", "args": {"table": "ledger", "cursor": "c_forged"}}, "invalid_cursor"),
+        ({"tool": "list_records", "args": {"table": "ledger", "extra": 1}}, "invalid_args"),
+        ({"tool": "get_record", "args": {"table": "ledger", "id": "LR-NOPE0000"}}, "unknown_id"),
+        ({"tool": "get_record", "args": {"table": "ledger"}}, "invalid_args"),
+        ({"tool": "get_document", "args": {"doc_id": "../private/truth.json"}}, "unknown_id"),
+        ({"tool": "calculator", "args": {"expression": "__import__('os')"}}, "calculator_error"),
+    ],
+)
 def test_bounded_errors_consume_step(action, code):
     env, obs, _ = env_with()
     o, r, term, trunc, info = env.step(action)
@@ -127,7 +139,6 @@ def test_submit_terminates_and_repeat_submit_is_inert():
 
 
 def test_submit_findings_json_wrapper_accepted():
-    ep = load_episode(11, None)
     env, obs, _ = env_with()
     sub = {"episode_id": obs["manifest"]["episode_id"], "findings": []}
     _, r, term, _, info = env.step({"tool": "submit", "args": {"findings": sub}})
@@ -137,7 +148,7 @@ def test_submit_findings_json_wrapper_accepted():
 def test_step_limit_truncates_with_empty_answer():
     env, obs, _ = env_with(seed=11)
     n_truth = len(load_episode(11, None).truth["issues"])
-    for i in range(MAX_STEPS - 1):
+    for _ in range(MAX_STEPS - 1):
         o, r, term, trunc, info = env.step({"tool": "calculator", "args": {"expression": "1+1"}})
         assert not trunc and not term
     o, r, term, trunc, info = env.step({"tool": "calculator", "args": {"expression": "1+1"}})
@@ -152,8 +163,9 @@ def test_submit_on_last_step_allowed():
     env, obs, _ = env_with()
     for _ in range(MAX_STEPS - 1):
         env.step({"tool": "calculator", "args": {"expression": "1"}})
-    o, r, term, trunc, info = env.step({"tool": "submit", "args": {"episode_id": obs["manifest"]["episode_id"],
-                                                                  "findings": []}})
+    o, r, term, trunc, info = env.step(
+        {"tool": "submit", "args": {"episode_id": obs["manifest"]["episode_id"], "findings": []}}
+    )
     assert term and not trunc and info["inspection_steps"] == 99
 
 

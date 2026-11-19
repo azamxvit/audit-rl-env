@@ -4,6 +4,7 @@ All amounts in the environment are ``int`` minor units (cents, tiyn, yen...).
 FX rates are decimal *strings*; every conversion goes through ``Decimal`` with an
 explicit rounding mode so results are bit-for-bit reproducible.
 """
+
 from __future__ import annotations
 
 from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal, InvalidOperation, localcontext

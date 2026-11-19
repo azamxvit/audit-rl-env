@@ -1,4 +1,5 @@
 """Policy adapter interface: ``reset(observation)`` then ``act(observation) -> action`` until done."""
+
 from __future__ import annotations
 
 
@@ -17,8 +18,14 @@ def submit_action(episode_id: str, findings: list) -> dict:
 
 
 def finding(type_: str, affected: list, amount: int, currency: str, evidence: list, explanation: str = "") -> dict:
-    return {"type": type_, "affected_ids": list(affected), "claimed_amount_minor": int(amount),
-            "currency": currency, "evidence_ids": list(evidence)[:10], "explanation": explanation[:1000]}
+    return {
+        "type": type_,
+        "affected_ids": list(affected),
+        "claimed_amount_minor": int(amount),
+        "currency": currency,
+        "evidence_ids": list(evidence)[:10],
+        "explanation": explanation[:1000],
+    }
 
 
 class TableReader:

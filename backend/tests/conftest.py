@@ -23,8 +23,8 @@ def episode(seed, name=None):
     return _episode(seed, name)
 
 
-def first_episode(pred, name=None, seeds=range(500)):
-    for s in seeds:
+def first_episode(pred, name=None, seeds=None):
+    for s in range(500) if seeds is None else seeds:
         ep = episode(s, name)
         if pred(ep):
             return s, ep

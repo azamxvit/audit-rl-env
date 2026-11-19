@@ -1,4 +1,5 @@
 """Error injection: one module per error type, plus interacting scenarios and distractors."""
+
 from __future__ import annotations
 
 from . import duplicate_invoice, fx_error, payment_allocation, period_cutoff
@@ -37,7 +38,11 @@ def plan_and_inject(ctx: InjectionContext, cfg: dict) -> list:
             specs.extend(SCENARIOS[name](ctx))
     queue = []
     for t, n in type_counts:
-        variants = (cfg.get("errors", {}).get(t) or {}).get("variants") if isinstance(cfg.get("errors", {}).get(t), dict) else None
+        variants = (
+            (cfg.get("errors", {}).get(t) or {}).get("variants")
+            if isinstance(cfg.get("errors", {}).get(t), dict)
+            else None
+        )
         for _ in range(n):
             queue.append((t, rng.choice(variants) if variants else None))
     for t, variant in queue:

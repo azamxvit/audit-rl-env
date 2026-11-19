@@ -1,4 +1,5 @@
 """Shared helpers for scripts (run from repo root; src/ is put on sys.path)."""
+
 import json
 import sys
 from pathlib import Path

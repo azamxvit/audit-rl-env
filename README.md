@@ -57,6 +57,19 @@ make play
 
 Пересобрать фронт (нужны Node 18+ и сеть для `npm ci`): `make frontend`. Режим разработки: `cd frontend && npm run dev`, Vite проксирует `/api` на `:8000`.
 
+## Разработка: форматирование и тесты
+
+```bash
+make format         # ruff (Python) + Prettier (TS/CSS/JSON/Markdown, порядок классов Tailwind)
+make lint           # то же без изменений файлов: ruff check, ruff format --check, prettier --check
+make frontend-test  # Vitest + Testing Library: утилиты, хуки, компоненты, интеграция App с фейковым API
+make e2e            # Playwright + axe: сборка dist, реальный сервер, сквозной сценарий и проверки доступности
+```
+
+Python-инструменты ставятся из `backend/requirements-dev.txt` (pytest и ruff с фиксированными версиями). Для фронта нужен `npm ci` в `frontend/`, а для e2e один раз `npx playwright install chromium`.
+
+Фронт написан на Tailwind CSS 4 без собственных CSS-классов и без `@apply`. Токены цвета, теней и шрифтов заданы в `@theme` в `frontend/src/index.css`, а переиспользуемые стили живут в компонентах `frontend/src/ui/` (`Button`, `Badge`, `Card`, `DataTable`, `Dialog`, `Drawer`, поля формы). Разметка семантическая: `aside`/`nav`/`header`/`main`, `role="search"`, `aria-current`, секции с заголовками, `dl` для пар ключ–значение, таблицы с `caption` и `th scope`, `fieldset`/`legend`, модальный диалог, live-region для уведомлений.
+
 ## Состав репозитория
 
 ```

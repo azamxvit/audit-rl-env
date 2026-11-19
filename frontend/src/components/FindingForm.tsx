@@ -31,7 +31,7 @@ function IdListField({
             <IdChip id={id} onRemove={() => onRemove(id)} />
           </li>
         ))}
-        {!ids.length && <li className="text-muted">пусто — добавляйте из таблиц кнопками «+»</li>}
+        {!ids.length && <li className="text-[13px] text-muted">пусто — добавляйте из таблиц кнопками «+»</li>}
       </ul>
       <div className="flex items-center gap-2">
         <label htmlFor={inputId} className="sr-only">

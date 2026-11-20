@@ -4,7 +4,7 @@ RUN := cd $(BACKEND) && PYTHONPATH=src $(PYTHON)
 # ruff from the active environment (pip install -r backend/requirements-dev.txt), or the local .venv
 RUFF ?= $(shell command -v ruff 2>/dev/null || echo $(CURDIR)/.venv/bin/ruff)
 
-.PHONY: verify test episodes check-data fuzz baselines train-learned eval-learned demo play frontend frontend-test e2e format lint clean
+.PHONY: verify test episodes check-data fuzz baselines train-learned eval-learned demo demo-steps play frontend frontend-test e2e format lint clean
 
 # One command: generate episodes -> tests -> independent data checks -> baselines (trajectories + report)
 # -> held-out evaluation of the learned auditor
@@ -35,7 +35,13 @@ train-learned:
 eval-learned:
 	$(RUN) scripts/eval_learned.py
 
+# Demo tour in 7 scenes (PACE=2.5 pauses between scenes for screen recording, see DEMO.md)
+PACE ?= 0
 demo:
+	$(RUN) scripts/demo_tour.py --pace $(PACE)
+
+# Step-by-step run of one scripted policy on one dev episode
+demo-steps:
 	$(RUN) scripts/demo.py 4
 
 # Auditor Playground: http://127.0.0.1:8000 (serves the committed frontend/dist)
@@ -57,12 +63,12 @@ e2e:
 # Autoformat everything: Python (ruff) + TS/CSS/JSON/Markdown (Prettier, Tailwind class order)
 format:
 	cd $(BACKEND) && $(RUFF) check --fix . && $(RUFF) format .
-	cd frontend && npx prettier --write . ../README.md ../DESIGN.md ../docs/superpowers
+	cd frontend && npx prettier --write . ../README.md ../DESIGN.md ../DEMO.md ../docs/superpowers
 
 # Check formatting and lint without changing files
 lint:
 	cd $(BACKEND) && $(RUFF) check . && $(RUFF) format --check .
-	cd frontend && npx prettier --check . ../README.md ../DESIGN.md ../docs/superpowers
+	cd frontend && npx prettier --check . ../README.md ../DESIGN.md ../DEMO.md ../docs/superpowers
 
 clean:
 	rm -rf $(BACKEND)/.pytest_cache

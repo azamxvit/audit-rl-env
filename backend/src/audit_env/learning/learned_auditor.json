@@ -1,0 +1,279 @@
+{
+  "env_version": "0.1.0",
+  "format": "audit-env/learned-auditor/1",
+  "kinds": {
+    "invoice": {
+      "features": [
+        "foreign",
+        "outside_period_company_tz",
+        "outside_period_printed_offset",
+        "outside_period_utc",
+        "days_outside_company_tz",
+        "within_1d_of_boundary",
+        "booking_lag_days",
+        "fx_gap_document_date",
+        "fx_gap_document_date_rel",
+        "fx_gap_printed_date",
+        "fx_gap_booking_date",
+        "fx_rate_missing",
+        "bookings_count",
+        "log_amount"
+      ],
+      "heads": {
+        "fx_error": {
+          "bias": -9.0468,
+          "weights": [
+            0.0164749,
+            0.105252,
+            0.156271,
+            0.0925078,
+            -0.734608,
+            -0.106104,
+            -0.199202,
+            1.51683,
+            1.07734,
+            0.153428,
+            0.175728,
+            0.0,
+            0.0,
+            0.0121253
+          ]
+        },
+        "period_cutoff": {
+          "bias": -8.84824,
+          "weights": [
+            -0.0332057,
+            1.93813,
+            0.0409864,
+            0.238784,
+            0.766185,
+            0.0633479,
+            -0.312995,
+            0.0427967,
+            0.0707516,
+            -0.00716194,
+            0.186155,
+            0.0,
+            0.0,
+            0.0123363
+          ]
+        }
+      },
+      "mean": [
+        0.515973,
+        0.0236813,
+        0.0586924,
+        0.0356612,
+        0.0052665,
+        0.114134,
+        0.126238,
+        0.0199666,
+        0.0157202,
+        0.0742942,
+        0.13763,
+        0.0,
+        0.0,
+        0.722754
+      ],
+      "scale": [
+        0.499745,
+        0.152054,
+        0.235048,
+        0.185444,
+        0.0539875,
+        0.317975,
+        0.282781,
+        0.139885,
+        0.116986,
+        0.262249,
+        0.344511,
+        1.0,
+        1.0,
+        0.143473
+      ]
+    },
+    "pair": {
+      "features": [
+        "line_items_identical",
+        "descriptions_identical",
+        "service_periods_identical",
+        "hours_apart",
+        "same_local_day",
+        "group_size",
+        "both_issued_in_period"
+      ],
+      "heads": {
+        "duplicate_invoice": {
+          "bias": -6.46852,
+          "weights": [
+            1.54051,
+            0.0,
+            1.54051,
+            -1.17914,
+            0.943332,
+            -0.493088,
+            0.0
+          ]
+        }
+      },
+      "mean": [
+        0.0544662,
+        1.0,
+        0.0544662,
+        0.962577,
+        0.0294118,
+        0.331699,
+        1.0
+      ],
+      "scale": [
+        0.226935,
+        1.0,
+        0.226935,
+        0.174646,
+        0.168958,
+        0.099914,
+        1.0
+      ]
+    },
+    "payment": {
+      "features": [
+        "foreign",
+        "fx_gap_value_date",
+        "fx_gap_value_date_rel",
+        "fx_gap_printed_date",
+        "refs_count",
+        "refs_cover_payment",
+        "single_full_ref",
+        "unapplied_share",
+        "unapplied_excess",
+        "unapplied_excess_rel",
+        "has_fx_difference_row",
+        "within_1d_of_boundary",
+        "log_amount"
+      ],
+      "heads": {
+        "fx_error": {
+          "bias": -8.58837,
+          "weights": [
+            0.0226413,
+            1.51994,
+            1.33853,
+            0.0216579,
+            -0.0609027,
+            -0.0489558,
+            -0.0175326,
+            -0.131723,
+            0.410967,
+            -0.298133,
+            -0.00715912,
+            0.0410841,
+            -0.00381539
+          ]
+        },
+        "payment_allocation": {
+          "bias": -8.32217,
+          "weights": [
+            0.0889407,
+            0.42154,
+            -0.379403,
+            -0.0542411,
+            0.215052,
+            0.0107123,
+            0.205866,
+            0.37611,
+            1.82831,
+            1.55015,
+            -0.072104,
+            0.0509843,
+            -0.000301626
+          ]
+        }
+      },
+      "mean": [
+        0.485406,
+        0.0190355,
+        0.0123122,
+        0.0763959,
+        0.337648,
+        0.940482,
+        0.904061,
+        0.0422254,
+        0.0243655,
+        0.0163706,
+        0.481345,
+        0.0656091,
+        0.708382
+      ],
+      "scale": [
+        0.499787,
+        0.13665,
+        0.0969996,
+        0.265631,
+        0.0814664,
+        0.236591,
+        0.294508,
+        0.186232,
+        0.154181,
+        0.111962,
+        0.499652,
+        0.247598,
+        0.144515
+      ]
+    }
+  },
+  "threshold": 0.5,
+  "training": {
+    "candidate_coverage_of_truth": 1.0,
+    "candidates": {
+      "invoice": 10768,
+      "pair": 1836,
+      "payment": 7880
+    },
+    "configs": [
+      "train/clean.json:train-clean-v1",
+      "train/fx_heavy.json:train-fx-heavy-v1",
+      "train/interacting.json:train-interacting-v1",
+      "train/large.json:train-large-v1",
+      "train/mixed.json:train-mixed-v1",
+      "train/small_month.json:train-small-month-v1"
+    ],
+    "optimizer": "SGD, lr 0.3/(1+epoch), 25 epochs, L2 1e-4, shuffle random.Random(0)",
+    "positives": {
+      "invoice.fx_error": 215,
+      "invoice.period_cutoff": 255,
+      "pair.duplicate_invoice": 100,
+      "payment.fx_error": 150,
+      "payment.payment_allocation": 192
+    },
+    "script": "scripts/train_learned.py",
+    "threshold_by_mean_terminal_reward": {
+      "0.1": 0.9577,
+      "0.15": 0.9577,
+      "0.2": 0.9577,
+      "0.25": 0.9577,
+      "0.3": 0.9577,
+      "0.35": 0.9577,
+      "0.4": 0.9577,
+      "0.45": 0.9577,
+      "0.5": 0.9577,
+      "0.55": 0.9577,
+      "0.6": 0.9577,
+      "0.65": 0.9577,
+      "0.7": 0.9577,
+      "0.75": 0.9577,
+      "0.8": 0.9577,
+      "0.85": 0.9577,
+      "0.9": 0.9577
+    },
+    "train_episodes": 180,
+    "train_seeds": [
+      5000000,
+      5000029
+    ],
+    "validation_episodes": 60,
+    "validation_seeds": [
+      5100000,
+      5100009
+    ]
+  }
+}

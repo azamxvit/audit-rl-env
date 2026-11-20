@@ -1,4 +1,7 @@
-"""Run the four baseline policies on the open episodes, write trajectories and a metrics report.
+"""Run the four baseline policies (+ our learned auditor) on the open episodes; write trajectories and a report.
+
+``learned_auditor`` is ours, trained by scripts/train_learned.py; it is reported as a separate, extra row
+and is not one of the organisers' four reference policies.
 
 * train split -> AuditEnv(mode="train"): terminal reward returned to the policy (training trajectories).
 * dev split   -> AuditEnv(mode="eval"):  grader in a separate process; policies see reward 0 / empty info;
@@ -17,10 +20,11 @@ from _common import RUNS, episode_dirs
 from audit_env.env import AuditEnv
 from audit_env.generator import load_private
 from audit_env.policies import FlagAllPolicy, OraclePolicy, RandomExplorerPolicy, SimpleReconcilerPolicy
+from audit_env.policies.learned import LearnedAuditorPolicy
 from audit_env.reward import prf
 from audit_env.trajectories import TrajectoryWriter, run_episode
 
-POLICIES = ["random_explorer", "simple_reconciler", "flag_all", "oracle"]
+POLICIES = ["random_explorer", "simple_reconciler", "flag_all", "oracle", "learned_auditor"]
 TYPES = ["duplicate_invoice", "payment_allocation", "fx_error", "period_cutoff"]
 
 
@@ -30,6 +34,7 @@ def make_policy(name, truth):
         "simple_reconciler": SimpleReconcilerPolicy,
         "flag_all": FlagAllPolicy,
         "oracle": lambda: OraclePolicy(truth),
+        "learned_auditor": LearnedAuditorPolicy,
     }[name]()
 
 
@@ -116,6 +121,8 @@ def main() -> None:
         "Diagnostics only. P, R, F1, return: means over episodes (per the case, P = R = 0 when the denominator is 0,",
         "so clean episodes pull the mean P/R down even for a perfect answer); micro P/R/F1 pool TP/FP/FN over",
         "episodes. Time is wall-clock seconds per episode (not part of any deterministic artefact).",
+        "`learned_auditor` is our trained policy (extra row, not one of the four reference baselines);",
+        "its held-out evaluation and learning curve are in runs/learned_eval.md.",
         "",
     ]
     for split, rep in report.items():

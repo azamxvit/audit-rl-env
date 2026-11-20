@@ -10,3 +10,6 @@ frontend/node_modules/
 frontend/test-results/
 frontend/playwright-report/
 frontend/coverage/
+
+# ad-hoc policy runs (scripts/run_policy.py)
+backend/runs/custom/

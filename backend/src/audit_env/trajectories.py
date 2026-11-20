@@ -78,7 +78,7 @@ def run_episode(
             )
     return {
         "episode_id": episode_id,
-        "policy": policy.name,
+        "policy": getattr(policy, "name", type(policy).__name__),
         "steps": step,
         "return": total,
         "terminated": terminated,

@@ -1,0 +1,77 @@
+{
+  "result": "PASS",
+  "mode": "full",
+  "commit": "56684f63b84fd304f661d132365b7c1207afcf56",
+  "tree_clean": true,
+  "started_utc": "2026-11-20T17:58:25Z",
+  "duration_s": 120.3,
+  "platform": "Darwin arm64",
+  "tools": {
+    "python": "3.14.6",
+    "node": "v24.16.0",
+    "docker": "29.5.2",
+    "ruff": "ruff 0.8.4"
+  },
+  "steps": [
+    {
+      "step": "lint: ruff + prettier",
+      "status": "PASS",
+      "seconds": 1.0,
+      "note": ""
+    },
+    {
+      "step": "backend tests",
+      "status": "PASS",
+      "seconds": 9.5,
+      "note": ""
+    },
+    {
+      "step": "make verify (episodes, tests, data, fuzz 150, baselines, learned eval)",
+      "status": "PASS",
+      "seconds": 31.5,
+      "note": ""
+    },
+    {
+      "step": "published episodes byte-identical after regeneration",
+      "status": "PASS",
+      "seconds": 0.1,
+      "note": ""
+    },
+    {
+      "step": "learned auditor weights reproducible",
+      "status": "PASS",
+      "seconds": 4.5,
+      "note": ""
+    },
+    {
+      "step": "generator fuzz, 600 random configs",
+      "status": "PASS",
+      "seconds": 17.1,
+      "note": ""
+    },
+    {
+      "step": "frontend unit tests (Vitest)",
+      "status": "PASS",
+      "seconds": 2.2,
+      "note": ""
+    },
+    {
+      "step": "frontend/dist matches sources",
+      "status": "PASS",
+      "seconds": 1.8,
+      "note": ""
+    },
+    {
+      "step": "frontend e2e + axe (Playwright)",
+      "status": "PASS",
+      "seconds": 9.9,
+      "note": ""
+    },
+    {
+      "step": "Docker: build + verify offline, --cpus 2 --memory 4g",
+      "status": "PASS",
+      "seconds": 42.2,
+      "note": ""
+    }
+  ]
+}

@@ -4,7 +4,7 @@ RUN := cd $(BACKEND) && PYTHONPATH=src $(PYTHON)
 # ruff from the active environment (pip install -r backend/requirements-dev.txt), or the local .venv
 RUFF ?= $(shell command -v ruff 2>/dev/null || echo $(CURDIR)/.venv/bin/ruff)
 
-.PHONY: verify test episodes check-data fuzz baselines train-learned eval-learned demo demo-steps play frontend frontend-test e2e format lint clean
+.PHONY: ci ci-fast hooks train-learned-check verify test episodes check-data fuzz baselines train-learned eval-learned demo demo-steps play frontend frontend-test e2e format lint clean
 
 # One command: generate episodes -> tests -> independent data checks -> baselines (trajectories + report)
 # -> held-out evaluation of the learned auditor
@@ -31,6 +31,9 @@ baselines:
 # Learned auditor: retrain the detector (~5 s, CPU, stdlib) and evaluate it on held-out episodes
 train-learned:
 	$(RUN) scripts/train_learned.py
+
+train-learned-check:
+	$(RUN) scripts/train_learned.py --check
 
 eval-learned:
 	$(RUN) scripts/eval_learned.py
@@ -63,12 +66,26 @@ e2e:
 # Autoformat everything: Python (ruff) + TS/CSS/JSON/Markdown (Prettier, Tailwind class order)
 format:
 	cd $(BACKEND) && $(RUFF) check --fix . && $(RUFF) format .
+	$(RUFF) check --fix --config $(BACKEND)/pyproject.toml ci && $(RUFF) format --config $(BACKEND)/pyproject.toml ci
 	cd frontend && npx prettier --write . ../README.md ../DESIGN.md ../DEMO.md ../docs/superpowers
 
 # Check formatting and lint without changing files
 lint:
 	cd $(BACKEND) && $(RUFF) check . && $(RUFF) format --check .
+	$(RUFF) check --config $(BACKEND)/pyproject.toml ci && $(RUFF) format --check --config $(BACKEND)/pyproject.toml ci
 	cd frontend && npx prettier --check . ../README.md ../DESIGN.md ../DEMO.md ../docs/superpowers
 
 clean:
 	rm -rf $(BACKEND)/.pytest_cache
+
+# Local CI (no hosted runners): full pipeline + report in ci/last-run.md; see ci/ci.py
+ci:
+	$(PYTHON) ci/ci.py
+
+ci-fast:
+	$(PYTHON) ci/ci.py --fast
+
+# Run `make ci-fast` before every git push (undo: git config --unset core.hooksPath)
+hooks:
+	git config core.hooksPath .githooks
+	@echo "pre-push hook enabled: make ci-fast runs before every push"

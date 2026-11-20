@@ -51,6 +51,29 @@ obs, reward, terminated, truncated, info = env.step(
 
 Бюджет — 100 шагов, `submit` входит в бюджет. Ошибочное действие тоже расходует шаг. При исчерпании шагов или 60 с эпизод завершается с `truncated=true` и оценивается как пустой ответ. Награда = `clip(2·F1 − 1 − 0.002·inspection_steps, −1, 1)`. В режиме `train` политика получает её после завершения эпизода. В режиме `eval` награда и диагностика остаются в журнале оценщика.
 
+## Схемы контракта и данных
+
+Машиночитаемый контракт лежит в [`backend/schemas/`](backend/schemas) — JSON Schema draft 2020-12, одна схема на понятие:
+
+| схема                                                                      | что описывает                                                                                   |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `action.schema.json`                                                       | действие `step()`: пять инструментов и их аргументы                                             |
+| `submission.schema.json`                                                   | `submit`: ≤ 30 выводов, ≤ 10 доказательств, пояснение ≤ 1000 символов                           |
+| `observation.schema.json`                                                  | наблюдения `reset`/`step` (результат каждого инструмента, все 10 кодов ошибок), `info`, награда |
+| `records.schema.json`                                                      | открытые файлы: `manifest`, `policy`, строки `ledger`, `invoices`, `payments`, `fx`             |
+| `trajectory.schema.json`                                                   | строка `trajectories.jsonl`                                                                     |
+| `truth.schema.json`, `provenance.schema.json`, `grader_result.schema.json` | закрытая сторона: эталон, история генерации, журнал оценщика                                    |
+| `config.schema.json`, `episode_index.schema.json`                          | конфиги генератора (с вариантами ошибок) и индекс эпизодов                                      |
+| `common.schema.json`                                                       | общие типы: ID, валюта, минорные суммы, даты, курсы                                             |
+
+Схемы проверяет любой стандартный валидатор. Ядро остаётся на stdlib, поэтому в `audit_env/schema.py` есть небольшой валидатор ровно тех ключевых слов, что используются в схемах; незнакомое ключевое слово он отвергает при загрузке. Тесты (`tests/test_schemas.py`, входят в `make verify`) проверяют по схемам всё, что среда отдаёт и принимает:
+
+- все опубликованные и свежесгенерированные эпизоды, эталон, provenance, конфиги и индекс;
+- каждый инструмент, каждый из 10 кодов ошибок, `submit`, обрезание по шагам и по времени, режимы train и eval;
+- траектории всех пяти политик и строки журнала оценщика.
+
+Отдельные тесты сверяют схемы с поведением среды: действие или `submit`, валидные по схеме, среда принимает, а структурно неверные отвергают и схема, и среда (с тем же кодом ошибки). Matcher дополнительно нормализует регистр и пробелы, поэтому он принимает чуть больше, чем каноническая форма в схеме.
+
 ## Сыграть за аудитора (веб-интерфейс AuditDesk)
 
 ```bash
@@ -90,12 +113,14 @@ Python-инструменты ставятся из `backend/requirements-dev.tx
 ## Состав репозитория
 
 ```
-backend/            Python: src/audit_env (среда + HTTP-сервер), tests/ (~160 тестов), scripts/, configs/, episodes/, runs/
+backend/            Python: src/audit_env (среда + HTTP-сервер), tests/ (222 теста), scripts/, configs/, episodes/, runs/, schemas/
   src/audit_env/    money, calculator, world, generator, errors/ (4 типа + сценарии + отвлекающие), checker, store, env,
-                    matcher, reward, grader, transform, trajectories, policies/
+                    matcher, reward, grader, transform, trajectories, schema, policies/, learning/
+  schemas/          JSON Schema контракта и файлов (draft 2020-12)
   configs/          версионированные конфиги генератора (train/, dev/) и splits.json (config, seed)
   episodes/         10 train + 10 dev: <ep>/public/* (агенту), <ep>/private/{truth,provenance}.json (оценщику)
-  scripts/          verify_all, generate_episodes, verify, run_baselines, transform_episode, demo
+  scripts/          verify_all, generate_episodes, verify, fuzz_generator, run_baselines, train_learned, eval_learned,
+                    transform_episode, demo
   runs/             траектории, журнал оценщика, report.md/json (результат make verify)
 frontend/           React + TS + Vite (Auditor Playground); собранный dist/ в репозитории
 docs/               case.pdf, спецификации и планы

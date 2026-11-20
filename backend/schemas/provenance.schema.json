@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "provenance.schema.json",
+  "title": "private/provenance.json (grader only)",
+  "description": "Generation history: config identity, pipeline, the distractors placed, and every injected change with the ledger before/after.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "env_version",
+    "episode_id",
+    "config_id",
+    "config_sha256",
+    "pipeline",
+    "clean_counts",
+    "distractors",
+    "changes"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/semver"
+    },
+    "env_version": {
+      "$ref": "common.schema.json#/$defs/semver"
+    },
+    "episode_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "config_id": {
+      "type": "string"
+    },
+    "config_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "pipeline": {
+      "type": [
+        "array",
+        "object",
+        "string"
+      ]
+    },
+    "clean_counts": {
+      "type": "object"
+    },
+    "distractors": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "change_id",
+          "issue_ids",
+          "target",
+          "op",
+          "document_added",
+          "booking_before",
+          "booking_after",
+          "ledger_before",
+          "ledger_after"
+        ],
+        "properties": {
+          "change_id": {
+            "type": "string"
+          },
+          "issue_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "target": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
+          },
+          "op": {
+            "enum": [
+              "change_booking",
+              "add_document_and_booking"
+            ]
+          },
+          "document_added": {
+            "description": "The added invoice/payment document, or null.",
+            "anyOf": [
+              {
+                "$ref": "records.schema.json#/$defs/invoice"
+              },
+              {
+                "$ref": "records.schema.json#/$defs/payment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "booking_before": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "booking_after": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "ledger_before": {
+            "description": "null when the change added a new document and its booking",
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "records.schema.json#/$defs/ledger_row"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ledger_after": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "records.schema.json#/$defs/ledger_row"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

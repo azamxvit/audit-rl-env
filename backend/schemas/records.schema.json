@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "records.schema.json",
+  "title": "Open episode files",
+  "description": "What an agent can see: manifest.json, policy.json and the records of ledger.csv (CSV, typed as below after parsing: amounts are integers, empty id cells are null), invoices.jsonl, payments.jsonl and fx.csv. Tools return exactly these record shapes. Missing links are explicit nulls, never guessed.",
+  "$defs": {
+    "ledger_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "row_id",
+        "timestamp",
+        "account",
+        "debit_minor",
+        "credit_minor",
+        "currency",
+        "entity_id",
+        "invoice_id",
+        "payment_id",
+        "entry_id"
+      ],
+      "properties": {
+        "row_id": { "$ref": "common.schema.json#/$defs/id" },
+        "timestamp": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "account": {
+          "description": "Chart-of-accounts code, see policy.accounts.",
+          "type": "string",
+          "pattern": "^\\d{4}$"
+        },
+        "debit_minor": { "$ref": "common.schema.json#/$defs/minor_amount" },
+        "credit_minor": { "$ref": "common.schema.json#/$defs/minor_amount" },
+        "currency": {
+          "description": "Always the functional currency (manifest.base_currency).",
+          "$ref": "common.schema.json#/$defs/currency"
+        },
+        "entity_id": { "anyOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+        "invoice_id": { "anyOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+        "payment_id": { "anyOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+        "entry_id": {
+          "description": "Journal entry; its rows balance (sum debit = sum credit).",
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      }
+    },
+    "line_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "quantity",
+        "unit_price_minor",
+        "amount_minor",
+        "service_period_start",
+        "service_period_end"
+      ],
+      "properties": {
+        "description": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "quantity": { "type": "integer", "minimum": 1 },
+        "unit_price_minor": { "$ref": "common.schema.json#/$defs/minor_amount" },
+        "amount_minor": {
+          "description": "quantity * unit_price_minor",
+          "$ref": "common.schema.json#/$defs/minor_amount"
+        },
+        "service_period_start": { "$ref": "common.schema.json#/$defs/date" },
+        "service_period_end": { "$ref": "common.schema.json#/$defs/date" }
+      }
+    },
+    "invoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_id",
+        "invoice_id",
+        "entity_id",
+        "issued_at",
+        "due_at",
+        "currency",
+        "total_minor",
+        "line_items"
+      ],
+      "properties": {
+        "doc_id": { "$ref": "common.schema.json#/$defs/id" },
+        "invoice_id": { "$ref": "common.schema.json#/$defs/id" },
+        "entity_id": { "$ref": "common.schema.json#/$defs/id" },
+        "issued_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "due_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "currency": { "$ref": "common.schema.json#/$defs/currency" },
+        "total_minor": {
+          "description": "Sum of line amounts, in the invoice currency.",
+          "$ref": "common.schema.json#/$defs/minor_amount"
+        },
+        "line_items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": { "$ref": "#/$defs/line_item" }
+        }
+      }
+    },
+    "invoice_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invoice_id", "amount_minor"],
+      "properties": {
+        "invoice_id": { "$ref": "common.schema.json#/$defs/id" },
+        "amount_minor": { "$ref": "common.schema.json#/$defs/minor_amount" }
+      }
+    },
+    "payment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_id",
+        "payment_id",
+        "entity_id",
+        "kind",
+        "timestamp",
+        "currency",
+        "amount_minor",
+        "invoice_refs"
+      ],
+      "properties": {
+        "doc_id": { "$ref": "common.schema.json#/$defs/id" },
+        "payment_id": { "$ref": "common.schema.json#/$defs/id" },
+        "entity_id": { "anyOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+        "kind": { "enum": ["receipt", "refund"] },
+        "timestamp": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "currency": { "$ref": "common.schema.json#/$defs/currency" },
+        "amount_minor": { "$ref": "common.schema.json#/$defs/minor_amount" },
+        "invoice_refs": {
+          "description": "Remittance advice; null when the payer gave none.",
+          "anyOf": [
+            { "type": "array", "items": { "$ref": "#/$defs/invoice_ref" } },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "fx_rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "source_currency", "target_currency", "rate", "rate_id"],
+      "properties": {
+        "date": {
+          "description": "Publication date (Monday-Friday only).",
+          "$ref": "common.schema.json#/$defs/date"
+        },
+        "source_currency": { "$ref": "common.schema.json#/$defs/currency" },
+        "target_currency": { "$ref": "common.schema.json#/$defs/currency" },
+        "rate": { "$ref": "common.schema.json#/$defs/rate" },
+        "rate_id": { "$ref": "common.schema.json#/$defs/id" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledger_rows", "invoices", "payments", "fx_rates", "documents"],
+      "properties": {
+        "ledger_rows": { "type": "integer", "minimum": 0, "maximum": 2000 },
+        "invoices": { "type": "integer", "minimum": 0 },
+        "payments": { "type": "integer", "minimum": 0 },
+        "fx_rates": { "type": "integer", "minimum": 0 },
+        "documents": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rounding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "scope"],
+      "properties": {
+        "mode": { "enum": ["half_even", "half_up"] },
+        "scope": { "type": "string" }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "env_version",
+        "episode_id",
+        "company_name",
+        "base_currency",
+        "period_start",
+        "period_end",
+        "timezone",
+        "counts",
+        "rounding"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "common.schema.json#/$defs/semver" },
+        "env_version": { "$ref": "common.schema.json#/$defs/semver" },
+        "episode_id": { "$ref": "common.schema.json#/$defs/id" },
+        "company_name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "base_currency": { "$ref": "common.schema.json#/$defs/currency" },
+        "period_start": { "$ref": "common.schema.json#/$defs/date" },
+        "period_end": { "$ref": "common.schema.json#/$defs/date" },
+        "timezone": { "$ref": "common.schema.json#/$defs/tz_offset" },
+        "counts": { "$ref": "#/$defs/counts" },
+        "rounding": { "$ref": "#/$defs/rounding" }
+      }
+    },
+    "policy": {
+      "description": "Bookkeeping rules the books follow (and the audit is judged against). Free-text rules are stable strings.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "functional_currency",
+        "ledger_currency",
+        "period",
+        "revenue_recognition",
+        "fx",
+        "rounding",
+        "payments",
+        "accounts",
+        "currency_exponents"
+      ],
+      "properties": {
+        "functional_currency": { "$ref": "common.schema.json#/$defs/currency" },
+        "ledger_currency": { "type": "string" },
+        "period": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end", "timezone", "membership"],
+          "properties": {
+            "start": { "$ref": "common.schema.json#/$defs/date" },
+            "end": { "$ref": "common.schema.json#/$defs/date" },
+            "timezone": { "$ref": "common.schema.json#/$defs/tz_offset" },
+            "membership": { "type": "string" }
+          }
+        },
+        "revenue_recognition": { "type": "string" },
+        "fx": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["direction", "rate_date", "fallback", "conversion"],
+          "properties": {
+            "direction": { "type": "string" },
+            "rate_date": { "type": "string" },
+            "fallback": { "type": "string" },
+            "conversion": { "type": "string" }
+          }
+        },
+        "rounding": { "$ref": "#/$defs/rounding" },
+        "payments": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["application", "carrying_amount", "fx_difference", "refunds"],
+          "properties": {
+            "application": { "type": "string" },
+            "carrying_amount": { "type": "string" },
+            "fx_difference": { "type": "string" },
+            "refunds": { "type": "string" }
+          }
+        },
+        "accounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": { "^\\d{4}$": { "type": "string" } }
+        },
+        "currency_exponents": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": { "^[A-Z]{3}$": { "type": "integer", "minimum": 0, "maximum": 4 } }
+        }
+      }
+    }
+  }
+}

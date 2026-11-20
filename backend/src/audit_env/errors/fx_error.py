@@ -48,9 +48,16 @@ def _try_override(ctx: InjectionContext, obj, variant: str, prefer: Optional[dat
     correct_rate = w.policy_rate(obj.currency, _doc_time(obj))
     correct = w.to_base(amount, obj.currency, correct_rate.rate)
     threshold = min_material_diff(correct)
+
+    def usable(rate: str) -> bool:
+        # material, and still a real booking: a wrong rate that rounds the functional amount to
+        # zero (e.g. a reciprocal rate into JPY) would produce an empty, two-sided-less ledger row
+        wrong = w.to_base(amount, obj.currency, rate)
+        return wrong >= 1 and abs(wrong - correct) >= threshold
+
     if variant == "inverted":
         inv_rate = _fmt_rate(Decimal(1) / Decimal(correct_rate.rate))
-        if abs(w.to_base(amount, obj.currency, inv_rate) - correct) >= threshold:
+        if usable(inv_rate):
             obj.rate_override = inv_rate
             return variant
         return None
@@ -63,7 +70,7 @@ def _try_override(ctx: InjectionContext, obj, variant: str, prefer: Optional[dat
             r = w.fx.lookup(obj.currency, d)
         except KeyError:
             continue
-        if r.rate_id != correct_rate.rate_id and abs(w.to_base(amount, obj.currency, r.rate) - correct) >= threshold:
+        if r.rate_id != correct_rate.rate_id and usable(r.rate):
             good.append(d)
     if not good:
         return None
@@ -115,11 +122,20 @@ def eligible_invoice(ctx, i) -> bool:
 
 
 def eligible_payment(ctx, p) -> bool:
+    """Receipts fully applied by their remittance refs.
+
+    A receipt with an unreferenced remainder parks that part in 2200 at the payment's
+    rate, so a wrong rate would also distort the 2200 row and surface as a second,
+    undeclared allocation discrepancy. Such receipts are never hosts.
+    """
     w = ctx.world
+    refs = p.invoice_refs or []
     return (
         p.kind == "receipt"
         and p.booking_ts is not None
         and p.currency != w.base
+        and bool(refs)
+        and sum(r["amount_minor"] for r in refs) == p.amount_minor
         and p.applied_override is None
         and ctx.is_free(p.payment_id)
         and p.rate_override is None

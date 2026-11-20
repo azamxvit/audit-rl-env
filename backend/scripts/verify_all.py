@@ -3,6 +3,7 @@
 1. generate the open episodes from versioned configs   (scripts/generate_episodes.py)
 2. run the test-suite                                    (pytest)
 3. independent data verification + paired checks         (scripts/verify.py)
+   + generator fuzzing: 150 random parameter combinations on unseen seeds (scripts/fuzz_generator.py)
 4. run the 4 baseline policies (+ the learned auditor), write trajectories+report (scripts/run_baselines.py)
 5. held-out evaluation and learning curve of the learned auditor (scripts/eval_learned.py)
 """
@@ -17,6 +18,7 @@ STEPS = [
     ("generate episodes", [sys.executable, "scripts/generate_episodes.py"]),
     ("tests", [sys.executable, "-m", "pytest", "-q"]),
     ("data verification", [sys.executable, "scripts/verify.py"]),
+    ("generator fuzzing", [sys.executable, "scripts/fuzz_generator.py", "--cases", "150"]),
     ("baselines", [sys.executable, "scripts/run_baselines.py"]),
     ("learned auditor eval", [sys.executable, "scripts/eval_learned.py"]),
 ]

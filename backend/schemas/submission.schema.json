@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "submission.schema.json",
+  "title": "submit() payload",
+  "description": "Canonical form of a submission. The matcher additionally normalises before matching (type: strip+lower, currency: strip+upper, ids: strip; a doc_id in affected_ids maps to its business id, a business id in evidence_ids to its doc_id), so it also accepts non-canonical spellings; everything valid here is valid for the matcher. A structurally invalid submission ends the episode with reward -1. Amounts are in the functional currency (manifest.base_currency). Reward never depends on explanation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["episode_id", "findings"],
+  "properties": {
+    "episode_id": {
+      "description": "Must equal manifest.episode_id.",
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 30,
+      "items": { "$ref": "#/$defs/finding" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "description": "Non-blank id string of at most 64 characters.",
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "\\S"
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "affected_ids", "claimed_amount_minor", "currency", "evidence_ids", "explanation"],
+      "properties": {
+        "type": { "$ref": "common.schema.json#/$defs/issue_type" },
+        "affected_ids": {
+          "description": "duplicate_invoice: both invoice_ids; payment_allocation: [payment_id, invoice_id]; fx_error: [invoice_id] or [payment_id]; period_cutoff: [invoice_id]. Compared as a set.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "claimed_amount_minor": {
+          "description": "Absolute misstatement in functional-currency minor units; tolerance 1.",
+          "$ref": "common.schema.json#/$defs/minor_amount"
+        },
+        "currency": {
+          "description": "The functional currency.",
+          "type": "string",
+          "pattern": "^\\s*[A-Za-z]{3}\\s*$"
+        },
+        "evidence_ids": {
+          "description": "Records that together prove the issue (documents, booking rows, the policy fx row). TP needs one admissible evidence set to be a subset.",
+          "type": "array",
+          "maxItems": 10,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "explanation": { "type": "string", "maxLength": 1000 }
+      }
+    }
+  }
+}

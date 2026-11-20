@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "grader_result.schema.json",
+  "title": "One line of the grader log",
+  "description": "Written by the grader (in eval mode in its own process) once per episode. P = TP/(TP+FP), R = TP/(TP+FN), F1 = 2TP/(2TP+FP+FN); a zero denominator gives 0, except empty truth and empty answer, which give F1 = 1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "termination",
+    "inspection_steps",
+    "n_truth",
+    "n_findings",
+    "valid",
+    "error",
+    "tp",
+    "fp",
+    "fn",
+    "precision",
+    "recall",
+    "f1",
+    "reward",
+    "matches"
+  ],
+  "properties": {
+    "episode_id": { "$ref": "common.schema.json#/$defs/id" },
+    "termination": { "enum": ["submit", "step_limit", "time_limit"] },
+    "inspection_steps": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "n_truth": { "type": "integer", "minimum": 0, "maximum": 12 },
+    "n_findings": { "type": "integer", "minimum": 0, "maximum": 30 },
+    "valid": { "type": "boolean" },
+    "error": {
+      "description": "Why the submission was rejected (reward -1), else null.",
+      "type": ["string", "null"]
+    },
+    "tp": { "type": "integer", "minimum": 0 },
+    "fp": { "type": "integer", "minimum": 0 },
+    "fn": { "type": "integer", "minimum": 0 },
+    "precision": { "type": "number", "minimum": 0, "maximum": 1 },
+    "recall": { "type": "number", "minimum": 0, "maximum": 1 },
+    "f1": { "type": "number", "minimum": 0, "maximum": 1 },
+    "reward": { "type": "number", "minimum": -1, "maximum": 1 },
+    "matches": {
+      "description": "[finding index, issue_id] pairs of the maximum one-to-one matching.",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": { "type": ["integer", "string"] }
+      }
+    },
+    "missed_types": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/issue_type" } },
+    "fp_types": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/issue_type" } }
+  },
+  "if": { "properties": { "valid": { "const": false } } },
+  "then": { "properties": { "reward": { "const": -1.0 }, "error": { "type": "string" } } }
+}

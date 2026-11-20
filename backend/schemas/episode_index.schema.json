@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "episode_index.schema.json",
+  "title": "backend/episodes/index.json",
+  "description": "Catalogue of the open episodes: where each came from (config + seed) and the sha256 of its public files, so anyone can regenerate and compare byte for byte.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "env_version", "episodes"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "env_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "episodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "split",
+          "path",
+          "episode_id",
+          "config",
+          "config_id",
+          "seed",
+          "public_sha256",
+          "n_issues",
+          "issue_types",
+          "scenarios",
+          "counts"
+        ],
+        "properties": {
+          "split": { "enum": ["train", "dev"] },
+          "path": { "type": "string", "pattern": "^(train|dev)/\\d{2}_\\S+$" },
+          "episode_id": { "$ref": "common.schema.json#/$defs/id" },
+          "config": { "type": "string", "pattern": "^(train|dev)/[a-z0-9_]+\\.json$" },
+          "config_id": { "type": "string" },
+          "seed": { "type": "integer", "minimum": 0 },
+          "public_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "n_issues": { "type": "integer", "minimum": 0, "maximum": 12 },
+          "issue_types": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^(duplicate_invoice|payment_allocation|fx_error|period_cutoff)$": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "scenarios": { "type": "array", "items": { "enum": ["fx_partial_boundary", "cutoff_fx"] } },
+          "counts": { "$ref": "records.schema.json#/$defs/counts" }
+        }
+      }
+    }
+  }
+}

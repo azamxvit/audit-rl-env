@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trajectory.schema.json",
+  "title": "One line of trajectories.jsonl",
+  "description": "Step 0 is the reset (action null, reset observation); every later line is one step() call. Observations never contain closed truth.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["episode_id", "step", "action", "observation", "reward", "terminated", "truncated"],
+  "properties": {
+    "episode_id": { "$ref": "common.schema.json#/$defs/id" },
+    "step": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "action": {
+      "description": "Whatever the policy sent (also malformed actions, which cost a step); null at step 0."
+    },
+    "observation": {
+      "anyOf": [
+        { "$ref": "observation.schema.json#/$defs/reset_observation" },
+        { "$ref": "observation.schema.json#/$defs/step_observation" }
+      ]
+    },
+    "reward": { "$ref": "observation.schema.json#/$defs/reward" },
+    "terminated": { "type": "boolean" },
+    "truncated": { "type": "boolean" }
+  },
+  "if": { "properties": { "step": { "const": 0 } } },
+  "then": {
+    "properties": {
+      "action": { "type": "null" },
+      "observation": { "$ref": "observation.schema.json#/$defs/reset_observation" },
+      "reward": { "const": 0 },
+      "terminated": { "const": false },
+      "truncated": { "const": false }
+    }
+  },
+  "else": {
+    "properties": { "observation": { "$ref": "observation.schema.json#/$defs/step_observation" } }
+  }
+}

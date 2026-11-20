@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "action.schema.json",
+  "title": "step() action",
+  "description": "A well-formed action. Anything else is still accepted by step() but costs a step and returns a bounded error (invalid_action, unknown_tool, invalid_args, ...). There is no shell, SQL, file or network tool.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tool", "args"],
+  "properties": {
+    "tool": { "enum": ["list_records", "get_record", "get_document", "calculator", "submit"] },
+    "args": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "tool": { "const": "list_records" } } },
+      "then": { "properties": { "args": { "$ref": "#/$defs/list_records" } } }
+    },
+    {
+      "if": { "properties": { "tool": { "const": "get_record" } } },
+      "then": { "properties": { "args": { "$ref": "#/$defs/get_record" } } }
+    },
+    {
+      "if": { "properties": { "tool": { "const": "get_document" } } },
+      "then": { "properties": { "args": { "$ref": "#/$defs/get_document" } } }
+    },
+    {
+      "if": { "properties": { "tool": { "const": "calculator" } } },
+      "then": { "properties": { "args": { "$ref": "#/$defs/calculator" } } }
+    },
+    {
+      "if": { "properties": { "tool": { "const": "submit" } } },
+      "then": { "properties": { "args": { "$ref": "#/$defs/submit" } } }
+    }
+  ],
+  "$defs": {
+    "list_records": {
+      "description": "One page (<= 50) in file order. cursor: opaque token from the previous page's next_cursor.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["table"],
+      "properties": {
+        "table": { "$ref": "common.schema.json#/$defs/table" },
+        "cursor": { "type": ["string", "null"] },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 50 }
+      }
+    },
+    "get_record": {
+      "description": "id: the table's id field (row_id, invoice_id, payment_id, rate_id); invoices/payments also accept doc_id.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["table", "id"],
+      "properties": {
+        "table": { "$ref": "common.schema.json#/$defs/table" },
+        "id": { "type": "string" }
+      }
+    },
+    "get_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["doc_id"],
+      "properties": { "doc_id": { "type": "string" } }
+    },
+    "calculator": {
+      "description": "Arithmetic on decimal numbers only (+ - * / // % **, parentheses); no names, calls or attributes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expression"],
+      "properties": { "expression": { "type": "string" } }
+    },
+    "submit": {
+      "description": "Either the submission itself, or {\"findings\": <submission>} (a whole findings.json).",
+      "oneOf": [
+        { "$ref": "submission.schema.json" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["findings"],
+          "properties": { "findings": { "$ref": "submission.schema.json" } }
+        }
+      ]
+    }
+  }
+}

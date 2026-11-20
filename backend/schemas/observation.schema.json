@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "observation.schema.json",
+  "title": "Observations and info dicts",
+  "description": "reset() -> (reset_observation, reset_info); step() -> (step_observation, reward, terminated, truncated, step_info). An observation holds only the requested records, the result or a bounded error, and the remaining budget: never truth, seeds, file paths or timings.",
+  "$defs": {
+    "reset_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task", "manifest", "policy", "tables", "tools", "max_steps", "steps_remaining"],
+      "properties": {
+        "task": { "type": "string", "minLength": 1 },
+        "manifest": { "$ref": "records.schema.json#/$defs/manifest" },
+        "policy": { "$ref": "records.schema.json#/$defs/policy" },
+        "tables": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ledger", "invoices", "payments", "fx"],
+          "properties": {
+            "ledger": { "$ref": "#/$defs/table_info" },
+            "invoices": { "$ref": "#/$defs/table_info" },
+            "payments": { "$ref": "#/$defs/table_info" },
+            "fx": { "$ref": "#/$defs/table_info" }
+          }
+        },
+        "tools": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "args"],
+            "properties": {
+              "name": { "enum": ["list_records", "get_record", "get_document", "calculator", "submit"] },
+              "args": { "type": "object", "additionalProperties": { "type": "string" } }
+            }
+          }
+        },
+        "max_steps": { "description": "100 in the official setting.", "type": "integer", "minimum": 1, "maximum": 100 },
+        "steps_remaining": { "type": "integer", "minimum": 1, "maximum": 100 }
+      }
+    },
+    "table_info": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id_field", "count"],
+      "properties": {
+        "id_field": { "enum": ["row_id", "invoice_id", "payment_id", "rate_id"] },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "reset_info": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["env_version", "schema_version", "mode"],
+      "properties": {
+        "env_version": { "$ref": "common.schema.json#/$defs/semver" },
+        "schema_version": { "$ref": "common.schema.json#/$defs/semver" },
+        "mode": { "enum": ["train", "eval"] }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "enum": [
+            "unknown_tool",
+            "invalid_action",
+            "invalid_args",
+            "unknown_table",
+            "unknown_id",
+            "invalid_cursor",
+            "invalid_limit",
+            "calculator_error",
+            "episode_finished",
+            "time_limit"
+          ]
+        },
+        "message": { "type": "string", "maxLength": 200 }
+      }
+    },
+    "record": {
+      "anyOf": [
+        { "$ref": "records.schema.json#/$defs/ledger_row" },
+        { "$ref": "records.schema.json#/$defs/invoice" },
+        { "$ref": "records.schema.json#/$defs/payment" },
+        { "$ref": "records.schema.json#/$defs/fx_rate" }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["table", "records", "next_cursor"],
+      "properties": {
+        "table": { "$ref": "common.schema.json#/$defs/table" },
+        "records": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/record" } },
+        "next_cursor": {
+          "description": "Opaque, stable token; null on the last page.",
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "document": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["doc_type", "document"],
+          "properties": {
+            "doc_type": { "const": "invoice" },
+            "document": { "$ref": "records.schema.json#/$defs/invoice" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["doc_type", "document"],
+          "properties": {
+            "doc_type": { "const": "payment" },
+            "document": { "$ref": "records.schema.json#/$defs/payment" }
+          }
+        }
+      ]
+    },
+    "step_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "ok", "result", "error", "steps_remaining"],
+      "properties": {
+        "tool": {
+          "description": "Echo of a known tool name; null for unknown tools or malformed actions.",
+          "enum": ["list_records", "get_record", "get_document", "calculator", "submit", null]
+        },
+        "ok": { "type": "boolean" },
+        "result": true,
+        "error": { "anyOf": [{ "$ref": "#/$defs/error" }, { "type": "null" }] },
+        "steps_remaining": { "type": "integer", "minimum": 0, "maximum": 100 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "ok": { "const": false } } },
+          "then": {
+            "properties": { "result": { "type": "null" }, "error": { "$ref": "#/$defs/error" } }
+          },
+          "else": { "properties": { "error": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "ok": { "const": true }, "tool": { "const": "list_records" } } },
+          "then": { "properties": { "result": { "$ref": "#/$defs/page" } } }
+        },
+        {
+          "if": { "properties": { "ok": { "const": true }, "tool": { "const": "get_record" } } },
+          "then": { "properties": { "result": { "$ref": "#/$defs/record" } } }
+        },
+        {
+          "if": { "properties": { "ok": { "const": true }, "tool": { "const": "get_document" } } },
+          "then": { "properties": { "result": { "$ref": "#/$defs/document" } } }
+        },
+        {
+          "if": { "properties": { "ok": { "const": true }, "tool": { "const": "calculator" } } },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["value"],
+                "properties": { "value": { "type": "string", "pattern": "^-?\\d+(\\.\\d+)?$" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "ok": { "const": true }, "tool": { "const": "submit" } } },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["status"],
+                "properties": { "status": { "const": "received" } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "step_info": {
+      "description": "Empty while the episode runs and always empty in eval mode. In train mode, the terminal step reports the grade.",
+      "anyOf": [
+        { "type": "object", "additionalProperties": false },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["termination", "valid", "inspection_steps", "metrics"],
+          "properties": {
+            "termination": { "enum": ["submit", "step_limit", "time_limit"] },
+            "valid": { "type": "boolean" },
+            "inspection_steps": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "metrics": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["tp", "fp", "fn", "precision", "recall", "f1"],
+              "properties": {
+                "tp": { "type": "integer", "minimum": 0 },
+                "fp": { "type": "integer", "minimum": 0 },
+                "fn": { "type": "integer", "minimum": 0 },
+                "precision": { "type": "number", "minimum": 0, "maximum": 1 },
+                "recall": { "type": "number", "minimum": 0, "maximum": 1 },
+                "f1": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "reward": {
+      "description": "0 until the terminal step; terminal reward clip(2*F1 - 1 - 0.002*inspection_steps, -1, 1) in train mode, 0 in eval mode.",
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    }
+  }
+}

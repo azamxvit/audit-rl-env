@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "config.schema.json",
+  "title": "Generator config (backend/configs/<split>/*.json)",
+  "description": "Versioned generator parameters; omitted keys take the defaults in generator.DEFAULT_CONFIG (nested objects merge one level deep). Ranges are inclusive [low, high]. The fuzzer (scripts/fuzz_generator.py) checks the generator across these ranges.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "config_id",
+    "schema_version"
+  ],
+  "properties": {
+    "config_id": {
+      "description": "Name + version, e.g. train-mixed-v1; bump the suffix on any change.",
+      "type": "string",
+      "pattern": "^[a-z0-9-]+-v\\d+$"
+    },
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/semver"
+    },
+    "period": {
+      "enum": [
+        "month",
+        "quarter"
+      ]
+    },
+    "base_currencies": {
+      "$ref": "#/$defs/currencies"
+    },
+    "foreign_currencies": {
+      "$ref": "#/$defs/currencies"
+    },
+    "foreign_customer_share": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "n_customers": {
+      "$ref": "common.schema.json#/$defs/range"
+    },
+    "n_invoices": {
+      "$ref": "common.schema.json#/$defs/range"
+    },
+    "n_prior_period_invoices": {
+      "$ref": "common.schema.json#/$defs/range"
+    },
+    "n_next_period_invoices": {
+      "$ref": "common.schema.json#/$defs/range"
+    },
+    "ledger_rows": {
+      "description": "Target size before injection; the generator keeps the final ledger within 200..2000 rows.",
+      "$ref": "common.schema.json#/$defs/range"
+    },
+    "errors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "duplicate_invoice": {
+          "$ref": "#/$defs/error_duplicate_invoice"
+        },
+        "payment_allocation": {
+          "$ref": "#/$defs/error_payment_allocation"
+        },
+        "fx_error": {
+          "$ref": "#/$defs/error_fx_error"
+        },
+        "period_cutoff": {
+          "$ref": "#/$defs/error_period_cutoff"
+        }
+      },
+      "description": "Per type: a count range, or {count, variants}; variants restricts which variants are drawn. At most 12 issues per episode in total."
+    },
+    "scenarios": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fx_partial_boundary": {
+          "$ref": "#/$defs/count"
+        },
+        "cutoff_fx": {
+          "$ref": "#/$defs/count"
+        }
+      }
+    },
+    "distractors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "split_payments": {
+          "$ref": "#/$defs/probability"
+        },
+        "multi_invoice_payments": {
+          "$ref": "#/$defs/probability"
+        },
+        "overpayments": {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        "unidentified_receipts": {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        "subscriptions": {
+          "$ref": "#/$defs/probability"
+        },
+        "booking_delay": {
+          "$ref": "#/$defs/probability"
+        },
+        "boundary_documents": {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        "boundary_partial_payments": {
+          "$ref": "common.schema.json#/$defs/range"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "currencies": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "enum": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "JPY",
+          "KZT"
+        ]
+      }
+    },
+    "count": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count"
+          ],
+          "properties": {
+            "count": {
+              "$ref": "common.schema.json#/$defs/range"
+            }
+          }
+        }
+      ]
+    },
+    "probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "error_duplicate_invoice": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count"
+          ],
+          "properties": {
+            "count": {
+              "$ref": "common.schema.json#/$defs/range"
+            },
+            "variants": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "enum": [
+                  "re_entered",
+                  "re_entered_later"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "error_payment_allocation": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count"
+          ],
+          "properties": {
+            "count": {
+              "$ref": "common.schema.json#/$defs/range"
+            },
+            "variants": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "enum": [
+                  "missing",
+                  "partial"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "error_fx_error": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count"
+          ],
+          "properties": {
+            "count": {
+              "$ref": "common.schema.json#/$defs/range"
+            },
+            "variants": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "enum": [
+                  "wrong_date",
+                  "stale_rate",
+                  "inverted"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "error_period_cutoff": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/range"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count"
+          ],
+          "properties": {
+            "count": {
+              "$ref": "common.schema.json#/$defs/range"
+            },
+            "variants": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "enum": [
+                  "next_period",
+                  "prior_period"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

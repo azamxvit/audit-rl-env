@@ -1,0 +1,277 @@
+{
+  "fx_error_on_overpaid_receipt_jpy": {
+    "config": {
+      "base_currencies": [
+        "EUR",
+        "JPY",
+        "USD"
+      ],
+      "config_id": "fuzz-521",
+      "errors": {
+        "duplicate_invoice": {
+          "count": [
+            0,
+            1
+          ]
+        },
+        "fx_error": {
+          "count": [
+            2,
+            4
+          ]
+        },
+        "payment_allocation": {
+          "count": [
+            1,
+            3
+          ]
+        },
+        "period_cutoff": {
+          "count": [
+            0,
+            1
+          ]
+        }
+      },
+      "foreign_currencies": [
+        "EUR",
+        "GBP",
+        "CHF",
+        "KZT"
+      ],
+      "foreign_customer_share": 1.0,
+      "ledger_rows": [
+        302,
+        414
+      ],
+      "n_customers": [
+        13,
+        14
+      ],
+      "n_invoices": [
+        15,
+        21
+      ],
+      "period": "month",
+      "scenarios": {
+        "cutoff_fx": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "fx_partial_boundary": {
+          "count": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "seed": 769548323
+  },
+  "inverted_rate_rounds_to_zero_jpy": {
+    "config": {
+      "base_currencies": [
+        "JPY"
+      ],
+      "config_id": "fuzz-278",
+      "errors": {
+        "duplicate_invoice": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "fx_error": {
+          "count": [
+            1,
+            3
+          ]
+        },
+        "payment_allocation": {
+          "count": [
+            3,
+            5
+          ]
+        },
+        "period_cutoff": {
+          "count": [
+            2,
+            2
+          ]
+        }
+      },
+      "foreign_currencies": [
+        "KZT",
+        "EUR",
+        "CHF",
+        "JPY"
+      ],
+      "foreign_customer_share": 0.2,
+      "ledger_rows": [
+        879,
+        960
+      ],
+      "n_customers": [
+        6,
+        11
+      ],
+      "n_invoices": [
+        22,
+        36
+      ],
+      "period": "month",
+      "scenarios": {
+        "cutoff_fx": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "fx_partial_boundary": {
+          "count": [
+            0,
+            2
+          ]
+        }
+      }
+    },
+    "seed": 854234443
+  },
+  "ledger_over_2000_rows": {
+    "config": {
+      "base_currencies": [
+        "KZT",
+        "GBP"
+      ],
+      "config_id": "fuzz-592",
+      "errors": {
+        "duplicate_invoice": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "fx_error": {
+          "count": [
+            1,
+            2
+          ]
+        },
+        "payment_allocation": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "period_cutoff": {
+          "count": [
+            2,
+            4
+          ]
+        }
+      },
+      "foreign_currencies": [
+        "KZT",
+        "USD"
+      ],
+      "foreign_customer_share": 0.5,
+      "ledger_rows": [
+        1779,
+        2000
+      ],
+      "n_customers": [
+        12,
+        17
+      ],
+      "n_invoices": [
+        52,
+        65
+      ],
+      "period": "quarter",
+      "scenarios": {
+        "cutoff_fx": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "fx_partial_boundary": {
+          "count": [
+            0,
+            2
+          ]
+        }
+      }
+    },
+    "seed": 912667598
+  },
+  "no_foreign_currency_besides_base": {
+    "config": {
+      "base_currencies": [
+        "JPY",
+        "CHF"
+      ],
+      "config_id": "fuzz-8",
+      "errors": {
+        "duplicate_invoice": {
+          "count": [
+            3,
+            4
+          ]
+        },
+        "fx_error": {
+          "count": [
+            1,
+            2
+          ]
+        },
+        "payment_allocation": {
+          "count": [
+            2,
+            3
+          ]
+        },
+        "period_cutoff": {
+          "count": [
+            3,
+            4
+          ]
+        }
+      },
+      "foreign_currencies": [
+        "CHF"
+      ],
+      "foreign_customer_share": 0.5,
+      "ledger_rows": [
+        998,
+        1235
+      ],
+      "n_customers": [
+        5,
+        7
+      ],
+      "n_invoices": [
+        26,
+        34
+      ],
+      "period": "quarter",
+      "scenarios": {
+        "cutoff_fx": {
+          "count": [
+            0,
+            2
+          ]
+        },
+        "fx_partial_boundary": {
+          "count": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "seed": 855462995
+  }
+}

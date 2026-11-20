@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import bisect
 import calendar
+import json
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
@@ -442,6 +443,15 @@ def _rand_range(rng, pair) -> int:
     return rng.randint(int(lo), int(hi))
 
 
+LEDGER_ROWS_MAX = 2000
+INJECTION_HEADROOM = 30
+
+
+def _content_key(items: list) -> str:
+    """Line-item content (the part a duplicate copies), independent of IDs and dates of issue."""
+    return json.dumps(sorted(json.dumps(li, sort_keys=True) for li in items))
+
+
 class WorldBuilder:
     """Builds a consistent company history from (seed, config)."""
 
@@ -482,10 +492,31 @@ class WorldBuilder:
             )
         return items
 
+    def _distinct_content(self, cust: Customer, items: list) -> list:
+        """A legitimate invoice never repeats another invoice of the same customer line for line.
+
+        Random line items can coincide (same catalogue item, quantity, price and service
+        month); that would be indistinguishable from an injected ``duplicate_invoice``.
+        On a collision the first line's quantity is raised by one until the content is
+        unique. No randomness is consumed, so episodes without a collision are unchanged.
+        """
+        seen = {
+            _content_key(i.line_items)
+            for i in self.w.invoices.values()
+            if i.entity_id == cust.entity_id and i.currency == cust.currency
+        }
+        items = [dict(li) for li in items]
+        while _content_key(items) in seen:
+            first = items[0]
+            first["quantity"] += 1
+            first["amount_minor"] = first["quantity"] * first["unit_price_minor"]
+        return items
+
     def _new_invoice(
         self, cust: Customer, issued: datetime, items: list, period_class: str, render_tz: Optional[int] = None
     ) -> Invoice:
         w = self.w
+        items = self._distinct_content(cust, items)
         due = issued + timedelta(days=self.rng.choice([14, 30, 30, 45]))
         inv = Invoice(
             doc_id=self.ids.new("DOC"),
@@ -577,7 +608,9 @@ class WorldBuilder:
         n = _rand_range(rng, cfg["n_customers"])
         share = cfg.get("foreign_customer_share", 0.3)
         for i in range(n):
-            ccy = rng.choice(foreign) if (rng.random() < share or i == 0) else w.base
+            wants_foreign = rng.random() < share or i == 0
+            # a pool with no currency other than the base means a single-currency company
+            ccy = rng.choice(foreign) if (wants_foreign and foreign) else w.base
             cust = Customer(self.ids.new("CUS"), _name(rng, 2), ccy, rng.choice(CUSTOMER_TZ_CHOICES))
             if rng.random() < cfg["distractors"].get("subscriptions", 0.0):
                 cust.plan = {
@@ -813,7 +846,9 @@ class WorldBuilder:
                 _price_minor(rng, w.base, 150, 900),
             )
             m = _add_months(m, 1)
-        target = _rand_range(rng, cfg["ledger_rows"])
+        # the case allows 200..2000 ledger rows; injections run later and add up to 2 rows per issue
+        # (<= 12 issues), so the noise filler stops early enough to stay within the limit
+        target = min(_rand_range(rng, cfg["ledger_rows"]), LEDGER_ROWS_MAX - INJECTION_HEADROOM)
         current = len(build_ledger(w).rows())
         while current < target:
             if rng.random() < 0.3:

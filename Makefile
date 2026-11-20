@@ -4,9 +4,10 @@ RUN := cd $(BACKEND) && PYTHONPATH=src $(PYTHON)
 # ruff from the active environment (pip install -r backend/requirements-dev.txt), or the local .venv
 RUFF ?= $(shell command -v ruff 2>/dev/null || echo $(CURDIR)/.venv/bin/ruff)
 
-.PHONY: verify test episodes check-data baselines demo play frontend frontend-test e2e format lint clean
+.PHONY: verify test episodes check-data baselines train-learned eval-learned demo play frontend frontend-test e2e format lint clean
 
-# One command: generate episodes -> tests -> independent data checks -> 4 baselines (trajectories + report)
+# One command: generate episodes -> tests -> independent data checks -> baselines (trajectories + report)
+# -> held-out evaluation of the learned auditor
 verify:
 	$(RUN) scripts/verify_all.py
 
@@ -21,6 +22,13 @@ check-data:
 
 baselines:
 	$(RUN) scripts/run_baselines.py
+
+# Learned auditor: retrain the detector (~5 s, CPU, stdlib) and evaluate it on held-out episodes
+train-learned:
+	$(RUN) scripts/train_learned.py
+
+eval-learned:
+	$(RUN) scripts/eval_learned.py
 
 demo:
 	$(RUN) scripts/demo.py 4

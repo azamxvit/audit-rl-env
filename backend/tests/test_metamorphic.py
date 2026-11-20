@@ -6,7 +6,7 @@ from audit_env.checker import audit, verify_episode
 from audit_env.env import AuditEnv
 from audit_env.generator import Episode, write_episode
 from audit_env.grader import Grader
-from audit_env.policies import OraclePolicy, SimpleReconcilerPolicy
+from audit_env.policies import LearnedAuditorPolicy, OraclePolicy, SimpleReconcilerPolicy
 from audit_env.trajectories import run_episode
 from audit_env.transform import map_findings, transform_episode
 from conftest import episode
@@ -72,6 +72,9 @@ def test_policies_through_env_on_transformed_files(tmp_path, seed, name):
     sa = run_episode(env, SimpleReconcilerPolicy(), config={"episode_dir": str(tmp_path / "a")})
     sb = run_episode(env, SimpleReconcilerPolicy(), config={"episode_dir": str(tmp_path / "b")})
     assert sa["return"] == sb["return"] and sa["info"]["metrics"] == sb["info"]["metrics"]
+    la = run_episode(env, LearnedAuditorPolicy(), config={"episode_dir": str(tmp_path / "a")})
+    lb = run_episode(env, LearnedAuditorPolicy(), config={"episode_dir": str(tmp_path / "b")})
+    assert la["return"] == lb["return"] and la["info"]["metrics"] == lb["info"]["metrics"]
 
 
 def test_permutation_changes_first_page():

@@ -1,0 +1,5 @@
+#!/bin/sh
+# Local CI gate (installed by `make hooks`): lint + backend tests before every push.
+# Skip once with: git push --no-verify
+echo "pre-push: make ci-fast" >&2
+exec make -s ci-fast

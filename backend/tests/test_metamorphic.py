@@ -82,3 +82,46 @@ def test_permutation_changes_first_page():
     pub2, _, _ = transform_episode(ep.public, ep.truth, seed="p", rename=False)
     assert [r["row_id"] for r in pub2["ledger"][:50]] != [r["row_id"] for r in ep.public["ledger"][:50]]
     assert sorted(r["row_id"] for r in pub2["ledger"]) == sorted(r["row_id"] for r in ep.public["ledger"])
+
+
+def _opaque(public, truth, style):
+    """Rename every id into a foreign format with no prefix, the way an outside evaluator might."""
+    import hashlib
+
+    from audit_env.transform import _collect_ids
+
+    def new(i):
+        h = hashlib.sha256(i.encode()).hexdigest()
+        return {
+            "hex": h[:20],
+            "num": str(int(h[:12], 16)),
+            "uuid": f"{h[:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}",
+        }[style]
+
+    mapping = {i: new(i) for i in _collect_ids(public)}
+    assert len(set(mapping.values())) == len(mapping)
+
+    def walk(x):
+        if isinstance(x, dict):
+            return {k: walk(v) for k, v in x.items()}
+        if isinstance(x, list):
+            return [walk(v) for v in x]
+        return mapping.get(x, x) if isinstance(x, str) else x
+
+    return walk(public), walk(truth)
+
+
+@pytest.mark.parametrize("style", ["hex", "num", "uuid"])
+@pytest.mark.parametrize("seed,name", [(9_000_001, "dev/mixed.json"), (9_000_002, "dev/interacting.json")])
+def test_foreign_id_formats_and_permutation_keep_validity_and_rewards(tmp_path, seed, name, style):
+    ep = episode(seed, name)
+    pub2, tr2 = _opaque(ep.public, ep.truth, style)
+    pub2, tr2, _ = transform_episode(pub2, tr2, seed=("opaque", seed), rename=False)  # and shuffle rows
+    assert verify_episode(pub2, tr2) == []
+    write_episode(ep, tmp_path / "a")
+    write_episode(Episode(pub2, tr2, ep.provenance, {}), tmp_path / "b")
+    env = AuditEnv("train")
+    for make in (lambda t: OraclePolicy(t), lambda t: SimpleReconcilerPolicy(), lambda t: LearnedAuditorPolicy()):
+        ra = run_episode(env, make(ep.truth), config={"episode_dir": str(tmp_path / "a")})
+        rb = run_episode(env, make(tr2), config={"episode_dir": str(tmp_path / "b")})
+        assert ra["return"] == rb["return"] and ra["info"]["metrics"] == rb["info"]["metrics"]

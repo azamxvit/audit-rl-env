@@ -2,6 +2,16 @@
 
 Генератор синтетической бухгалтерии вымышленной компании со скрытыми ошибками и Gym-подобная среда `reset/step`. В неё входят узкие инструменты расследования, matcher и терминальная награда. Ядро написано на чистом Python 3.11 stdlib: без сети, без GPU и без внешних зависимостей (`pytest` нужен только для тестов). Устройство и принятые решения описаны в [DESIGN.md](DESIGN.md).
 
+## Где что проверить (по критериям кейса)
+
+| критерий (баллы)                   | где реализовано                                                                                                                                                                                                                                                           | что это доказывает                                                                                                                                                                                                                                                                               | команда                              |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Контракт и изоляция (25)           | `env.py`, `store.py`, `grader.py` (оценщик в отдельном процессе в `eval`), [`backend/schemas/`](backend/schemas)                                                                                                                                                          | `tests/test_env.py` (reset/step, лимиты, завершение, неверный ввод, eval-изоляция), `tests/test_antileak.py`, `tests/test_schemas.py` (все 10 кодов ошибок, все инструменты по схемам)                                                                                                           | `make test`                          |
+| Данные и эталон (25)               | `world.py`, `generator.py`, `errors/`, независимый `checker.py`                                                                                                                                                                                                           | `scripts/verify.py` (равенства до и после инъекции, «аудит == эталон», достаточность каждого набора доказательств), фаззинг генератора на новых seed и сочетаниях параметров (DESIGN §13)                                                                                                        | `make check-data`, `make fuzz`       |
+| Надёжность награды (25)            | `matcher.py` (1-к-1, Kuhn), `reward.py`                                                                                                                                                                                                                                   | `tests/test_reward.py`: полный ответ vs молчание, молчание vs ложные обвинения, дубли, «пометить всё», угаданные ID, неподтверждённые доказательства, валюта и допуск, неверная структура (−1), стоимость шагов, максимальное паросочетание; повторный submit и тайм-аут — в `tests/test_env.py` | `make test`, `make demo` (сцены 4–5) |
+| Воспроизводимость и обобщение (15) | только `random.Random(seed)`, `transform.py`                                                                                                                                                                                                                              | `tests/test_determinism.py`, `tests/test_metamorphic.py` (перестановка + смена ID, в том числе на чужие форматы: hex, числа, UUID), парные проверки в `verify.py`                                                                                                                                | `make check-data`                    |
+| Инженерия и объяснение (10)        | одна команда (`make verify` / Docker), конфиги с версиями (`config_id …-vN`, `config.schema.json`, sha в `episodes/index.json`), траектории (`runs/*/*/trajectories.jsonl`), измеренный разбор сбоев (DESIGN §9, §13, `runs/report.md`), честные ограничения (DESIGN §10) | локальный CI (`ci/last-run.md`)                                                                                                                                                                                                                                                                  | `make ci`                            |
+
 ## Одна команда проверки
 
 ```bash
@@ -52,6 +62,25 @@ obs, reward, terminated, truncated, info = env.step(
 | `submit`       | `episode_id`, `findings[]`                                                                                | завершает эпизод (`terminated=true`)                          |
 
 Бюджет — 100 шагов, `submit` входит в бюджет. Ошибочное действие тоже расходует шаг. При исчерпании шагов или 60 с эпизод завершается с `truncated=true` и оценивается как пустой ответ. Награда = `clip(2·F1 − 1 − 0.002·inspection_steps, −1, 1)`. В режиме `train` политика получает её после завершения эпизода. В режиме `eval` награда и диагностика остаются в журнале оценщика.
+
+## Как подключить свою политику
+
+Политика — это любой объект с методами `reset(observation)` и `act(observation) -> action`. Скрипт `run_policy.py` прогоняет её через ту же среду и оценщика, что и базовые политики: пишет траектории (`trajectory.schema.json`) и оценки (`grader_result.schema.json`) и печатает P/R/F1, возврат и шаги.
+
+```bash
+cd backend
+# класс на Python (новый экземпляр на каждый эпизод); пример: examples/python_policy.py
+PYTHONPATH=src python3 scripts/run_policy.py --policy examples/python_policy.py:UnappliedCashPolicy --split dev
+# любой язык: отдельный процесс, JSON-строки через stdin/stdout; пример: examples/jsonl_policy.py
+PYTHONPATH=src python3 scripts/run_policy.py --cmd "python3 examples/jsonl_policy.py" --split dev --mode eval
+# свои seed и конфиг генератора или свои каталоги эпизодов
+PYTHONPATH=src python3 scripts/run_policy.py --policy audit_env.policies:SimpleReconcilerPolicy --config configs/dev/mixed.json --seeds 100-119
+PYTHONPATH=src python3 scripts/run_policy.py --policy mypkg.agent:Agent --episode-dir path/to/ep1 path/to/ep2
+```
+
+- **Протокол процесса** (`audit_env/external.py`): среда пишет одну JSON-строку `{"type": "reset"|"step", "observation": {...}}`, процесс отвечает одной строкой-действием; в конце приходит `{"type": "close"}`. Строка не JSON — это `invalid_action` (шаг тратится). Упавший или молчащий процесс не ломает среду: эпизод дойдёт до лимита шагов. stderr свободен для логов.
+- **`--mode eval`**: оценщик работает в отдельном процессе, политика получает награду 0 и пустой `info`, оценки читаются из журнала оценщика после прогона.
+- Из Python напрямую: `AuditEnv("train").reset(seed, config)` / `.step(action)`, см. раздел ниже. Веб-сервер `make play` — только для открытых эпизодов и ручной игры, это не точка входа для оценки.
 
 ## Схемы контракта и данных
 
@@ -112,6 +141,19 @@ Python-инструменты ставятся из `backend/requirements-dev.tx
 
 Импорты идут через алиас `@/` и barrel-файлы `index.ts` в каждой папке: `import { Button, Card } from "@/ui"`, а также `@/components`, `@/screens`, `@/hooks`, `@/lib`, `@/types` и `@/api`. Внутри одной папки модули импортируют друг друга по относительному пути, чтобы не было циклов через barrel.
 
+## Локальный CI
+
+Хостинговый CI не используется: весь конвейер запускается локально одной командой, отчёт с SHA коммита коммитится в [`ci/last-run.md`](ci/last-run.md).
+
+```bash
+make ci        # lint, тесты, make verify, побайтовая регенерация эпизодов, воспроизводимость весов,
+               # фаззинг 600 конфигов, Vitest, сборка фронта == dist, e2e + axe, Docker без сети (2 CPU / 4 ГБ)
+make ci-fast   # lint + тесты бэкенда (~15 с)
+make hooks     # pre-push хук: make ci-fast перед каждым git push (отключить: git config --unset core.hooksPath)
+```
+
+Шаг, для которого нет условий (не запущен Docker, не установлен Chromium для Playwright), помечается SKIP с причиной, а не падает. Остальные шаги выполняются даже после ошибки, чтобы один отчёт показывал всё.
+
 ## Состав репозитория
 
 ```
@@ -119,12 +161,14 @@ backend/            Python: src/audit_env (среда + HTTP-сервер), test
   src/audit_env/    money, calculator, world, generator, errors/ (4 типа + сценарии + отвлекающие), checker, store, env,
                     matcher, reward, grader, transform, trajectories, schema, policies/, learning/
   schemas/          JSON Schema контракта и файлов (draft 2020-12)
+  examples/         примеры своей политики: класс на Python и процесс на JSON-строках
   configs/          версионированные конфиги генератора (train/, dev/) и splits.json (config, seed)
   episodes/         10 train + 10 dev: <ep>/public/* (агенту), <ep>/private/{truth,provenance}.json (оценщику)
-  scripts/          verify_all, generate_episodes, verify, fuzz_generator, run_baselines, train_learned, eval_learned,
+  scripts/          verify_all, generate_episodes, verify, fuzz_generator, run_baselines, run_policy, train_learned, eval_learned,
                     transform_episode, demo, demo_tour
   runs/             траектории, журнал оценщика, report.md/json (результат make verify)
 frontend/           React + TS + Vite (Auditor Playground); собранный dist/ в репозитории
+ci/                 локальный CI (ci.py) и отчёт последнего прогона
 docs/               case.pdf, спецификации и планы
 ```
 

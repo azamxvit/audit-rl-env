@@ -1,6 +1,15 @@
+# Keep the build context to what the offline verification needs.
 .git
+.venv
+.claude
+CLAUDE_CODE_PROMPT.md
 backend/runs
 **/__pycache__
 **/.pytest_cache
+**/.ruff_cache
 *.egg-info
 frontend/node_modules
+frontend/test-results
+frontend/playwright-report
+frontend/coverage
+.DS_Store

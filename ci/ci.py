@@ -6,7 +6,7 @@
 
 Steps run in order; each is PASS, FAIL or SKIP (with the reason, e.g. Docker not running).
 Every step runs even after a failure, so one report shows everything. Writes ci/last-run.md and
-ci/last-run.json with the commit, whether the tree was clean, tool versions and timings; exit code
+ci/last-run.json (fast runs: ci/last-fast-run.*, not committed) with the commit, whether the tree was clean, tool versions and timings; exit code
 1 if any step failed. Nothing is uploaded anywhere.
 """
 
@@ -133,7 +133,9 @@ def main() -> int:
         "steps": results,
     }
     OUT.mkdir(exist_ok=True)
-    (OUT / "last-run.json").write_text(json.dumps(report, indent=2) + "\n")
+    # the committed report is the full run; fast runs (the pre-push hook) go to an ignored file
+    stem = "last-fast-run" if a.fast else "last-run"
+    (OUT / f"{stem}.json").write_text(json.dumps(report, indent=2) + "\n")
     lines = [
         "# Local CI - last run",
         "",
@@ -150,11 +152,11 @@ def main() -> int:
         note = r["note"].splitlines()[-1] if r["note"] else ""
         lines.append(f"| {r['step']} | {r['status']} | {r['seconds']} | {note.replace('|', '/')} |")
     lines += ["", "Produced by `make ci` (ci/ci.py). Reproduce on your machine with the same command."]
-    (OUT / "last-run.md").write_text("\n".join(lines) + "\n")
+    (OUT / f"{stem}.md").write_text("\n".join(lines) + "\n")
     print(
         f"\n{report['result']}: {sum(r['status'] == 'PASS' for r in results)} passed, "
         f"{sum(r['status'] == 'FAIL' for r in results)} failed, {sum(r['status'] == 'SKIP' for r in results)} skipped "
-        f"-> ci/last-run.md"
+        f"-> ci/{stem}.md"
     )
     return 0 if ok else 1
 

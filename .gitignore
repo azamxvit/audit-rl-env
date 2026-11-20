@@ -13,3 +13,4 @@ frontend/coverage/
 
 # ad-hoc policy runs (scripts/run_policy.py)
 backend/runs/custom/
+ci/last-fast-run.*

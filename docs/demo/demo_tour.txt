@@ -1,0 +1,56 @@
+
+[1/7] reset(): one fictional company, one period
+      The agent sees the task, manifest, policy and table sizes - never the seed or the answer.
+  EP-AAEZHWVM  Mirost Logistics LLC  2025-10-01..2025-10-31  tz -05:00  functional USD
+  tables: ledger=301, invoices=57, payments=24, fx=146
+  tools : list_records, get_record, get_document, calculator, submit   budget: 100 steps
+  info  : {'env_version': '0.1.0', 'schema_version': '1.0', 'mode': 'train'}
+
+[2/7] step(): narrow tools, bounded errors, every call costs a step
+      Pages hold <= 50 records; errors are fixed codes that never echo input or internals.
+  list_records(payments, limit 3) -> 3 records, next_cursor c_7f3f72c7...
+     first: PAY-MPBBNSAJ receipt 64200 USD refs=[{'invoice_id': 'INV-ED30SRMW', 'amount_minor': 64200}]
+  get_record({"table": "ledger", "id": "LR-NOTREAL1"})           -> unknown_id: No record with this id.  (98 left)
+  calculator({"expression": "__import__('os').system('ls')"})    -> calculator_error: Expression rejected or not computable. (only arithmetic on decimal numbers is allowed)  (97 left)
+  shell({"cmd": "cat private/truth.json"})                       -> unknown_tool: Unknown tool.  (96 left)
+  calculator(1234.56 * 1.0845)                                   -> 1338.88032  (Decimal, no eval)
+
+[3/7] A scripted auditor works through the tools and submits
+      simple_reconciler: reads payments, invoices and the ledger page by page, then applies two checks.
+  step   1  list_records({"table": "payments", "limit": 50})
+  step   2  list_records({"table": "invoices", "limit": 50})
+  ...       (paging through the ledger)
+  step  11  submit(2 findings)
+     -> payment_allocation  PAY-FAY60QXQ,INV-QSBY8D6Q        320654 USD  evidence 2 ids
+     -> duplicate_invoice   INV-QTK66DFX,INV-61YQ4Q15       2226800 USD  evidence 4 ids
+  grader: TP=2 FP=0 FN=6  F1=0.400  reward=-0.220   (truth: 8 issues)
+
+[4/7] The reward cannot be gamed
+      Same episode, five policies. Flag-everything and random guessing lose; repeats and guessed ids earn nothing.
+  policy               steps  result
+  random_explorer         22  TP=0 FP=1 FN=8  F1=0.000  reward=-1.000
+  flag_all (attack)        4  TP=0 FP=30 FN=8  F1=0.000  reward=-1.000
+  simple_reconciler       11  TP=2 FP=0 FN=6  F1=0.400  reward=-0.220
+  learned_auditor         14  TP=8 FP=0 FN=0  F1=1.000  reward=+0.974
+  oracle (grader-side)     1  TP=8 FP=0 FN=0  F1=1.000  reward=+1.000
+  every right answer twice   -> TP=8 FP=8 FN=0  F1=0.667  reward=+0.331
+  right answers, no evidence -> TP=0 FP=8 FN=8  F1=0.000  reward=-1.000
+
+[5/7] Clean books: silence beats false accusations
+      Some companies have no errors; an empty answer is the right one.
+  simple_reconciler    TP=0 FP=0 FN=0  F1=1.000  reward=+0.976
+  learned_auditor      TP=0 FP=0 FN=0  F1=1.000  reward=+0.970
+  flag_all (attack)    TP=0 FP=30 FN=0  F1=0.000  reward=-1.000
+
+[6/7] Reproducible, and robust to harmless transformations
+      Same seed + config + version + actions -> identical bytes. Shuffling rows and renaming every id keeps the answer.
+  generate(seed 424242) twice: 9d493561ec73d9de... == 9d493561ec73d9de...  True
+  same policy, same episode, two runs -> trajectories identical: True
+  rows permuted, 997 ids renamed (e.g. CUS-0HVX5AR1 -> CUS-B89X7X7J): oracle reward 1.0 -> 1.0
+
+[7/7] Closed evaluation: the grader lives in another process
+      In eval mode the policy gets reward 0 and empty info; the score exists only in the grader's log.
+  policy saw: return=0.0  info={}
+  grader log: TP=8 FP=0 FN=0  F1=1.000  reward=+0.974
+
+Done. Full check: make verify  |  report: backend/runs/report.md  |  play it yourself: make play

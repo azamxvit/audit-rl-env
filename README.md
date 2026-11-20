@@ -25,7 +25,9 @@ docker build -t audit-env . && docker run --network none audit-env
 5. прогоняет 4 базовые политики и нашу обученную `learned_auditor` (отдельной строкой). Траектории пишутся в `backend/runs/<split>/<policy>/trajectories.jsonl`, метрики P/R/F1, возврат, шаги и время — в `backend/runs/report.md`.
 6. оценивает обученного аудитора на 80 отложенных эпизодах и строит кривую обучения (`backend/runs/learned_eval.md`).
 
-Без `make`: `cd backend && PYTHONPATH=src python3 scripts/verify_all.py`. Демо скриптовой политики: `make demo`.
+Без `make`: `cd backend && PYTHONPATH=src python3 scripts/verify_all.py`.
+
+**Демо:** `make demo` — тур из 7 сцен: контракт, ограниченные ошибки, скриптовый аудитор, атаки на награду, чистые книги, воспроизводимость, закрытая оценка. Сценарий записи на 2 минуты лежит в [DEMO.md](DEMO.md).
 
 ## Использование среды
 
@@ -113,14 +115,14 @@ Python-инструменты ставятся из `backend/requirements-dev.tx
 ## Состав репозитория
 
 ```
-backend/            Python: src/audit_env (среда + HTTP-сервер), tests/ (222 теста), scripts/, configs/, episodes/, runs/, schemas/
+backend/            Python: src/audit_env (среда + HTTP-сервер), tests/ (223 теста), scripts/, configs/, episodes/, runs/, schemas/
   src/audit_env/    money, calculator, world, generator, errors/ (4 типа + сценарии + отвлекающие), checker, store, env,
                     matcher, reward, grader, transform, trajectories, schema, policies/, learning/
   schemas/          JSON Schema контракта и файлов (draft 2020-12)
   configs/          версионированные конфиги генератора (train/, dev/) и splits.json (config, seed)
   episodes/         10 train + 10 dev: <ep>/public/* (агенту), <ep>/private/{truth,provenance}.json (оценщику)
   scripts/          verify_all, generate_episodes, verify, fuzz_generator, run_baselines, train_learned, eval_learned,
-                    transform_episode, demo
+                    transform_episode, demo, demo_tour
   runs/             траектории, журнал оценщика, report.md/json (результат make verify)
 frontend/           React + TS + Vite (Auditor Playground); собранный dist/ в репозитории
 docs/               case.pdf, спецификации и планы

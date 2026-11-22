@@ -469,6 +469,72 @@
         "payment",
         "PAY-JQGNW0N4"
       ]
+    },
+    {
+      "booking_after": null,
+      "booking_before": null,
+      "change_id": "CHG-007",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-2JMDT3T7"
+      ],
+      "ledger_after": [
+        {
+          "account": "1100",
+          "credit_minor": 2675969385,
+          "currency": "KZT",
+          "debit_minor": 0,
+          "entity_id": "CUS-H36ZVCY8",
+          "entry_id": "JE-BTH975BY",
+          "invoice_id": "INV-2T4TZ3N3",
+          "payment_id": "PAY-CXYFSJA2",
+          "row_id": "LR-XVDV01RT",
+          "timestamp": "2025-05-15T09:07:40+09:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 71449905,
+          "currency": "KZT",
+          "debit_minor": 0,
+          "entity_id": "CUS-H36ZVCY8",
+          "entry_id": "JE-BTH975BY",
+          "invoice_id": null,
+          "payment_id": "PAY-CXYFSJA2",
+          "row_id": "LR-YJF3PVP2",
+          "timestamp": "2025-05-15T09:07:40+09:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "1100",
+          "credit_minor": 2661531469,
+          "currency": "KZT",
+          "debit_minor": 0,
+          "entity_id": "CUS-H36ZVCY8",
+          "entry_id": "JE-BTH975BY",
+          "invoice_id": "INV-2T4TZ3N3",
+          "payment_id": "PAY-CXYFSJA2",
+          "row_id": "LR-XVDV01RT",
+          "timestamp": "2025-05-15T09:07:40+09:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 85887821,
+          "currency": "KZT",
+          "debit_minor": 0,
+          "entity_id": "CUS-H36ZVCY8",
+          "entry_id": "JE-BTH975BY",
+          "invoice_id": null,
+          "payment_id": "PAY-CXYFSJA2",
+          "row_id": "LR-YJF3PVP2",
+          "timestamp": "2025-05-15T09:07:40+09:00"
+        }
+      ],
+      "op": "recompute_dependent",
+      "target": [
+        "ledger",
+        "dependent_rows"
+      ]
     }
   ],
   "clean_counts": {

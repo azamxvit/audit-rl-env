@@ -1,0 +1,48 @@
+{
+  "config_id": "judge-d03-clean-refund-v1",
+  "schema_version": "1.0",
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "scenarios": {
+    "fx_partial_boundary": {
+      "count": 0
+    },
+    "cutoff_fx": {
+      "count": 0
+    }
+  },
+  "distractors": {
+    "split_payments": 0,
+    "multi_invoice_payments": 0,
+    "overpayments": [
+      2,
+      3
+    ],
+    "unidentified_receipts": [
+      0,
+      0
+    ],
+    "subscriptions": 0,
+    "booking_delay": 0,
+    "boundary_documents": [
+      0,
+      0
+    ],
+    "boundary_partial_payments": [
+      0,
+      0
+    ]
+  }
+}

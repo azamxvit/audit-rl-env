@@ -1,0 +1,31 @@
+{
+  "config_id": "judge-d19-cutoff-fx-quarter-v1",
+  "schema_version": "1.0",
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "scenarios": {
+    "fx_partial_boundary": {
+      "count": 0
+    },
+    "cutoff_fx": {
+      "count": 1
+    }
+  },
+  "period": "quarter",
+  "base_currencies": [
+    "GBP"
+  ],
+  "foreign_customer_share": 0.6
+}

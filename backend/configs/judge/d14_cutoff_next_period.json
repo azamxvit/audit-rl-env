@@ -1,0 +1,32 @@
+{
+  "config_id": "judge-d14-cutoff-next-period-v1",
+  "schema_version": "1.0",
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": [
+        1,
+        2
+      ],
+      "variants": [
+        "next_period"
+      ]
+    }
+  },
+  "scenarios": {
+    "fx_partial_boundary": {
+      "count": 0
+    },
+    "cutoff_fx": {
+      "count": 0
+    }
+  }
+}

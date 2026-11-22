@@ -87,7 +87,8 @@
           "op": {
             "enum": [
               "change_booking",
-              "add_document_and_booking"
+              "add_document_and_booking",
+              "recompute_dependent"
             ]
           },
           "document_added": {

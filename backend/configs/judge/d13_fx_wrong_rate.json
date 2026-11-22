@@ -1,0 +1,34 @@
+{
+  "config_id": "judge-d13-fx-wrong-rate-v1",
+  "schema_version": "1.0",
+  "errors": {
+    "duplicate_invoice": {
+      "count": 0
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": [
+        1,
+        2
+      ],
+      "variants": [
+        "stale_rate",
+        "inverted"
+      ]
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "scenarios": {
+    "fx_partial_boundary": {
+      "count": 0
+    },
+    "cutoff_fx": {
+      "count": 0
+    }
+  },
+  "foreign_customer_share": 0.6
+}

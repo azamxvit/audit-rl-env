@@ -37,7 +37,7 @@ TASK_TEXT = (
     "[payment_id], |booked - amount at the policy rate|; period_cutoff -> [invoice_id], amount booked. "
     "evidence_ids: record ids (doc_id or invoice_id/payment_id for documents, row_id for ledger rows, rate_id "
     "for fx rates) that together prove the issue (documents, the booking row(s), the fx row used by policy). "
-    "Amount tolerance is 1 minor unit. Every step (including errors) costs budget; submit ends the episode."
+    "Amounts must match exactly (tolerance 0 minor units). Every step (including errors) costs budget; submit ends the episode."
 )
 
 TOOLS = [

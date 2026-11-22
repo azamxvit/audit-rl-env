@@ -195,7 +195,7 @@ def _content_key(inv: dict) -> str:
     )
 
 
-def audit(public: dict, tolerance: int = 1) -> list:
+def audit(public: dict, tolerance: int = 0) -> list:
     """Rule-based full audit. Returns findings as dicts {type, affected_ids, amount_minor, currency}."""
     b = Books.from_public(public)
     found = []
@@ -354,7 +354,7 @@ def derive_from_evidence(issue_type: str, evidence_ids: list, public: dict) -> d
 def verify_episode(public: dict, truth: dict, clean_public: dict | None = None) -> list:
     """Full independent verification. Returns a list of problems (empty = episode is valid)."""
     problems = []
-    tol = truth.get("tolerance_minor", 1)
+    tol = truth.get("tolerance_minor", 0)
     if clean_public is not None:
         problems += [f"clean: {p}" for p in check_invariants(clean_public)]
         problems += [f"clean books not clean: {f}" for f in audit(clean_public, tol)]
@@ -364,7 +364,7 @@ def verify_episode(public: dict, truth: dict, clean_public: dict | None = None) 
         (
             {
                 "type": i["type"],
-                "affected_ids": i["affected_ids"],
+                "affected_ids": sorted(i["affected_ids"]),  # a set: renamed ids need not stay sorted
                 "amount_minor": i["expected_amount_minor"],
                 "currency": i["currency"],
             }
@@ -389,7 +389,10 @@ def verify_episode(public: dict, truth: dict, clean_public: dict | None = None) 
             except CheckError as exc:
                 problems.append(f"{issue['issue_id']}: evidence {ev} insufficient: {exc}")
                 continue
-            if got["affected_ids"] != issue["affected_ids"] or got["amount_minor"] != issue["expected_amount_minor"]:
+            if (
+                sorted(got["affected_ids"]) != sorted(issue["affected_ids"])
+                or got["amount_minor"] != issue["expected_amount_minor"]
+            ):
                 problems.append(f"{issue['issue_id']}: evidence derives {got}")
         if issue["expected_amount_minor"] <= tol:
             problems.append(f"{issue['issue_id']}: immaterial amount")

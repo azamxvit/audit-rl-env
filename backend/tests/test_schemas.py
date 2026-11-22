@@ -251,25 +251,27 @@ VALID_SUBMISSIONS = [
     {"episode_id": EPISODE_ID, "findings": []},
     {"episode_id": EPISODE_ID, "findings": [_finding()]},
     {"episode_id": EPISODE_ID, "findings": [_finding(evidence_ids=[], explanation="x" * 1000)] * 30},
-    {"episode_id": EPISODE_ID, "findings": [_finding(currency=" usd ", affected_ids=["a"] * 10)]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(explanation="\u00e9" * 1000)]},  # code points, not bytes
+    # structurally valid, simply never matched (false positives, not crashes)
+    {"episode_id": EPISODE_ID, "findings": [_finding(type="fraud")]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(currency=" usd ")]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=[])]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=["a"] * 11)]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor=-1)]},
 ]
 INVALID_SUBMISSIONS = [
     {"findings": []},
     {"episode_id": EPISODE_ID, "findings": [], "extra": 1},
     {"episode_id": EPISODE_ID, "findings": {}},
     {"episode_id": EPISODE_ID, "findings": [_finding()] * 31},
-    {"episode_id": EPISODE_ID, "findings": [_finding(type="fraud")]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=[])]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=["a"] * 11)]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=["  "])]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=["x" * 65])]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(evidence_ids=["e"] * 11)]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor=-1)]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(type=None)]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids="INV-1")]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(affected_ids=[1])]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(evidence_ids=["e"] * 11)]},  # M05: counted before dedupe
     {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor=1.5)]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor=True)]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor=10**15)]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(currency="US")]},
-    {"episode_id": EPISODE_ID, "findings": [_finding(currency="U5D")]},
+    {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor=True)]},  # M09
+    {"episode_id": EPISODE_ID, "findings": [_finding(claimed_amount_minor="10000")]},  # M09
+    {"episode_id": EPISODE_ID, "findings": [_finding(currency=None)]},
     {"episode_id": EPISODE_ID, "findings": [_finding(explanation="x" * 1001)]},
     {"episode_id": EPISODE_ID, "findings": [{**_finding(), "confidence": 0.9}]},
     {"episode_id": EPISODE_ID, "findings": ["not an object"]},

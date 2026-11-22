@@ -185,13 +185,13 @@ def raw_request(port, head: bytes, body: bytes = b"", timeout=10) -> bytes:
     try:  # the server may answer and close before the whole body is sent - that is the point
         s.sendall(body)
         s.shutdown(socket.SHUT_WR)
-    except (BrokenPipeError, ConnectionResetError):
+    except OSError:  # BrokenPipe/ECONNRESET on macOS, ENOTCONN on Linux
         pass
     data = b""
     try:
         while chunk := s.recv(65536):
             data += chunk
-    except ConnectionResetError:
+    except OSError:
         pass
     s.close()
     return data

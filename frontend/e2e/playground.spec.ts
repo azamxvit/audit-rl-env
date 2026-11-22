@@ -88,4 +88,30 @@ test.describe("AuditDesk end to end", () => {
     await page.keyboard.press("Enter");
     await expect(page.locator("output")).toHaveText("= 108.4512");
   });
+
+  test("duplicate candidates: free, answer-blind grouping with one-click pair actions", async ({ page }) => {
+    const { issues } = truthFor("train/00"); // grader side: only used to check the UI's top candidate
+    await startEpisode(page, "train/00");
+    await page.getByRole("button", { name: "Счета", exact: true }).click();
+    await page.getByRole("button", { name: /Загрузить первые 50/ }).click();
+    await expect(page.getByRole("table", { name: /загружено 50 из/ })).toBeVisible();
+    const before = await budget(page);
+    const toggle = page.getByRole("button", { name: /Кандидаты в дубли/ });
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    expect(await budget(page)).toBe(before); // free: no step spent
+    const top = page.getByRole("region", { name: /Группа A/ });
+    await expect(top).toContainText("позиции совпадают"); // identical lines come first
+    const text = (await top.getByRole("row").allInnerTexts()).join(" ");
+    const pair = issues.find(
+      (i) => i.type === "duplicate_invoice" && i.affected_ids.every((id) => text.includes(id)),
+    );
+    expect(pair, "the top candidate is a real duplicate of this episode").toBeTruthy();
+    await top.getByRole("button", { name: "invoice_id → affected" }).click();
+    await top.getByRole("button", { name: "doc_id → доказательства" }).click();
+    await page.getByRole("button", { name: /^Выводы/ }).click();
+    const form = page.getByRole("form", { name: "Новый вывод" });
+    for (const id of pair!.affected_ids) await expect(form.getByText(id, { exact: true })).toBeVisible();
+    await expectNoSeriousA11yViolations(page);
+  });
 });

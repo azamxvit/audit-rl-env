@@ -3,6 +3,11 @@
 Stdlib only. Run: ``PYTHONPATH=src python -m audit_env.server`` (from backend/) -> http://127.0.0.1:8000
 The API is a thin wrapper: /api/step returns exactly what AuditEnv.step returns. Truth is only read
 by /api/review, and only after the episode has ended; it is used for open train/dev episodes only.
+
+Local-only hardening (security review, DESIGN §15): requests must name a local Host (blocks DNS
+rebinding), a cross-site Origin is refused, POST bodies must be JSON with a valid Content-Length
+(<= 1 MB; a cross-site "simple" text/plain POST cannot create or evict sessions), slow clients
+time out, and the banner does not disclose the Python version.
 """
 
 from __future__ import annotations
@@ -16,7 +21,7 @@ from collections import OrderedDict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Optional
-from urllib.parse import parse_qs, unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse, urlsplit
 
 from .env import AuditEnv
 from .generator import load_private
@@ -27,6 +32,8 @@ DEFAULT_EPISODES = BACKEND_ROOT / "episodes"
 DEFAULT_STATIC = REPO_ROOT / "frontend" / "dist"
 MAX_BODY = 1_000_000
 MAX_SESSIONS = 32
+SOCKET_TIMEOUT_S = 15
+LOCAL_HOSTNAMES = {"127.0.0.1", "localhost", "::1"}
 METRIC_KEYS = ("tp", "fp", "fn", "precision", "recall", "f1", "reward", "inspection_steps", "valid", "termination")
 
 
@@ -136,9 +143,20 @@ class PlaygroundApp:
         }
 
 
-def make_handler(app: PlaygroundApp):
+def _hostname(value: str) -> Optional[str]:
+    try:
+        return urlsplit("//" + value).hostname
+    except ValueError:
+        return None
+
+
+def make_handler(app: PlaygroundApp, allowed_hosts: frozenset = frozenset()):
+    allowed = LOCAL_HOSTNAMES | set(allowed_hosts)
+
     class Handler(BaseHTTPRequestHandler):
         server_version = "AuditDesk/0.1"
+        sys_version = ""  # no Python version in the Server header
+        timeout = SOCKET_TIMEOUT_S  # slow clients cannot hold a thread forever
 
         def log_message(self, fmt, *args):  # quiet
             pass
@@ -154,8 +172,23 @@ def make_handler(app: PlaygroundApp):
         def _json(self, status: int, obj) -> None:
             self._send(status, json.dumps(obj).encode("utf-8"), "application/json; charset=utf-8")
 
+        def _guard(self, method: str) -> None:
+            raw_host = self.headers.get("Host")  # browsers always send it; bare HTTP/1.0 tools may not
+            if raw_host is not None and _hostname(raw_host) not in allowed:
+                raise ApiError(403, "forbidden_host")  # DNS rebinding: a foreign name pointing at us
+            origin = self.headers.get("Origin")
+            if origin is not None and _hostname(urlsplit(origin).netloc) not in allowed:
+                raise ApiError(403, "forbidden_origin")  # cross-site page
+            if method == "POST":
+                ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+                if ctype != "application/json":  # forces a CORS preflight, which we never grant
+                    raise ApiError(415, "json_required")
+
         def _body(self):
-            n = int(self.headers.get("Content-Length") or 0)
+            raw_len = (self.headers.get("Content-Length") or "0").strip()
+            if not raw_len.isdigit():
+                raise ApiError(400, "bad_length")  # negative or garbage: would read to EOF unbounded
+            n = int(raw_len)
             if n > MAX_BODY:
                 raise ApiError(413, "too_large")
             raw = self.rfile.read(n) if n else b"null"
@@ -166,7 +199,10 @@ def make_handler(app: PlaygroundApp):
 
         def _static(self, path: str) -> None:
             root = app.static_dir.resolve()
-            target = (root / unquote(path).lstrip("/")).resolve()
+            try:
+                target = (root / unquote(path).lstrip("/")).resolve()
+            except (ValueError, OSError):  # e.g. an embedded NUL byte
+                target = root / "index.html"
             if not target.is_relative_to(root) or not target.is_file():
                 target = root / "index.html"
             if not target.is_file():
@@ -179,6 +215,7 @@ def make_handler(app: PlaygroundApp):
         def _dispatch(self, method: str) -> None:
             url = urlparse(self.path)
             try:
+                self._guard(method)
                 if method == "GET" and url.path == "/api/episodes":
                     return self._json(200, app.episodes())
                 if method == "GET" and url.path == "/api/review":
@@ -205,7 +242,8 @@ def make_handler(app: PlaygroundApp):
 
 
 def make_server(app: PlaygroundApp, host: str = "127.0.0.1", port: int = 8000) -> ThreadingHTTPServer:
-    server = ThreadingHTTPServer((host, port), make_handler(app))
+    extra = frozenset() if host in ("", "0.0.0.0", "::") else frozenset({host})
+    server = ThreadingHTTPServer((host, port), make_handler(app, extra))
     server.daemon_threads = True
     return server
 

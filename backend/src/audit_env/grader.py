@@ -48,7 +48,7 @@ class Grader:
         if self.result is not None:  # one score per episode; repeated submits cannot rescore
             return self.result
         issues = self.truth["issues"]
-        tol = self.truth.get("tolerance_minor", 1)
+        tol = self.truth.get("tolerance_minor", 0)
         result = {
             "episode_id": self.episode_id,
             "termination": termination,

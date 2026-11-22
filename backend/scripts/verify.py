@@ -2,7 +2,8 @@
 
 For every episode in episodes/index.json:
   1. regenerate from (config, seed) and require byte-identical public files and identical truth (reproducibility);
-  2. accounting invariants on the pre-injection books, clean-books audit finds nothing;
+  2. accounting invariants on the pre-injection books, clean-books audit finds nothing; the pre-injection books
+     rebuilt from the FILES alone (public + provenance, audit_env.reconstruct) equal them and pass too;
   3. invariants after injection, rule-based audit == truth, every evidence set independently sufficient;
   4. paired check: permute + rename IDs -> episode still valid, oracle answer (renamed) gets the same reward.
 Exit code 1 on any problem.
@@ -12,9 +13,10 @@ import json
 import sys
 
 from _common import CONFIGS, RUNS, episode_dirs
-from audit_env.checker import verify_episode
+from audit_env.checker import audit, check_invariants, verify_episode
 from audit_env.generator import generate_episode, load_config, load_private, load_public, public_files
 from audit_env.grader import Grader
+from audit_env.reconstruct import clean_books
 from audit_env.transform import map_findings, transform_episode
 from audit_env.util import dumps, sha256_text
 
@@ -49,6 +51,11 @@ def main() -> int:
             if regen.truth != truth:
                 p.append("truth not reproducible")
             p += verify_episode(public, truth, regen.clean_public)
+            _, provenance = load_private(path)
+            rebuilt = clean_books(public, provenance)
+            if sorted(map(dumps, rebuilt["ledger"])) != sorted(map(dumps, regen.clean_public["ledger"])):
+                p.append("pre-injection ledger not reconstructible from provenance")
+            p += [f"rebuilt clean books: {x}" for x in check_invariants(rebuilt) + audit(rebuilt)]
             pub2, tr2, mapping = transform_episode(public, truth, seed=("pair", meta["episode_id"]))
             p += [f"paired: {x}" for x in verify_episode(pub2, tr2)]
             sub = oracle_submission(truth)

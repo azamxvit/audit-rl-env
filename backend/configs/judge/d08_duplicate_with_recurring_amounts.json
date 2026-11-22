@@ -1,0 +1,32 @@
+{
+  "config_id": "judge-d08-duplicate-with-recurring-amounts-v1",
+  "schema_version": "1.0",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        1,
+        2
+      ]
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "scenarios": {
+    "fx_partial_boundary": {
+      "count": 0
+    },
+    "cutoff_fx": {
+      "count": 0
+    }
+  },
+  "distractors": {
+    "subscriptions": 0.8
+  }
+}

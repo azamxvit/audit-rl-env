@@ -139,16 +139,32 @@ def test_unconfirmed_evidence_is_not_rewarded():
 def test_wrong_currency_and_amount_tolerance():
     ep = episode(4)
     i = ep.truth["issues"][0]
+    assert ep.truth["tolerance_minor"] == 0  # exact by default (check definitions: tau = 0)
     other_ccy = "JPY" if i["currency"] != "JPY" else "USD"
 
     def mk(amt, ccy):
         return finding(i["type"], i["affected_ids"], amt, ccy, i["evidence_sets"][0], "")
 
+    assert grade(ep, [mk(i["expected_amount_minor"], i["currency"])])["tp"] == 1
     assert grade(ep, [mk(i["expected_amount_minor"], other_ccy)])["tp"] == 0
-    assert grade(ep, [mk(i["expected_amount_minor"] + 1, i["currency"])])["tp"] == 1
-    assert grade(ep, [mk(i["expected_amount_minor"] - 1, i["currency"])])["tp"] == 1
-    assert grade(ep, [mk(i["expected_amount_minor"] + 2, i["currency"])])["tp"] == 0
-    assert grade(ep, [mk(i["expected_amount_minor"], i["currency"].lower() + " ")])["tp"] == 1  # normalised
+    assert grade(ep, [mk(i["expected_amount_minor"] + 1, i["currency"])])["tp"] == 0
+    assert grade(ep, [mk(i["expected_amount_minor"] - 1, i["currency"])])["tp"] == 0
+    # M06: currency differing only by case or whitespace is a different code
+    assert grade(ep, [mk(i["expected_amount_minor"], i["currency"].lower())])["tp"] == 0
+    assert grade(ep, [mk(i["expected_amount_minor"], i["currency"] + " ")])["tp"] == 0
+
+
+def test_published_nonzero_tolerance_is_inclusive():
+    # M08: a fixture that publishes tau = 1 accepts +-1 inclusive, not +-2
+    ep = episode(4)
+    truth = dict(ep.truth, tolerance_minor=1)
+    i = truth["issues"][0]
+
+    def g(amt):
+        f = finding(i["type"], i["affected_ids"], amt, i["currency"], i["evidence_sets"][0], "")
+        return Grader(ep.public, truth).grade({"episode_id": ep.episode_id, "findings": [f]}, 0, "submit")
+
+    assert g(i["expected_amount_minor"] + 1)["tp"] == 1 and g(i["expected_amount_minor"] + 2)["tp"] == 0
 
 
 def test_explanation_text_does_not_change_reward():
@@ -163,13 +179,47 @@ def test_explanation_text_does_not_change_reward():
     assert grade(ep, a)["reward"] == grade(ep, b)["reward"] == grade(ep, c)["reward"]
 
 
-def test_id_aliases_are_normalised():
+def test_ids_type_and_currency_are_exact_with_one_published_alias():
     _, ep = first_episode(lambda e: any(i["type"] == "period_cutoff" for i in e.truth["issues"]))
     i = next(i for i in ep.truth["issues"] if i["type"] == "period_cutoff")
     inv = next(x for x in ep.public["invoices"] if x["invoice_id"] == i["affected_ids"][0])
     ev = [inv["invoice_id"] if e == inv["doc_id"] else e for e in i["evidence_sets"][0]]  # business id as evidence
-    f = finding(" Period_Cutoff ", [inv["doc_id"] + " "], i["expected_amount_minor"], i["currency"], ev, "")
+
+    def f(type_="period_cutoff", affected=None, evidence=None):
+        return finding(
+            type_, affected or [inv["doc_id"]], i["expected_amount_minor"], i["currency"], evidence or ev, ""
+        )
+
+    assert grade(ep, [f()])["tp"] == 1  # doc_id <-> business id: the same open record, published alias
+    assert grade(ep, [f(type_="Period_Cutoff")])["tp"] == 0  # no case folding
+    assert grade(ep, [f(type_=" period_cutoff")])["tp"] == 0  # no trimming
+    assert grade(ep, [f(affected=[inv["invoice_id"] + " "])])["tp"] == 0  # ids compared exactly
+    assert grade(ep, [f(affected=[inv["invoice_id"].lower()])])["tp"] == 0
+
+
+def test_structurally_valid_but_wrong_fields_are_false_positives_not_crashes():
+    # check definitions, matcher rule 8: unknown type, odd currency, negative amount, empty affected -> FP
+    ep = episode(6)
+    base = oracle_findings(ep.truth)[0]
+    for bad in (
+        dict(base, type="fraud"),
+        dict(base, currency="EURO"),
+        dict(base, claimed_amount_minor=-5),
+        dict(base, affected_ids=[]),
+        dict(base, affected_ids=base["affected_ids"] + ["INV-EXTRA001"]),
+    ):
+        r = grade(ep, [bad])
+        assert r["valid"] and r["tp"] == 0 and r["fp"] == 1
+
+
+def test_unknown_evidence_id_blocks_the_match():
+    # M04: the minimal set plus an id that does not exist -> not matched
+    ep = episode(6)
+    f = oracle_findings(ep.truth)[0]
     assert grade(ep, [f])["tp"] == 1
+    assert grade(ep, [dict(f, evidence_ids=f["evidence_ids"] + ["LR-NOPE0000"])])["tp"] == 0
+    extra = ep.public["ledger"][0]["row_id"]  # M03: an extra EXISTING record is fine
+    assert grade(ep, [dict(f, evidence_ids=[extra] + f["evidence_ids"][::-1])])["tp"] == 1
 
 
 @pytest.mark.parametrize(
@@ -182,16 +232,15 @@ def test_id_aliases_are_normalised():
         lambda s: {**s, "episode_id": "EP-WRONG000"},
         lambda s: {**s, "findings": "all"},
         lambda s: {**s, "findings": [{"type": "fx_error"}]},
-        lambda s: {**s, "findings": [dict(s["findings"][0], type="fraud")]},
         lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=12.5)]},
         lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=True)]},
-        lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor=-5)]},
-        lambda s: {**s, "findings": [dict(s["findings"][0], currency="EURO")]},
-        lambda s: {**s, "findings": [dict(s["findings"][0], affected_ids=[])]},
         lambda s: {**s, "findings": [dict(s["findings"][0], affected_ids="INV-1")]},
         lambda s: {**s, "findings": [dict(s["findings"][0], evidence_ids=["X"] * 11)]},
         lambda s: {**s, "findings": [dict(s["findings"][0], explanation="x" * 1001)]},
         lambda s: {**s, "findings": [dict(s["findings"][0], hint=1)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], claimed_amount_minor="10000")]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], type=None)]},
+        lambda s: {**s, "findings": [dict(s["findings"][0], evidence_ids=s["findings"][0]["evidence_ids"][:1] * 11)]},
         lambda s: {**s, "findings": s["findings"][:1] * 31},
     ],
 )
@@ -208,7 +257,8 @@ def test_invalid_structure_ends_with_minus_one(mutate):
 def test_limits_at_boundary_are_valid():
     ep = episode(6)
     f = oracle_findings(ep.truth)[0]
-    f = dict(f, evidence_ids=(f["evidence_ids"] + ["LR-PAD00000"] * 10)[:10], explanation="x" * 1000)
+    pad = [r["row_id"] for r in ep.public["ledger"] if r["row_id"] not in f["evidence_ids"]]
+    f = dict(f, evidence_ids=(f["evidence_ids"] + pad)[:10], explanation="\u00e9" * 1000)  # code points
     r = grade(ep, [f] * 30)
     assert r["valid"] and r["tp"] == 1 and r["fp"] == 29
 
@@ -242,7 +292,7 @@ def test_matching_is_maximum_not_greedy():
     ]
 
     def nf(amt):
-        return NormFinding("fx_error", frozenset({"INV-A"}), amt, "USD", frozenset({"DOC-A"}))
+        return NormFinding("fx_error", frozenset({"INV-A"}), amt, "USD", frozenset({"DOC-A"}), True)
 
     pairs = match([nf(100), nf(99)], issues, 1)  # f0 fits both, f1 fits only I1
     assert len(pairs) == 2 and (1, 0) in pairs and (0, 1) in pairs

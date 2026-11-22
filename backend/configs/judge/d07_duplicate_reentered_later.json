@@ -1,0 +1,32 @@
+{
+  "config_id": "judge-d07-duplicate-reentered-later-v1",
+  "schema_version": "1.0",
+  "errors": {
+    "duplicate_invoice": {
+      "count": [
+        1,
+        2
+      ],
+      "variants": [
+        "re_entered_later"
+      ]
+    },
+    "payment_allocation": {
+      "count": 0
+    },
+    "fx_error": {
+      "count": 0
+    },
+    "period_cutoff": {
+      "count": 0
+    }
+  },
+  "scenarios": {
+    "fx_partial_boundary": {
+      "count": 0
+    },
+    "cutoff_fx": {
+      "count": 0
+    }
+  }
+}

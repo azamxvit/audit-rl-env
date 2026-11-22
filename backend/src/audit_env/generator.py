@@ -29,7 +29,7 @@ from .world import (
     render_row,
 )
 
-TOLERANCE_MINOR = 1
+TOLERANCE_MINOR = 0  # exact by default (organisers' check definitions: tau = 0)
 
 DEFAULT_CONFIG: dict = {
     "schema_version": SCHEMA_VERSION,
@@ -144,6 +144,38 @@ def _entry_dump(world: World, ledger, source) -> Optional[list]:
     return [render_row(world, r) for r in sorted(e.rows, key=lambda r: r.row_id)]
 
 
+def _dependent_changes(clean_rows: list, rows: list, changes: list, issues: list) -> list:
+    """Rows the policy re-derives from an injected booking (e.g. AR relieved at the booked amount and the
+    7900 difference of a payment applied to a mis-booked invoice). They change as a consequence, so they are
+    recorded too: with them, undoing ``changes`` in reverse order restores the pre-injection ledger exactly."""
+    covered = {r["row_id"] for c in changes for r in (c["ledger_before"] or []) + (c["ledger_after"] or [])}
+    before = {r["row_id"]: r for r in clean_rows}
+    after = {r["row_id"]: r for r in rows}
+    ids = sorted((set(before) | set(after)) - covered)
+    changed = [i for i in ids if before.get(i) != after.get(i)]
+    if not changed:
+        return []
+    links = {
+        x for i in changed for r in (before.get(i), after.get(i)) if r for x in (r["invoice_id"], r["payment_id"]) if x
+    }
+    owners = sorted(iss["issue_id"] for iss in issues if links & set(iss["affected_ids"])) or sorted(
+        iss["issue_id"] for iss in issues
+    )
+    return [
+        {
+            "change_id": f"CHG-{len(changes) + 1:03d}",
+            "issue_ids": owners,
+            "target": ["ledger", "dependent_rows"],
+            "op": "recompute_dependent",
+            "document_added": None,
+            "booking_before": None,
+            "booking_after": None,
+            "ledger_before": [before[i] for i in changed if i in before],
+            "ledger_after": [after[i] for i in changed if i in after],
+        }
+    ]
+
+
 def generate_episode(seed: object, config: Optional[dict] = None) -> Episode:
     cfg = merge_config(config)
     builder = WorldBuilder(seed, cfg)
@@ -198,6 +230,7 @@ def generate_episode(seed: object, config: Optional[dict] = None) -> Episode:
                 "ledger_after": _entry_dump(world, ledger, target),
             }
         )
+    changes += _dependent_changes(clean_public["ledger"], public["ledger"], changes, issues)
     for iss in issues:
         del iss["_targets"]
 

@@ -600,6 +600,121 @@
         "payment",
         "PAY-Z6P5NPC1"
       ]
+    },
+    {
+      "booking_after": null,
+      "booking_before": null,
+      "change_id": "CHG-008",
+      "document_added": null,
+      "issue_ids": [
+        "ISS-8QCVJ7E7",
+        "ISS-R00AEVJA"
+      ],
+      "ledger_after": [
+        {
+          "account": "7900",
+          "credit_minor": 0,
+          "currency": "GBP",
+          "debit_minor": 1797107,
+          "entity_id": "CUS-83CNRNJJ",
+          "entry_id": "JE-FS5KP3EW",
+          "invoice_id": null,
+          "payment_id": "PAY-Y7J3NGX9",
+          "row_id": "LR-1YVPBPP9",
+          "timestamp": "2025-02-07T16:34:04+03:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 4275564,
+          "currency": "GBP",
+          "debit_minor": 0,
+          "entity_id": "CUS-83CNRNJJ",
+          "entry_id": "JE-FS5KP3EW",
+          "invoice_id": "INV-9JJQH5V2",
+          "payment_id": "PAY-Y7J3NGX9",
+          "row_id": "LR-39YJJ90B",
+          "timestamp": "2025-02-07T16:34:04+03:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 1082366,
+          "currency": "GBP",
+          "debit_minor": 0,
+          "entity_id": "CUS-M2TAXP8D",
+          "entry_id": "JE-JF7AC1TT",
+          "invoice_id": "INV-JJGYRZ41",
+          "payment_id": "PAY-N0GHN21W",
+          "row_id": "LR-42H0GQYB",
+          "timestamp": "2025-03-09T10:57:11+03:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 0,
+          "currency": "GBP",
+          "debit_minor": 471735,
+          "entity_id": "CUS-M2TAXP8D",
+          "entry_id": "JE-JF7AC1TT",
+          "invoice_id": null,
+          "payment_id": "PAY-N0GHN21W",
+          "row_id": "LR-6BVG280K",
+          "timestamp": "2025-03-09T10:57:11+03:00"
+        }
+      ],
+      "ledger_before": [
+        {
+          "account": "7900",
+          "credit_minor": 0,
+          "currency": "GBP",
+          "debit_minor": 69507,
+          "entity_id": "CUS-83CNRNJJ",
+          "entry_id": "JE-FS5KP3EW",
+          "invoice_id": null,
+          "payment_id": "PAY-Y7J3NGX9",
+          "row_id": "LR-1YVPBPP9",
+          "timestamp": "2025-02-07T16:34:04+03:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 2547964,
+          "currency": "GBP",
+          "debit_minor": 0,
+          "entity_id": "CUS-83CNRNJJ",
+          "entry_id": "JE-FS5KP3EW",
+          "invoice_id": "INV-9JJQH5V2",
+          "payment_id": "PAY-Y7J3NGX9",
+          "row_id": "LR-39YJJ90B",
+          "timestamp": "2025-02-07T16:34:04+03:00"
+        },
+        {
+          "account": "1100",
+          "credit_minor": 616391,
+          "currency": "GBP",
+          "debit_minor": 0,
+          "entity_id": "CUS-M2TAXP8D",
+          "entry_id": "JE-JF7AC1TT",
+          "invoice_id": "INV-JJGYRZ41",
+          "payment_id": "PAY-N0GHN21W",
+          "row_id": "LR-42H0GQYB",
+          "timestamp": "2025-03-09T10:57:11+03:00"
+        },
+        {
+          "account": "7900",
+          "credit_minor": 0,
+          "currency": "GBP",
+          "debit_minor": 5760,
+          "entity_id": "CUS-M2TAXP8D",
+          "entry_id": "JE-JF7AC1TT",
+          "invoice_id": null,
+          "payment_id": "PAY-N0GHN21W",
+          "row_id": "LR-6BVG280K",
+          "timestamp": "2025-03-09T10:57:11+03:00"
+        }
+      ],
+      "op": "recompute_dependent",
+      "target": [
+        "ledger",
+        "dependent_rows"
+      ]
     }
   ],
   "clean_counts": {

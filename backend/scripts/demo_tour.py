@@ -1,9 +1,10 @@
-"""Demo tour: the environment in seven short scenes, offline, ~1 minute of output (see DEMO.md).
+"""Demo tour: the environment in eight short scenes, offline (see DEMO.md).
 
-    PYTHONPATH=src python3 scripts/demo_tour.py [--pace 2.5]
+    PYTHONPATH=src python3 scripts/demo_tour.py [--pace 2.5 | --step]
 
---pace N pauses N seconds between scenes, for screen recording. Everything is computed live
-from the open dev episodes and fresh seeds; nothing is pre-recorded.
+--pace N pauses N seconds between scenes; --step waits for Enter (the presenter sets the tempo on
+a screen recording). Everything is computed live from the open dev episodes and fresh seeds;
+nothing is pre-recorded.
 """
 
 import argparse
@@ -30,6 +31,8 @@ from audit_env.util import dumps, sha256_text
 
 TTY = sys.stdout.isatty()
 PACE = 0.0
+STEP = False
+SCENES = 8
 
 
 def bold(s: str) -> str:
@@ -40,11 +43,18 @@ def dim(s: str) -> str:
     return f"\033[2m{s}\033[0m" if TTY else s
 
 
-def scene(n: int, title: str, note: str) -> None:
-    if n > 1 and PACE:
+def wait() -> None:
+    if STEP:
+        input(dim("\n      [Enter] ->"))
+    elif PACE:
         time.sleep(PACE)
+
+
+def scene(n: int, title: str, note: str) -> None:
+    if n > 1:
+        wait()
     print()
-    print(bold(f"[{n}/7] {title}"))
+    print(bold(f"[{n}/{SCENES}] {title}"))
     print(dim("      " + note))
 
 
@@ -64,10 +74,12 @@ def grade_line(g: dict) -> str:
 
 
 def main() -> int:
-    global PACE
+    global PACE, STEP
     ap = argparse.ArgumentParser()
     ap.add_argument("--pace", type=float, default=0.0)
-    PACE = ap.parse_args().pace
+    ap.add_argument("--step", action="store_true", help="wait for Enter between scenes")
+    a = ap.parse_args()
+    PACE, STEP = a.pace, a.step
 
     dev = episode_dirs("dev")
     path, meta = dev[4]  # a books-with-errors episode
@@ -220,9 +232,45 @@ def main() -> int:
             ev.close()
         g = json.loads(log.read_text().splitlines()[-1])
         print(f"  grader log: {grade_line(g)}")
+
+    # 8 ------------------------------------------------------------------------------------------
+    scene(
+        8,
+        "How the jury plugs in: judge_adapter.py",
+        "The organisers' interface: generate_episode / make_env / score_episode, closed mode by episode_dir.",
+    )
+    _judge_scene()
+    wait()
     print()
     print(bold("Done.") + " Full check: make verify  |  report: backend/runs/report.md  |  play it yourself: make play")
     return 0
+
+
+def _judge_scene() -> None:
+    import os
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    with tempfile.TemporaryDirectory() as tmp:
+        os.environ["AUDIT_ENV_GRADER_LOG"] = str(Path(tmp) / "grader_log.jsonl")
+        import judge_adapter as ja
+
+        ep_dir = Path(tmp) / "ep"
+        cfg_file = CONFIGS / "judge" / "d16_fx_partial_boundary_quarter.json"
+        ja.generate_episode(2026, load_config(cfg_file), str(ep_dir))
+        print(f"  generate_episode(2026, configs/judge/{cfg_file.name}) -> public/ + private/")
+        env = ja.make_env()
+        try:
+            obs, info = env.reset(seed=None, config={"mode": "closed", "episode_dir": str(ep_dir)})
+            print(f"  reset(mode=closed) -> keys {sorted(obs)}, remaining_steps={obs['remaining_steps']}")
+            o = env.step({"name": "list_records", "args": {"table": "ledger", "cursor": None, "limit": 50}})
+            print(f"  step(list_records) -> {len(o[0]['result']['records'])} records, reward {o[1]}, info {o[4]}")
+            findings = _oracle_submission(load_private(ep_dir)[0])
+            o = env.step({"name": "submit", "args": {"findings": findings}})
+            print(f"  step(submit) -> {o[0]['result']}, reward {o[1]} (closed: the policy learns nothing)")
+        finally:
+            env.close()
+        print(f"  score_episode(...) -> {ja.score_episode(str(ep_dir), findings, 1)}")
+        print(dim("      All blocks of the published checks run literally in tests/test_judge_checks.py."))
 
 
 def _public_truth(path: Path):

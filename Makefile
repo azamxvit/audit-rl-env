@@ -4,7 +4,7 @@ RUN := cd $(BACKEND) && PYTHONPATH=src $(PYTHON)
 # ruff from the active environment (pip install -r backend/requirements-dev.txt), or the local .venv
 RUFF ?= $(shell command -v ruff 2>/dev/null || echo $(CURDIR)/.venv/bin/ruff)
 
-.PHONY: ci ci-fast hooks train-learned-check verify test episodes check-data fuzz baselines train-learned eval-learned demo demo-steps play frontend frontend-test e2e format lint clean
+.PHONY: ci ci-fast hooks train-learned-check verify test episodes check-data fuzz baselines train-learned eval-learned demo demo-steps demo-record play frontend frontend-test e2e format lint clean
 
 # One command: generate episodes -> tests -> independent data checks -> baselines (trajectories + report)
 # -> held-out evaluation of the learned auditor
@@ -40,8 +40,13 @@ eval-learned:
 
 # Demo tour in 7 scenes (PACE=2.5 pauses between scenes for screen recording, see DEMO.md)
 PACE ?= 0
+STEP ?=
 demo:
-	$(RUN) scripts/demo_tour.py --pace $(PACE)
+	$(RUN) scripts/demo_tour.py --pace $(PACE) $(if $(STEP),--step,)
+
+# One-take screen recording: Docker check -> tour (Enter between scenes) -> report -> web UI (DEMO.md)
+demo-record:
+	bash scripts/demo_record.sh
 
 # Step-by-step run of one scripted policy on one dev episode
 demo-steps:

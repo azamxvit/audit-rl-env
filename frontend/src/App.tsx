@@ -79,6 +79,10 @@ export default function App() {
         ep={ep}
         onSelect={setOpened}
         selected={opened?.table === view.table ? String(opened.record[ID_FIELD[view.table]]) : undefined}
+        onAdd={(kind, ids) => {
+          ids.forEach((id) => draft.addTo(kind, id));
+          notify(`${ids.join(", ")} → ${kind === "affected" ? "affected" : "доказательства"}`);
+        }}
       />
     );
   else if (view.name === "calculator") screen = <CalculatorScreen ep={ep} />;

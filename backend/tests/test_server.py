@@ -137,7 +137,8 @@ def test_body_too_large(server):
     port, _ = server
     s = socket.create_connection(("127.0.0.1", port), timeout=10)
     s.sendall(
-        b"POST /api/step HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\n" b"Content-Length: 2000000\r\n\r\n"
+        b"POST /api/step HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
+        b"Content-Length: 2000000\r\n\r\n"
     )  # body never sent: the server must refuse before reading it
     data = b""
     while b"too_large" not in data:
@@ -171,3 +172,114 @@ def test_session_eviction(server):
         port, "POST", "/api/step", {"session": first, "action": {"tool": "calculator", "args": {"expression": "1"}}}
     )
     assert status == 404 and len(app.sessions) == 32
+
+
+# --------------------------------------------------------------------------- security review (DESIGN §15)
+
+
+def raw_request(port, head: bytes, body: bytes = b"", timeout=10) -> bytes:
+    import socket
+
+    s = socket.create_connection(("127.0.0.1", port), timeout=timeout)
+    s.sendall(head)
+    try:  # the server may answer and close before the whole body is sent - that is the point
+        s.sendall(body)
+        s.shutdown(socket.SHUT_WR)
+    except OSError:  # BrokenPipe/ECONNRESET on macOS, ENOTCONN on Linux
+        pass
+    data = b""
+    try:
+        while chunk := s.recv(65536):
+            data += chunk
+    except OSError:
+        pass
+    s.close()
+    return data
+
+
+def _post(port, path, body: dict, headers: dict):
+    c = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+    c.request("POST", path, body=json.dumps(body).encode(), headers=headers)
+    r = c.getresponse()
+    out = (r.status, json.loads(r.read()))
+    c.close()
+    return out
+
+
+def test_cross_site_simple_post_cannot_create_or_evict_sessions(server):
+    port, _ = server
+    status, body = req(port, "POST", "/api/reset", {"episode": "train/00"})
+    victim = body["session"]
+    for _ in range(40):  # what a malicious page could fire without a CORS preflight
+        st, b = _post(port, "/api/reset", {"episode": "dev/00"}, {"Content-Type": "text/plain"})
+        assert (st, b["error"]) == (415, "json_required")
+    st, b = _post(
+        port, "/api/reset", {"episode": "dev/00"}, {"Content-Type": "application/json", "Origin": "http://evil.example"}
+    )
+    assert (st, b["error"]) == (403, "forbidden_origin")
+    st, _ = req(
+        port, "POST", "/api/step", {"session": victim, "action": {"tool": "calculator", "args": {"expression": "1"}}}
+    )
+    assert st == 200  # the victim's game survived
+    st, b = _post(
+        port,
+        "/api/reset",
+        {"episode": "dev/00"},
+        {"Content-Type": "application/json", "Origin": f"http://localhost:{port}"},
+    )
+    assert st == 200 and b["session"]
+
+
+def test_foreign_host_header_is_refused(server):
+    port, _ = server
+    c = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+    c.request("GET", "/api/episodes", headers={"Host": "attacker.example"})
+    r = c.getresponse()
+    assert r.status == 403 and json.loads(r.read())["error"] == "forbidden_host"
+    c.close()
+    for host in (f"localhost:{port}", f"127.0.0.1:{port}", f"[::1]:{port}"):
+        c = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+        c.request("GET", "/api/episodes", headers={"Host": host})
+        assert c.getresponse().status == 200, host
+        c.close()
+
+
+def test_negative_or_garbage_content_length_is_rejected(server):
+    port, _ = server
+    big = b'{"episode":"train/00","pad":"' + b"A" * 2_000_000 + b'"}'
+    for length in (b"-1", b"abc", b"1e9"):
+        head = (
+            b"POST /api/reset HTTP/1.0\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\nContent-Length: "
+            + length
+            + b"\r\n\r\n"
+        )
+        reply = raw_request(port, head, big)
+        assert reply.startswith(b"HTTP/1.0 400") and b"bad_length" in reply
+
+
+def test_banner_and_nul_byte(server):
+    port, _ = server
+    reply = raw_request(port, b"GET /%00 HTTP/1.0\r\nHost: 127.0.0.1\r\n\r\n")
+    assert reply.startswith(b"HTTP/1.0 200")  # served the app shell, no 500
+    assert b"Python" not in reply.split(b"\r\n\r\n")[0]
+
+
+def test_slow_client_times_out(server, monkeypatch):
+    import socket
+    import time
+
+    import audit_env.server as srv_mod
+
+    _, app = server
+    monkeypatch.setattr(srv_mod, "SOCKET_TIMEOUT_S", 1)
+    srv = make_server(app, "127.0.0.1", 0)  # handler class picks up the 1 s timeout
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        s = socket.create_connection(("127.0.0.1", srv.server_address[1]), timeout=10)
+        s.sendall(b"GET /api/episodes HTTP/1.0\r\n")  # never finishes the request
+        t = time.time()
+        data = s.recv(100)  # the server gives up and closes instead of holding a thread forever
+        assert time.time() - t < 5 and (data == b"" or data.startswith(b"HTTP/1.0 408"))
+        s.close()
+    finally:
+        srv.shutdown()

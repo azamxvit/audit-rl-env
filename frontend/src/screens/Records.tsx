@@ -1,9 +1,28 @@
-import { Download } from "lucide-react";
+import { Copy, Download } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import type { EpisodeApi, Opened } from "@/hooks";
-import { formatMinor, formatTimestamp, ID_FIELD, TABLE_LABEL } from "@/lib";
+import {
+  duplicateGroups,
+  formatMinor,
+  formatTimestamp,
+  ID_FIELD,
+  TABLE_LABEL,
+  type DuplicateGroup,
+} from "@/lib";
 import type { Rec, TableName } from "@/types";
-import { Badge, Button, Cost, EmptyState, SearchBox, Mono, Muted, Page, DataTable, type Column } from "@/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  Cost,
+  EmptyState,
+  SearchBox,
+  Mono,
+  Muted,
+  Page,
+  DataTable,
+  type Column,
+} from "@/ui";
 
 function columns(table: TableName, exps: Record<string, number>, open: (r: Rec) => void): Column<Rec>[] {
   const money = (field: string) => (r: Rec) =>
@@ -77,18 +96,116 @@ function columns(table: TableName, exps: Record<string, number>, open: (r: Rec) 
   }
 }
 
+export type AddIds = (kind: "affected" | "evidence", ids: string[]) => void;
+
+function DuplicateCandidates({
+  groups,
+  cols,
+  exps,
+  selected,
+  onOpen,
+  onAdd,
+}: {
+  groups: DuplicateGroup[];
+  cols: Column<Rec>[];
+  exps: Record<string, number>;
+  selected?: string;
+  onOpen: (r: Rec) => void;
+  onAdd?: AddIds;
+}) {
+  const hint = (
+    <p className="mt-0 mb-1 text-muted">
+      Счета одного клиента с той же валютой и суммой среди загруженных. Бесплатно, эталон не используется:
+      решение — за аудитором.
+    </p>
+  );
+  if (!groups.length)
+    return (
+      <EmptyState>
+        Среди загруженных счетов нет пар с тем же клиентом, валютой и суммой. Загрузите ещё страницу.
+      </EmptyState>
+    );
+  return (
+    <div className="flex flex-col gap-4">
+      {hint}
+      {groups.map((g) => (
+        <Card
+          key={g.label}
+          level={2}
+          title={
+            <>
+              Группа {g.label} · <Mono>{g.entity}</Mono> · {formatMinor(g.totalMinor, g.currency, exps)} ·{" "}
+              {g.rows.length} счёта
+            </>
+          }
+          actions={
+            onAdd && (
+              <>
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    onAdd(
+                      "affected",
+                      g.rows.map((r) => r.invoice_id),
+                    )
+                  }
+                >
+                  invoice_id → affected
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    onAdd(
+                      "evidence",
+                      g.rows.map((r) => r.doc_id),
+                    )
+                  }
+                >
+                  doc_id → доказательства
+                </Button>
+              </>
+            )
+          }
+        >
+          <p className="mt-0 mb-3 flex items-center gap-2 text-muted">
+            {g.sameLines ? (
+              <Badge tone="danger">позиции совпадают</Badge>
+            ) : (
+              <Badge tone="neutral">позиции различаются</Badge>
+            )}
+            {g.sameLines
+              ? "Те же позиции и период услуг — проверьте проводки обоих счетов."
+              : "Скорее законный повтор (например, подписка за другой период)."}
+          </p>
+          <DataTable
+            caption={`Группа ${g.label}: кандидаты в дубли`}
+            columns={cols}
+            rows={g.rows}
+            rowKey={(r) => String(r.invoice_id)}
+            selectedKey={selected}
+            onRowClick={onOpen}
+          />
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export function Records({
   table,
   ep,
   selected,
   onSelect,
+  onAdd,
 }: {
   table: TableName;
   ep: EpisodeApi;
   selected?: string;
   onSelect: (o: Opened) => void;
+  onAdd?: AddIds;
 }) {
   const [filter, setFilter] = useState("");
+  const [dupes, setDupes] = useState(false);
   const t = ep.tables[table];
   const total = ep.obs!.tables[table].count;
   const exps = ep.obs!.policy.currency_exponents;
@@ -99,6 +216,8 @@ export function Records({
       filter ? t.rows.filter((r) => JSON.stringify(r).toLowerCase().includes(filter.toLowerCase())) : t.rows,
     [t.rows, filter],
   );
+  const groups = useMemo(() => (table === "invoices" ? duplicateGroups(t.rows) : []), [table, t.rows]);
+  const showDupes = table === "invoices" && dupes;
   const canLoad = !ep.done && (!t.started || !!t.next);
   return (
     <Page title={TABLE_LABEL[table]} wide>
@@ -113,6 +232,17 @@ export function Records({
         <p className="m-0 text-muted" aria-live="polite">
           Загружено {t.rows.length} из {total}
         </p>
+        {table === "invoices" && (
+          <Button
+            variant={dupes ? "primary" : "secondary"}
+            aria-pressed={dupes}
+            disabled={!t.rows.length}
+            onClick={() => setDupes((v) => !v)}
+          >
+            <Copy size={14} aria-hidden />
+            Кандидаты в дубли · {groups.length}
+          </Button>
+        )}
         <Button className="ml-auto" disabled={!canLoad || ep.busy} onClick={() => ep.loadMore(table)}>
           <Download size={14} aria-hidden />
           {t.started ? "Загрузить ещё 50" : "Загрузить первые 50"} <Cost />
@@ -120,6 +250,15 @@ export function Records({
       </div>
       {!t.rows.length ? (
         <EmptyState>Записи ещё не загружены. Каждая страница — 1 шаг.</EmptyState>
+      ) : showDupes ? (
+        <DuplicateCandidates
+          groups={groups}
+          cols={cols}
+          exps={exps}
+          selected={selected}
+          onOpen={open}
+          onAdd={onAdd}
+        />
       ) : (
         <DataTable
           caption={`${TABLE_LABEL[table]}: загружено ${t.rows.length} из ${total}`}
